@@ -1,17 +1,41 @@
 {
-    "name": "sparclex/lims",
-    "description": "A Laravel Nova tool.",
+    "name": "sparclex/Lims",
+    "description": "A Laboratory Information Management System based on laravel nova",
     "keywords": [
         "laravel",
         "nova"
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../nova"
+        }
+    ],
+    "homepage": "https://github.com/sparclex/Lims",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Silvan Wehner",
+            "email": "silvan.wehner@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.1.0",
+        "laravel/nova": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.6",
+        "phpunit/phpunit": "7.1"
     },
     "autoload": {
         "psr-4": {
             "Sparclex\\Lims\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sparclex\\Lims\\Tests\\": "tests"
         }
     },
     "extra": {

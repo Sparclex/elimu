@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use Laravel\Nova\Nova;
-use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\NovaApplicationServiceProvider;
-use Sparclex\LimsGettingStartedCard\LimsGettingStartedCard;
+use Sparclex\Lims\Tool;
+use Sparclex\Lims\ToolServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -57,7 +57,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
-            new LimsGettingStartedCard(view('cards.gettingStarted')),
         ];
     }
 
@@ -68,7 +67,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools()
     {
-        return [];
+        return [
+            new Tool
+        ];
     }
 
     /**

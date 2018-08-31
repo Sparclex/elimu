@@ -17,6 +17,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",
+        "beyondcode/laravel-dump-server": "^1.2",
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",
         "laracasts/generators": "^1.1",
@@ -66,34 +67,6 @@
         {
             "type": "path",
             "url": "./nova"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/Tagging"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/Storage"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/Multiselect"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/HtmlReadonly"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/IntroductionCard"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/LimsGettingStartedCard"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/LimsImporter"
         },
         {
             "type": "path",

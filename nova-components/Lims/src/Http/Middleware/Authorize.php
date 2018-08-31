@@ -2,19 +2,15 @@
 
 namespace Sparclex\Lims\Http\Middleware;
 
-use Sparclex\Lims\Lims;
+use Closure;
+use Illuminate\Http\Request;
+use Sparclex\Lims\Tool;
+use Symfony\Component\HttpFoundation\Response;
 
 class Authorize
 {
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return \Illuminate\Http\Response
-     */
-    public function handle($request, $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        return resolve(Lims::class)->authorize($request) ? $next($request) : abort(403);
+        return $next($request);
     }
 }

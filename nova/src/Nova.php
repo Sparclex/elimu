@@ -238,6 +238,8 @@ class Nova
             if (is_subclass_of($resource, Resource::class) &&
                 ! (new ReflectionClass($resource))->isAbstract()) {
                 $resources[] = $resource;
+            } else {
+                dump($resource);
             }
         }
 

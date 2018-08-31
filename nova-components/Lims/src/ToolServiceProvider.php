@@ -17,14 +17,14 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'lims');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'Lims');
 
         $this->app->booted(function () {
             $this->routes();
         });
 
         Nova::serving(function (ServingNova $event) {
-            //
+            Nova::resourcesIn(__DIR__ . '/Resources');
         });
     }
 
@@ -39,8 +39,8 @@ class ToolServiceProvider extends ServiceProvider
             return;
         }
 
-        Route::middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/lims')
+        Route::middleware(['nova'])
+                ->prefix('nova-vendor/sparclex/Lims')
                 ->group(__DIR__.'/../routes/api.php');
     }
 

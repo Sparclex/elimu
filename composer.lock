@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dfc245cfffb219fc2e500ea0ba3a3916",
+    "content-hash": "fbe66a686ef25b0e28d32460be83810f",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1439,16 +1439,21 @@
             "time": "2018-07-19T23:38:55+00:00"
         },
         {
-            "name": "sparclex/lims",
+            "name": "sparclex/Lims",
             "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/Lims",
-                "reference": "c7ffcf88160337c350c6bbc71490f1b459f7d724",
+                "reference": "eeb8028f9e0f6bab5a190ad3487d9fce40fea6e0",
                 "shasum": null
             },
             "require": {
+                "laravel/nova": "*",
                 "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^3.6",
+                "phpunit/phpunit": "7.1"
             },
             "type": "library",
             "extra": {
@@ -1463,10 +1468,23 @@
                     "Sparclex\\Lims\\": "src/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "Sparclex\\Lims\\Tests\\": "tests"
+                }
+            },
             "license": [
                 "MIT"
             ],
-            "description": "A Laravel Nova tool.",
+            "authors": [
+                {
+                    "name": "Silvan Wehner",
+                    "email": "silvan.wehner@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Laboratory Information Management System based on laravel nova",
+            "homepage": "https://github.com/sparclex/Lims",
             "keywords": [
                 "laravel",
                 "nova"
@@ -2622,6 +2640,67 @@
                 "webprofiler"
             ],
             "time": "2018-08-22T11:06:19+00:00"
+        },
+        {
+            "name": "beyondcode/laravel-dump-server",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beyondcode/laravel-dump-server.git",
+                "reference": "d24b641e9c8db7c33ad6e4db7042bbd352b92ad1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beyondcode/laravel-dump-server/zipball/d24b641e9c8db7c33ad6e4db7042bbd352b92ad1",
+                "reference": "d24b641e9c8db7c33ad6e4db7042bbd352b92ad1",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "5.6.*|5.7.*",
+                "illuminate/http": "5.6.*|5.7.*",
+                "illuminate/support": "5.6.*|5.7.*",
+                "php": "^7.1",
+                "symfony/var-dumper": "^4.1.1"
+            },
+            "require-dev": {
+                "larapack/dd": "^1.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BeyondCode\\DumpServer\\DumpServerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BeyondCode\\DumpServer\\": "src"
+                },
+                "files": [
+                    "helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marcel Pociot",
+                    "email": "marcel@beyondco.de",
+                    "homepage": "https://beyondcode.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Symfony Var-Dump Server for Laravel",
+            "homepage": "https://github.com/beyondcode/laravel-dump-server",
+            "keywords": [
+                "beyondcode",
+                "laravel-dump-server"
+            ],
+            "time": "2018-08-05T19:09:56+00:00"
         },
         {
             "name": "doctrine/instantiator",
