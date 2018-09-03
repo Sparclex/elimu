@@ -1,35 +1,27 @@
 <?php
 
-namespace Sparclex\Lims\Resources;
+namespace Sparclex\Lims\Nova;
 
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Sparclex\HtmlReadonly\HtmlReadonly;
-use Sparclex\Tagging\Tagging;
-use Laravel\Nova\Fields\HasOne;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Timezone;
-use Laravel\Nova\Fields\BelongsTo;
-use Sparclex\Multiselect\Multiselect;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use App\StorageSize as StorageSizeModel;
+use Sparclex\Lims\Fields\HtmlReadonly;
 
 class Sample extends Resource
 {
-
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Sample';
+    public static $model = 'Sparclex\Lims\Models\Sample';
 
     /**
      * The columns that should be searched.

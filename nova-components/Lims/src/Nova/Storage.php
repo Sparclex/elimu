@@ -1,22 +1,29 @@
 <?php
 
-namespace Sparclex\Lims\Resources;
+namespace Sparclex\Lims\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Study extends Resource
+class Storage extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Study';
+    public static $model = 'Sparclex\Lims\Models\Storage';
+
+    /**
+     * The single value that should be used to represent the resource when being displayed.
+     *
+     * @var string
+     */
+    public static $title = 'id';
+
+    public static $with = ['sample'];
 
     /**
      * The columns that should be searched.
@@ -24,12 +31,9 @@ class Study extends Resource
      * @var array
      */
     public static $search = [
-        'name',
-        'study_id'
+        'id',
     ];
-    public function title() {
-        return $this->study_id . ": " . str_limit($this->name, 20);
-    }
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -39,15 +43,12 @@ class Study extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make()->hideFromDetail()->hideFromIndex(),
-            Number::make('Study ID')->sortable()
-                ->creationRules('required', 'unique:studies,study_id')
-                ->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
-            Text::make('Name')->sortable()
-                ->creationRules('required', 'unique:studies,name')
-                ->updateRules('required', 'unique:studies,name,{{resourceId}}'),
-            HasMany::make('Storage Sizes', 'storageSizes', StorageSize::class),
-            HasMany::make('Samples'),
+            ID::make()->sortable()->onlyOnForms(),
+            BelongsTo::make('Sample'),
+            BelongsTo::make('Sample Type', 'sampleType', SampleType::class),
+            BelongsTo::make('Study'),
+            Number::make('Box'),
+            Number::make('Field'),
         ];
     }
 

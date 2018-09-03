@@ -1,29 +1,21 @@
 <?php
 
-namespace Sparclex\Lims\Resources;
+namespace Sparclex\Lims\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Text;
 
-class StorageSize extends Resource
+class Study extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\StorageSize';
-
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
-    public static $title = 'id';
+    public static $model = 'Sparclex\Lims\Models\Study';
 
     /**
      * The columns that should be searched.
@@ -31,33 +23,36 @@ class StorageSize extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'name',
+        'study_id',
     ];
 
-    public static $displayInNavigation = false;
-
-    public static $globallySearchable = false;
+    public function title()
+    {
+        return $this->study_id.": ".str_limit($this->name, 20);
+    }
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable(),
-            BelongsTo::make('Study')->rules('required','exists:studies,id'),
-            BelongsTo::make('SampleType')->rules('bail','required','exists:sample_types,id'),
-            Number::make('Fields per box', 'size')->rules('required', 'numeric')
+            ID::make()->hideFromDetail()->hideFromIndex(),
+            Number::make('Study ID')->sortable()->creationRules('required', 'unique:studies,study_id')->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
+            Text::make('Name')->sortable()->creationRules('required', 'unique:studies,name')->updateRules('required', 'unique:studies,name,{{resourceId}}'),
+            HasMany::make('Storage Sizes', 'storageSizes', StorageSize::class),
+            HasMany::make('Samples'),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -68,7 +63,7 @@ class StorageSize extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -79,7 +74,7 @@ class StorageSize extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -90,7 +85,7 @@ class StorageSize extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)

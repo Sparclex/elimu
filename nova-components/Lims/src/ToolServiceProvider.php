@@ -7,6 +7,14 @@ use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Sparclex\Lims\Http\Middleware\Authorize;
+use Sparclex\Lims\Nova\Person;
+use Sparclex\Lims\Nova\ProcessingLog;
+use Sparclex\Lims\Nova\Result;
+use Sparclex\Lims\Nova\SampleType;
+use Sparclex\Lims\Nova\Storage;
+use Sparclex\Lims\Nova\StorageSize;
+use Sparclex\Lims\Nova\Study;
+use Sparclex\Lims\Nova\Test;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -18,13 +26,12 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'Lims');
-
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->app->booted(function () {
             $this->routes();
         });
 
         Nova::serving(function (ServingNova $event) {
-            Nova::resourcesIn(__DIR__ . '/Resources');
         });
     }
 

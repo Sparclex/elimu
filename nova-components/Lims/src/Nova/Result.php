@@ -1,58 +1,65 @@
 <?php
 
-namespace Sparclex\Lims\Resources;
+namespace Sparclex\Lims\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\ID;
 
-class Person extends Resource
+class Result extends Resource
 {
+    public static $displayInNavigation = false;
+
+    public static $globallySearchable = false;
+
+    public static $with = ['processingLog', 'processingLog.test'];
+
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Person';
+    public static $model = 'Sparclex\Lims\Models\Result';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
-        'name',
-    ];
+    public static $search = [];
 
+    public function title()
+    {
+        return $this->processingLog->test->name.":".$this->created_at;
+    }
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable()->hideFromIndex(),
-            Text::make('Name')->sortable()
-            ->creationRules('required', 'unique:people,name')
-            ->updateRules('required', 'unique:people,name,{{resourceId}}')
+            ID::make()->sortable(),
+            BelongsTo::make('ProcessingLog')->searchable(),
+            DateTime::make('Created At')->exceptOnForms(),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -63,7 +70,7 @@ class Person extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -74,7 +81,7 @@ class Person extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -85,7 +92,7 @@ class Person extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)

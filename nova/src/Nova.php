@@ -225,7 +225,6 @@ class Nova
     public static function resourcesIn($directory)
     {
         $namespace = app()->getNamespace();
-
         $resources = [];
 
         foreach ((new Finder)->in($directory)->files() as $resource) {
@@ -238,8 +237,6 @@ class Nova
             if (is_subclass_of($resource, Resource::class) &&
                 ! (new ReflectionClass($resource))->isAbstract()) {
                 $resources[] = $resource;
-            } else {
-                dump($resource);
             }
         }
 

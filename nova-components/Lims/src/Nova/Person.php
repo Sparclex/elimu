@@ -1,20 +1,19 @@
 <?php
 
-namespace Sparclex\Lims\Resources;
+namespace Sparclex\Lims\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Test extends Resource
+class Person extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Test';
+    public static $model = 'Sparclex\Lims\Models\Person';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -32,27 +31,24 @@ class Test extends Resource
         'name',
     ];
 
-    public static $globallySearchable = false;
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
     {
         return [
-            ID::make()->hideFromIndex(),
-            Text::make('Name')->sortable()
-            ->creationRules('required', 'unique:tests,name')
-            ->updateRules('required', 'unique:tests,name,{{resourceId}}')
+            ID::make()->sortable()->hideFromIndex(),
+            Text::make('Name')->sortable()->creationRules('required', 'unique:people,name')->updateRules('required', 'unique:people,name,{{resourceId}}'),
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -63,7 +59,7 @@ class Test extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -74,7 +70,7 @@ class Test extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -85,7 +81,7 @@ class Test extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)
