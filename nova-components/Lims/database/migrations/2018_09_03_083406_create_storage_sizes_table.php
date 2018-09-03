@@ -15,13 +15,14 @@ class CreateStorageSizesTable extends Migration
     {
         Schema::create('storage_sizes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('study_id');
-            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
-            $table->unsignedBigInteger('sample_type_id');
-            $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
-            $table->unsignedInteger('size');
-            $table->unique(['study_id', 'sample_type_id']);
+            $table->bigInteger('study_id')->unsigned();
+            $table->bigInteger('sample_type_id')->unsigned();
+            $table->integer('size')->unsigned();
             $table->timestamps();
+
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
+            $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
+            $table->unique(['study_id', 'sample_type_id']);
         });
     }
 

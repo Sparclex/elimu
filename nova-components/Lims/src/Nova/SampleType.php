@@ -33,6 +33,15 @@ class SampleType extends Resource
 
     public static $globallySearchable = false;
 
+    public static function singularLabel()
+    {
+        return 'Sample Type';
+    }
+
+    public static function label()
+    {
+        return 'Sample Types';
+    }
     /**
      * Get the fields displayed by the resource.
      *

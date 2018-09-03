@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -13,10 +14,13 @@ class CreateResultsTable extends Migration
     public function up()
     {
         Schema::create('results', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('processing_log_id');
-            $table->foreign('processing_log_id')->references('id')->on('processing_logs');
+            $table->bigInteger('test_id')->unsigned();
+            $table->bigInteger('data_id')->unsigned();
             $table->timestamps();
+
+            $table->foreign('test_id')->references('id')->on('tests')->onDelete('CASCADE');
+            $table->foreign('data_id')->references('id')->on('data')->onDelete('CASCADE');
+            $table->primary(['test_id', 'data_id']);
         });
     }
 
@@ -27,6 +31,6 @@ class CreateResultsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('results');
+        Schema::dropIfExists('results');
     }
 }

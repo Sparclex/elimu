@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStudiesTable extends Migration
+class CreateAssaysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +13,11 @@ class CreateStudiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('studies', function (Blueprint $table) {
+        Schema::create('assays', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('study_id')->unique();
             $table->string('name')->unique();
             $table->timestamps();
         });
-
     }
 
     /**
@@ -28,6 +27,6 @@ class CreateStudiesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('studies');
+        Schema::dropIfExists('assays');
     }
 }

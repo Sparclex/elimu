@@ -2,71 +2,73 @@
 
 namespace Sparclex\Lims\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Storage extends Model
 {
-    public $timestamps = false;
+    protected $table = 'storage';
 
-    protected $fillable = ['study_id', 'sample_type_id', 'box', 'field'];
+    protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];
 
-    public function sample() {
-        return $this->belongsToMany(Sample::class, 'storage_places');
+    public function sample()
+    {
+        return $this->belongsTo(Sample::class);
     }
 
-    public function getSampleAttribute() {
-        return $this->relations['sample']->first();
+    public function sampleType()
+    {
+        return $this->belongsTo(SampleType::class);
     }
 
-    public function sampleType() {
-        return $this->belongsToMany(SampleType::class, 'storage_places');
-    }
-
-    public function study() {
+    public function study()
+    {
         return $this->belongsTo(Study::class);
     }
 
-    public function getSampleTypeAttribute() {
-        return $this->relations['sampleType']->first();
-    }
-
-
-    public static function generateStorePlace($study_id, $sample_type_id, $create = true)
+    public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
-        $box = 1;
-        $field = 1;
-
-        $size = StorageSize::sizeFor($study_id, $sample_type_id);
+        $size = StorageSize::sizeFor($studyId, $sampleTypeId);
         if (! $size) {
             return false;
         }
-        $storage = self::where('study_id', $study_id)
-            ->where('study_id', $study_id)
-            ->where('sample_type_id', $sample_type_id)
-            ->orderByDesc('id')
-            ->first();
-        if($storage) {
-            if($storage->field + 1 > $size) {
-                $box = $storage->box + 1;
-                $field = 1;
-            }
-            else {
-                $box = $storage->box;
-                $field = $storage->field + 1;
-            }
+        $storage = self::latestPosition($studyId, $sampleTypeId);
+        $newPositions = new Collection();
+        for($i = 0; $i < $quantity; $i++) {
+            $storage = $newPositions[] = $storage->nextPosition($size, $sampleId);
         }
-        if($create) {
-            return Storage::create([
-                'study_id' => $study_id,
-                'sample_type_id' => $sample_type_id,
-                'box' => $box,
-                'field' => $field,
-            ]);
+        if($quantity === 1) {
+            $position = $newPositions->first();
+            return $create ? $position->save() : $position;
+        } else {
+            return $create ? $newPositions->each(function($position) {$position->save();}) : $newPositions;
         }
-        return [
-            'box' => $box,
-            'place' => $field,
-            'size' => $size
-        ];
+    }
+
+    public static function latestPosition($studyId, $sampleTypeId) {
+        return self::where('study_id', $studyId)->where('sample_type_id', $sampleTypeId)->orderByDesc('id')->first()
+            ?? new Storage(['box' => 0, 'position' => 0, 'sample_type_id' => $sampleTypeId, 'study_id' => $studyId]);
+    }
+
+    public function nextPosition($size, $sampleId) {
+        $storage = new Storage([
+            'box' => 1,
+            'position' => 1,
+            'sample_type_id' => $this->sample_type_id,
+            'study_id' => $this->study_id,
+            'sample_id' => $sampleId
+        ]);
+
+        if ($this->position + 1 > $size) {
+            $storage->box = $this->box + 1;
+        } else {
+            $storage->box = $this->box;
+            $storage->position = $this->position + 1;
+        }
+        return $storage;
+    }
+
+    public function exceedsBoxSize($size) {
+        return $this->position + 1 > $size;
     }
 }

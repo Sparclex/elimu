@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSampleTypesTable extends Migration
+class CreateSampleInformationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +13,14 @@ class CreateSampleTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sample_types', function (Blueprint $table) {
+        Schema::create('sample_informations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('sample_id');
+            $table->string('subject_id');
+            $table->timestamp('date')->nullable();
+            $table->string('visit_id');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -27,6 +30,6 @@ class CreateSampleTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('sample_types');
+        Schema::dropIfExists('sample_informations');
     }
 }

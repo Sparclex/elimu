@@ -34,6 +34,9 @@
         }
     },
     "autoload-dev": {
+        "classmap": [
+            "database/factories"
+        ],
         "psr-4": {
             "Sparclex\\Lims\\Tests\\": "tests"
         }

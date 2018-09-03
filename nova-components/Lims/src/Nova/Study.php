@@ -25,6 +25,7 @@ class Study extends Resource
     public static $search = [
         'name',
         'study_id',
+        'id',
     ];
 
     public function title()
@@ -42,7 +43,7 @@ class Study extends Resource
     {
         return [
             ID::make()->hideFromDetail()->hideFromIndex(),
-            Number::make('Study ID')->sortable()->creationRules('required', 'unique:studies,study_id')->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
+            Text::make('Study ID')->sortable()->creationRules('required', 'unique:studies,study_id')->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
             Text::make('Name')->sortable()->creationRules('required', 'unique:studies,name')->updateRules('required', 'unique:studies,name,{{resourceId}}'),
             HasMany::make('Storage Sizes', 'storageSizes', StorageSize::class),
             HasMany::make('Samples'),

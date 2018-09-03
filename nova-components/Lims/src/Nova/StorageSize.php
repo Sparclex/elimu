@@ -3,6 +3,7 @@
 namespace Sparclex\Lims\Nova;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
@@ -44,10 +45,20 @@ class StorageSize extends Resource
      */
     public function fields(Request $request)
     {
+        $studyId = $request->get('study');
+        $sampleTypeId = $request->get('sampleType');
         return [
             ID::make()->sortable(),
             BelongsTo::make('Study')->rules('required', 'exists:studies,id'),
-            BelongsTo::make('SampleType')->rules('bail', 'required', 'exists:sample_types,id'),
+            BelongsTo::make('Sample Type', 'sampleType', SampleType::class)
+                ->creationRules('required', 'exists:sample_types,id',
+                    Rule::unique('storage_sizes', 'sample_type_id')->where(function ($query) use ($studyId, $sampleTypeId) {
+                        return $query->where('study_id', $studyId);
+                    }))
+                ->updateRules('required', 'exists:sample_types,id',
+                    Rule::unique('storage_sizes', 'sample_type_id')->where(function ($query) use ($studyId, $sampleTypeId) {
+                        return $query->where('study_id', $studyId);
+                    })->ignore('{{resourceId}}')),
             Number::make('Fields per box', 'size')->rules('required', 'numeric'),
         ];
     }

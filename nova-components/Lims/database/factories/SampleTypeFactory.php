@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\SampleType::class, function (Faker $faker) {
+$factory->define(\Sparclex\Lims\Models\SampleType::class, function (Faker $faker) {
     return [
         'name' => $faker->unique()->randomElement([
             'Whole blood',

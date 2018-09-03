@@ -14,14 +14,14 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Sparclex\Lims\Fields\HtmlReadonly;
 
-class Sample extends Resource
+class SampleInformation extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Models\Sample';
+    public static $model = 'Sparclex\Lims\Models\SampleInformation';
 
     /**
      * The columns that should be searched.
@@ -29,18 +29,28 @@ class Sample extends Resource
      * @var array
      */
     public static $search = [
-        'brady_number',
-        'subject_id',
     ];
+
+
 
     public function title()
     {
-        return "Brady Nr. ".$this->brady_number;
+        return "Sample ID ".$this->sample_id;
     }
 
     public function subtitle()
     {
         return 'Study: ('.$this->study->study_id.') '.$this->study->name;
+    }
+
+    public static function label()
+    {
+        return 'Sample Informations';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Sample Information';
     }
 
     /**
@@ -52,12 +62,17 @@ class Sample extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable()->hideFromIndex()->hideFromDetail(),
-            BelongsTo::make('Study')->searchable()->rules('required', 'exists:studies,id'),
-            BelongsTo::make('Type', 'sampleType', SampleType::class)->rules('required', 'exists:sample_types,id'),
-            BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)->rules('required', 'exists:sample_informations,id'),
-            Number::make('Quantity')->rules('numeric'),
-            Boolean::make('Store')
+            ID::make()->onlyOnForms(),
+            Text::make('Sample ID')
+                ->creationRules('required', 'unique:sample_informations,sample_id')
+                ->updateRules('required', 'unique:sample_informations,sample_id,{{resourceId}}'),
+            Text::make('Subject ID')->rules('required'),
+            Text::make('Visit', 'visit_id')->rules('required'),
+            DateTime::make('Date')->rules('required'),
+            /*Trix::make('Comment'),
+            BelongsTo::make('Delivered by', 'deliverer', Person::class)->rules('exists:people,id'),
+            BelongsTo::make('Received by', 'receiver', Person::class)->rules('exists:people,id'),*/
+
         ];
     }
 

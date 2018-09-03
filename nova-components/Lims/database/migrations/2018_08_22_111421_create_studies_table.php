@@ -14,7 +14,7 @@ class CreateStudiesTable extends Migration
     {
         Schema::create('studies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('study_id')->unique();
+            $table->string('study_id')->unique();
             $table->string('name')->unique();
             $table->timestamps();
         });

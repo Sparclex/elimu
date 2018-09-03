@@ -2,20 +2,19 @@
 
 namespace Sparclex\Lims;
 
+use Illuminate\Support\Str;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool as BaseTool;
-use Sparclex\Lims\Nova\Person;
-use Sparclex\Lims\Nova\ProcessingLog;
-use Sparclex\Lims\Nova\Result;
-use Sparclex\Lims\Nova\Sample;
-use Sparclex\Lims\Nova\SampleType;
-use Sparclex\Lims\Nova\Storage;
-use Sparclex\Lims\Nova\StorageSize;
-use Sparclex\Lims\Nova\Study;
-use Sparclex\Lims\Nova\Test;
+use ReflectionClass;
+use Sparclex\Lims\Models\Sample;
+use Sparclex\Lims\Nova\Resource;
+use Sparclex\Lims\Observers\AutoStorageSaver;
+use Symfony\Component\Finder\Finder;
 
 class Tool extends BaseTool
 {
+    private const TOOL_DIR = __DIR__;
+
     /**
      * Perform any tasks that need to happen when the tool is booted.
      *
@@ -23,17 +22,7 @@ class Tool extends BaseTool
      */
     public function boot()
     {
-        Nova::resources([
-            Person::class,
-            ProcessingLog::class,
-            Result::class,
-            SampleType::class,
-            Sample::class,
-            Storage::class,
-            StorageSize::class,
-            Study::class,
-            Test::class
-        ]);
+        $this->resourcesIn(__DIR__.'/Nova');
         $this->bootFields();
         Nova::script('Lims', __DIR__.'/../dist/js/tool.js');
 
@@ -53,5 +42,27 @@ class Tool extends BaseTool
     public function bootFields() {
         $fieldDir = __DIR__.'/../dist/fields/';
         Nova::script('html-readonly', $fieldDir.'html-readonly/js/field.js');
+    }
+
+    public function resourcesIn($directory)
+    {
+        $namespace = 'Sparclex\\Lims';
+        $resources = [];
+
+        foreach ((new Finder)->in($directory)->files() as $resource) {
+            $resource = $namespace.str_replace(
+                    ['/', '.php'],
+                    ['\\', ''],
+                    Str::after($resource->getPathname(), self::TOOL_DIR)
+                );
+            if (is_subclass_of($resource, Resource::class) &&
+                ! (new ReflectionClass($resource))->isAbstract()) {
+                $resources[] = $resource;
+            }
+        }
+
+        Nova::resources(
+            collect($resources)->sort()->all()
+        );
     }
 }

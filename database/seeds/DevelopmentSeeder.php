@@ -11,13 +11,13 @@ class DevelopmentSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Test::class, 10)->create();
+        //factory(App\Test::class, 10)->create();
         factory(App\User::class)->create([
             'email' => 'silvan.wehner@gmail.com',
             'password' => \Hash::make('12345'),
             'name' => 'Silvan Wehner'
         ]);
-        foreach(['Whole blood',
+        /*foreach(['Whole blood',
                     'Serum',
                     'Stool',
                     'Urine',
@@ -36,6 +36,6 @@ class DevelopmentSeeder extends Seeder
             ['size' => 23, 'sample_type_id' => 1],
             ['size' => 10, 'sample_type_id' => 2],
             ['size' => 2, 'sample_type_id' => 3],
-        ]);
+        ]);*/
     }
 }
