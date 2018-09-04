@@ -16,6 +16,7 @@ class CreateAssaysTable extends Migration
         Schema::create('assays', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
+            $table->boolean('manual')->default(false);
             $table->timestamps();
         });
     }

@@ -25,6 +25,7 @@ class CreateStorageTable extends Migration
             $table->unique(['study_id', 'sample_type_id', 'box', 'position']);
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
             $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
+            $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
         });
     }
 
