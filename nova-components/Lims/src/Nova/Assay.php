@@ -3,28 +3,24 @@
 namespace Sparclex\Lims\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Text;
 
-class Storage extends Resource
+class Assay extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Models\Storage';
+    public static $model = 'Sparclex\Lims\Models\Assay';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'id';
-
-    public static $with = ['sample'];
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
@@ -32,8 +28,10 @@ class Storage extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'name',
     ];
+
+    public static $globallySearchable = false;
 
     /**
      * Get the fields displayed by the resource.
@@ -44,11 +42,8 @@ class Storage extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable()->onlyOnForms(),
-            BelongsTo::make('Study'),
-            BelongsTo::make('Sample'),
-            Number::make('Box'),
-            Number::make('Position'),
+            ID::make()->hideFromIndex(),
+            Text::make('Name')->sortable()->creationRules('required', 'unique:assays,name')->updateRules('required', 'unique:assays,name,{{resourceId}}'),
         ];
     }
 
@@ -94,17 +89,5 @@ class Storage extends Resource
     public function actions(Request $request)
     {
         return [];
-    }
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        return $query;
     }
 }

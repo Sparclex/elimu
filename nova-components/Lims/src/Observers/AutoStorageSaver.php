@@ -16,7 +16,6 @@ class AutoStorageSaver
      */
     public function updated(Sample $sample)
     {
-        dd('testy');
         if ($sample->getOriginal('quantity') > $sample->quantity) {
             Storage::where([
                 'sample_id' => $sample->id,
@@ -42,7 +41,6 @@ class AutoStorageSaver
      */
     public function created(Sample $sample)
     {
-        dd('test');
         Storage::generateStoragePosition($sample->id, $sample->study_id, $sample->sample_type_id, $sample->quantity);
     }
 }

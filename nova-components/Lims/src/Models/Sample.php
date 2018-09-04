@@ -7,11 +7,6 @@ use Sparclex\Lims\Observers\AutoStorageSaver;
 
 class Sample extends Model
 {
-    protected $dispatchesEvents = [
-        'updated' => AutoStorageSaver::class,
-        'created' => AutoStorageSaver::class,
-    ];
-
     public function study()
     {
         return $this->belongsTo(Study::class);

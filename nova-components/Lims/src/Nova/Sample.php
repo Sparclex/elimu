@@ -29,13 +29,12 @@ class Sample extends Resource
      * @var array
      */
     public static $search = [
-        'brady_number',
         'subject_id',
     ];
 
     public function title()
     {
-        return "Brady Nr. ".$this->brady_number;
+        return "Brady Nr. ".$this->sampleInformation->sample_id;
     }
 
     public function subtitle()
@@ -56,8 +55,7 @@ class Sample extends Resource
             BelongsTo::make('Study')->searchable()->rules('required', 'exists:studies,id'),
             BelongsTo::make('Type', 'sampleType', SampleType::class)->rules('required', 'exists:sample_types,id'),
             BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)->rules('required', 'exists:sample_informations,id'),
-            Number::make('Quantity')->rules('numeric'),
-            Boolean::make('Store')
+            Number::make('Quantity', 'quantity')->rules('nullable','numeric')->help('Enter 0 if this sample should not be stored.')
         ];
     }
 

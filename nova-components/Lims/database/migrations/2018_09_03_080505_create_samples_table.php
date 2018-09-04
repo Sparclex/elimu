@@ -18,7 +18,7 @@ class CreateSamplesTable extends Migration
             $table->bigInteger('sample_type_id')->unsigned();
             $table->bigInteger('sample_information_id')->unsigned();
             $table->bigInteger('study_id')->unsigned();
-            $table->integer('quantity')->nullable();
+            $table->integer('quantity')->default(0);
             $table->timestamps();
 
             $table->unique(['sample_type_id', 'sample_information_id', 'study_id']);

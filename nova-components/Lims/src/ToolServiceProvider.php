@@ -2,22 +2,27 @@
 
 namespace Sparclex\Lims;
 
-use Laravel\Nova\Nova;
-use Laravel\Nova\Events\ServingNova;
+use App\Policies\StoragePolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Sparclex\Lims\Http\Middleware\Authorize;
-use Sparclex\Lims\Nova\Person;
-use Sparclex\Lims\Nova\ProcessingLog;
-use Sparclex\Lims\Nova\Result;
-use Sparclex\Lims\Nova\SampleType;
+use Laravel\Nova\Events\ServingNova;
+use Laravel\Nova\Nova;
+use Sparclex\Lims\Models\Sample;
 use Sparclex\Lims\Nova\Storage;
-use Sparclex\Lims\Nova\StorageSize;
-use Sparclex\Lims\Nova\Study;
-use Sparclex\Lims\Nova\Test;
+use Sparclex\Lims\Observers\AutoStorageSaver;
 
 class ToolServiceProvider extends ServiceProvider
 {
+    /**
+     * The policy mappings for the application.
+     *
+     * @var array
+     */
+    protected $policies = [
+        Storage::class => StoragePolicy::class,
+    ];
+
     /**
      * Bootstrap any application services.
      *
@@ -27,12 +32,20 @@ class ToolServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'Lims');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->registerPolicies();
         $this->app->booted(function () {
             $this->routes();
         });
-
+        Sample::observe(AutoStorageSaver::class);
         Nova::serving(function (ServingNova $event) {
         });
+    }
+
+    private function registerPolicies()
+    {
+        foreach ($this->policies as $key => $value) {
+            Gate::policy($key, $value);
+        }
     }
 
     /**
@@ -46,9 +59,7 @@ class ToolServiceProvider extends ServiceProvider
             return;
         }
 
-        Route::middleware(['nova'])
-                ->prefix('nova-vendor/sparclex/Lims')
-                ->group(__DIR__.'/../routes/api.php');
+        Route::middleware(['nova'])->prefix('nova-vendor/sparclex/Lims')->group(__DIR__.'/../routes/api.php');
     }
 
     /**

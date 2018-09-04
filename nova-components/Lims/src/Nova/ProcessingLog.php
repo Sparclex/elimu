@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Trix;
 
@@ -17,12 +18,6 @@ class ProcessingLog extends Resource
      * @var string
      */
     public static $model = 'Sparclex\Lims\Models\ProcessingLog';
-
-    public static $with = ['test'];
-
-    public static $globallySearchable = false;
-
-    public static $displayInNavigation = false;
 
     /**
      * The columns that should be searched.
@@ -36,9 +31,14 @@ class ProcessingLog extends Resource
         return 'Processing Logs';
     }
 
+    public static function singularLabel()
+    {
+        return 'Processing Log';
+    }
+
     public function title()
     {
-        return $this->test->name." (Brady Nr. ".$this->sample->brady_number.")";
+        return $this->processed_at->format('Y-m-d H:i:s');
     }
 
     /**
@@ -51,14 +51,12 @@ class ProcessingLog extends Resource
     {
         return [
             ID::make()->hideFromIndex()->hideFromDetail(),
-            BelongsTo::make('Sample')->rules('required', 'exists:samples,id')->searchable()->sortable(),
-            BelongsTo::make('Test')->rules('exists:tests,id')->searchable(),
-            DateTime::make('Processed at')->hideFromIndex()->rules('required', 'date'),
-            BelongsTo::make('Receiver', 'receiver', Person::class)->rules('required', 'exists:people,id')->hideFromIndex()->searchable(),
-            BelongsTo::make('Deliverer', 'deliverer', Person::class)->rules('required', 'exists:people,id')->hideFromIndex()->searchable(),
-            BelongsTo::make('Collector', 'collector', Person::class)->rules('required', 'exists:people,id')->hideFromIndex()->searchable(),
+            DateTime::make('Processed at')->rules('required', 'date'),
+            BelongsTo::make('Receiver', 'receiver', Person::class)->rules('required', 'exists:people,id')->searchable(),
+            BelongsTo::make('Deliverer', 'deliverer', Person::class)->rules('required', 'exists:people,id')->searchable(),
+            BelongsTo::make('Collector', 'collector', Person::class)->rules('required', 'exists:people,id')->searchable(),
             Trix::make('Comment')->hideFromIndex(),
-            HasMany::make('Results')->hideFromIndex(),
+            HasMany::make('Experiment')->rules('exists:experiments,id'),
         ];
     }
 

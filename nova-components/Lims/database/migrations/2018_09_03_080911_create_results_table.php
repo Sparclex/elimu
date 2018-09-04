@@ -14,13 +14,13 @@ class CreateResultsTable extends Migration
     public function up()
     {
         Schema::create('results', function (Blueprint $table) {
-            $table->bigInteger('test_id')->unsigned();
+            $table->bigInteger('experiment_id')->unsigned();
             $table->bigInteger('data_id')->unsigned();
             $table->timestamps();
 
-            $table->foreign('test_id')->references('id')->on('tests')->onDelete('CASCADE');
+            $table->foreign('experiment_id')->references('id')->on('experiments')->onDelete('CASCADE');
             $table->foreign('data_id')->references('id')->on('data')->onDelete('CASCADE');
-            $table->primary(['test_id', 'data_id']);
+            $table->primary(['experiment_id', 'data_id']);
         });
     }
 

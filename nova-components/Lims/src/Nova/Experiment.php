@@ -3,17 +3,18 @@
 namespace Sparclex\Lims\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 
-class Test extends Resource
+class Experiment extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'Sparclex\Lims\Models\Test';
+    public static $model = 'Sparclex\Lims\Models\Experiment';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -43,7 +44,9 @@ class Test extends Resource
     {
         return [
             ID::make()->hideFromIndex(),
-            Text::make('Name')->sortable()->creationRules('required', 'unique:tests,name')->updateRules('required', 'unique:tests,name,{{resourceId}}'),
+            BelongsTo::make('Assay'),
+            BelongsTo::make('Processing Log', 'processingLog', ProcessingLog::class),
+            BelongsTo::make('Sample')
         ];
     }
 

@@ -29,10 +29,12 @@ class Storage extends Model
     public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
         $size = StorageSize::sizeFor($studyId, $sampleTypeId);
+
         if (! $size) {
             return false;
         }
         $storage = self::latestPosition($studyId, $sampleTypeId);
+
         $newPositions = new Collection();
         for($i = 0; $i < $quantity; $i++) {
             $storage = $newPositions[] = $storage->nextPosition($size, $sampleId);
@@ -47,7 +49,7 @@ class Storage extends Model
 
     public static function latestPosition($studyId, $sampleTypeId) {
         return self::where('study_id', $studyId)->where('sample_type_id', $sampleTypeId)->orderByDesc('id')->first()
-            ?? new Storage(['box' => 0, 'position' => 0, 'sample_type_id' => $sampleTypeId, 'study_id' => $studyId]);
+            ?? new Storage(['box' => 1, 'position' => 0, 'sample_type_id' => $sampleTypeId, 'study_id' => $studyId]);
     }
 
     public function nextPosition($size, $sampleId) {

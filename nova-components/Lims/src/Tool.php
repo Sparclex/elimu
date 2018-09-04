@@ -13,8 +13,6 @@ use Symfony\Component\Finder\Finder;
 
 class Tool extends BaseTool
 {
-    private const TOOL_DIR = __DIR__;
-
     /**
      * Perform any tasks that need to happen when the tool is booted.
      *
@@ -53,7 +51,7 @@ class Tool extends BaseTool
             $resource = $namespace.str_replace(
                     ['/', '.php'],
                     ['\\', ''],
-                    Str::after($resource->getPathname(), self::TOOL_DIR)
+                    Str::after($resource->getPathname(), __DIR__)
                 );
             if (is_subclass_of($resource, Resource::class) &&
                 ! (new ReflectionClass($resource))->isAbstract()) {

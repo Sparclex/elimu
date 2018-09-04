@@ -12,14 +12,6 @@ class ProcessingLog extends Model
         'processed_at'
     ];
 
-    public function sample() {
-        return $this->belongsTo(Sample::class);
-    }
-
-    public function test() {
-        return $this->belongsTo(Test::class);
-    }
-
     public function deliverer() {
         return $this->belongsTo(Person::class);
     }
@@ -34,5 +26,9 @@ class ProcessingLog extends Model
 
     public function results() {
         return $this->hasMany(Result::class);
+    }
+
+    public function experiment() {
+        return $this->hasMany(Experiment::class);
     }
 }
