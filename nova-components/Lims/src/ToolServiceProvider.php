@@ -5,12 +5,14 @@ namespace Sparclex\Lims;
 use App\Policies\StoragePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Sparclex\Lims\Models\Sample;
 use Sparclex\Lims\Nova\Storage;
 use Sparclex\Lims\Observers\AutoStorageSaver;
+use Sparclex\Lims\Rules\StorageSizeExists;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -33,12 +35,15 @@ class ToolServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'Lims');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->registerPolicies();
-        $this->app->booted(function () {
-            $this->routes();
-        });
+        $this->app->booted(
+            function () {
+                $this->routes();
+            });
+        Validator::extend('existing_storage', StorageSizeExists::class . "@validate");
         Sample::observe(AutoStorageSaver::class);
-        Nova::serving(function (ServingNova $event) {
-        });
+        Nova::serving(
+            function (ServingNova $event) {
+            });
     }
 
     private function registerPolicies()
@@ -59,7 +64,8 @@ class ToolServiceProvider extends ServiceProvider
             return;
         }
 
-        Route::middleware(['nova'])->prefix('nova-vendor/sparclex/Lims')->group(__DIR__.'/../routes/api.php');
+        Route::middleware(['nova'])->prefix('nova-vendor/sparclex/Lims')->namespace(
+            'Sparclex\\Lims\\Http\\Controllers')->group(__DIR__.'/../routes/api.php');
     }
 
     /**

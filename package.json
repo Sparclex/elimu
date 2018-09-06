@@ -25,7 +25,9 @@
         "build-lims-importer": "cd nova-components/LimsImporter && npm run dev",
         "build-lims-importer-prod": "cd nova-components/LimsImporter && npm run prod",
         "build-lims": "cd nova-components/Lims && npm run dev",
-        "build-lims-prod": "cd nova-components/Lims && npm run prod"
+        "build-lims-prod": "cd nova-components/Lims && npm run prod",
+        "build-select-has-many": "cd nova-components/SelectHasMany && npm run dev",
+        "build-select-has-many-prod": "cd nova-components/SelectHasMany && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.18",

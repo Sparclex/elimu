@@ -2,7 +2,9 @@
 
 namespace Laravel\Nova;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Laravel\Nova\Events\NovaServiceProviderRegistered;
 
 class PendingRouteRegistration
 {
@@ -71,18 +73,20 @@ class PendingRouteRegistration
             ->as('nova.')
             ->prefix(Nova::path())
             ->group(function () {
-                Route::get('/logout', 'LoginController@logout');
+                Route::get('/logout', 'LoginController@logout')->name('logout');
             });
 
-        Route::view(Nova::path(), 'nova::router')
-            ->middleware(config('nova.middleware', []))
-            ->name('nova.index');
+        Event::listen(NovaServiceProviderRegistered::class, function () {
+            Route::view(Nova::path(), 'nova::router')
+                ->middleware(config('nova.middleware', []))
+                ->name('nova.index');
 
-        Route::middleware(config('nova.middleware', []))
-            ->as('nova.')
-            ->prefix(Nova::path())
-            ->get('/{view}', 'Laravel\Nova\Http\Controllers\RouterController@show')
-            ->where('view', '.*');
+            Route::middleware(config('nova.middleware', []))
+                ->as('nova.')
+                ->prefix(Nova::path())
+                ->get('/{view}', 'Laravel\Nova\Http\Controllers\RouterController@show')
+                ->where('view', '.*');
+        });
     }
 
     /**

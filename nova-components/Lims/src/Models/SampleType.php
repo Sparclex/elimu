@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class SampleType extends Model
 {
+    protected $fillable = ['name'];
+
     public static function boot()
     {
         parent::boot();

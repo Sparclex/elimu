@@ -599,11 +599,36 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 
+function link(path) {
+    return 'https://nova.laravel.com/docs/1.0/' + path;
+}
+
 exports.default = {
     name: 'Help',
 
     props: {
         card: Object
+    },
+
+    computed: {
+        resources: function resources() {
+            return link('resources');
+        },
+        actions: function actions() {
+            return link('actions/defining-actions.html');
+        },
+        filters: function filters() {
+            return link('filters/defining-filters.html');
+        },
+        lenses: function lenses() {
+            return link('lenses/defining-lenses.html');
+        },
+        metrics: function metrics() {
+            return link('metrics/defining-metrics.html');
+        },
+        cards: function cards() {
+            return link('customization/cards.html');
+        }
     }
 };
 
@@ -1129,7 +1154,7 @@ exports.default = {
 
     computed: {
         label: function label() {
-            return this.field.value == true ? 'True' : 'False';
+            return this.field.value == true ? this.__('Yes') : this.__('No');
         }
     }
 };
@@ -2832,6 +2857,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField, _laravelNova.InteractsWithDates],
@@ -3974,7 +4000,7 @@ exports.default = {
             var placeType = this.field.placeType;
 
             var config = {
-                container: document.querySelector('#' + this.field.name),
+                container: document.querySelector('#' + this.field.attribute),
                 type: this.field.placeType ? this.field.placeType : 'address',
                 templates: {
                     value: function value(suggestion) {
@@ -4597,11 +4623,100 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField],
-    components: { Trix: _Trix2.default }
+    components: { Trix: _Trix2.default },
+
+    data: function data() {
+        return { draftId: uuidv4() };
+    },
+
+    beforeDestroy: function beforeDestroy() {
+        this.cleanUp();
+    },
+
+
+    methods: {
+        fill: function fill(formData) {
+            formData.append(this.field.attribute, this.value || '');
+            formData.append(this.field.attribute + 'DraftId', this.draftId);
+        },
+
+
+        /**
+         * Initiate an attachement upload
+         */
+        handleFileAdd: function handleFileAdd(_ref) {
+            var attachment = _ref.attachment;
+
+            if (attachment.file) {
+                this.uploadAttachment(attachment);
+            }
+        },
+
+
+        /**
+         * Upload an attachment
+         */
+        uploadAttachment: function uploadAttachment(attachment) {
+            var data = new FormData();
+            data.append('Content-Type', attachment.file.type);
+            data.append('attachment', attachment.file);
+            data.append('draftId', this.draftId);
+
+            Nova.request().post('/nova-api/' + this.resourceName + '/trix-attachment/' + this.field.attribute, data, {
+                onUploadProgress: function onUploadProgress(progressEvent) {
+                    attachment.setUploadProgress(Math.round(progressEvent.loaded * 100 / progressEvent.total));
+                }
+            }).then(function (_ref2) {
+                var url = _ref2.data.url;
+
+                console.log(url);
+
+                return attachment.setAttributes({
+                    url: url,
+                    href: url
+                });
+            });
+        },
+
+
+        /**
+         * Remove an attachment from the server
+         */
+        handleFileRemove: function handleFileRemove(_ref3) {
+            var attachment = _ref3.attachment.attachment;
+
+            Nova.request().delete('/nova-api/' + this.resourceName + '/trix-attachment/' + this.field.attribute, {
+                params: { attachmentUrl: attachment.attributes.values.url }
+            }).then(function (response) {}).catch(function (error) {});
+        },
+
+
+        /**
+         * Purge pending attachments for the draft
+         */
+        cleanUp: function cleanUp() {
+            if (this.field.withFiles) {
+                Nova.request().delete('/nova-api/' + this.resourceName + '/trix-attachment/' + this.field.attribute + '/' + this.draftId).then(function (response) {
+                    return console.log(response);
+                }).catch(function (error) {});
+            }
+        }
+    }
 };
+
+
+function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+        return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+    });
+}
 
 /***/ }),
 
@@ -4629,9 +4744,78 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
+var _vueClickaway = __webpack_require__("./node_modules/vue-clickaway/dist/vue-clickaway.common.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 exports.default = {
+    mixins: [_vueClickaway.mixin],
+
     data: function data() {
         return {
             currentlySearching: false,
@@ -4844,78 +5028,7 @@ exports.default = {
             });
         }
     }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -5030,7 +5143,7 @@ exports.default = {
             'svg',
             {
                 'class': 'mx-auto block',
-                style: { width: this.width },
+                style: { width: this.width + 'px' },
                 attrs: { viewBox: '0 0 120 30',
                     xmlns: 'http://www.w3.org/2000/svg',
                     fill: this.fillColor
@@ -5876,6 +5989,7 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
 //
 //
 //
@@ -7381,6 +7495,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
     props: {
@@ -7877,19 +7992,56 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-__webpack_require__("./node_modules/trix/dist/trix.js");
+var _trix = __webpack_require__("./node_modules/trix/dist/trix.js");
+
+var _trix2 = _interopRequireDefault(_trix);
 
 __webpack_require__("./node_modules/trix/dist/trix.css");
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 exports.default = {
     name: 'trix-vue',
-    props: ['name', 'value', 'placeholder'],
+
+    props: {
+        name: { type: String },
+        value: { type: String },
+        placeholder: { type: String },
+        withFiles: { type: Boolean, default: true }
+    },
+
     methods: {
-        onInitialize: function onInitialize() {
+        initialize: function initialize() {
             this.$refs.theEditor.editor.insertHTML(this.value);
         },
-        onChange: function onChange() {
+        handleChange: function handleChange() {
             this.$emit('change', this.$refs.theEditor.value);
+        },
+        handleFileAccept: function handleFileAccept(e) {
+            if (!this.withFiles) {
+                e.preventDefault();
+            }
+        },
+        handleAddFile: function handleAddFile(event) {
+            this.$emit('file-add', event);
+        },
+        handleRemoveFile: function handleRemoveFile(event) {
+            this.$emit('file-remove', event);
         }
     }
 };
@@ -8415,44 +8567,6 @@ var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.j
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 exports.default = {
     mixins: [_laravelNova.InteractsWithResourceInformation],
 
@@ -8544,7 +8658,9 @@ exports.default = {
                                 response = _context2.sent;
 
 
-                                this.$toasted.show(this.__('The :resource was created!', { resource: this.resourceInformation.singularLabel.toLowerCase() }), { type: 'success' });
+                                this.$toasted.show(this.__('The :resource was created!', {
+                                    resource: this.resourceInformation.singularLabel.toLowerCase()
+                                }), { type: 'success' });
 
                                 this.$router.push({
                                     name: 'detail',
@@ -8598,27 +8714,31 @@ exports.default = {
                                 response = _context3.sent;
 
 
-                                this.$toasted.show(this.__('The :resource was created!', { resource: this.resourceInformation.singularLabel.toLowerCase() }), { type: 'success' });
+                                this.$toasted.show(this.__('The :resource was created!', {
+                                    resource: this.resourceInformation.singularLabel.toLowerCase()
+                                }), { type: 'success' });
 
                                 // Reset the form by refetching the fields
                                 this.getFields();
-                                _context3.next = 11;
+
+                                this.validationErrors = new _laravelNova.Errors();
+                                _context3.next = 12;
                                 break;
 
-                            case 8:
-                                _context3.prev = 8;
+                            case 9:
+                                _context3.prev = 9;
                                 _context3.t0 = _context3['catch'](0);
 
                                 if (_context3.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context3.t0.response.data.errors);
                                 }
 
-                            case 11:
+                            case 12:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 8]]);
+                }, _callee3, this, [[0, 9]]);
             }));
 
             function createAndAddAnother() {
@@ -8657,10 +8777,46 @@ exports.default = {
 
     computed: {
         singularName: function singularName() {
-            return (0, _laravelNova.Capitalize)(_laravelNova.Inflector.singularize(this.resourceName));
+            return this.resourceInformation.singularLabel;
         }
     }
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -10212,7 +10368,7 @@ exports.default = {
          * Get the singular name for the resource
          */
         singularName: function singularName() {
-            return (0, _laravelNova.Capitalize)(_laravelNova.Inflector.singularize(this.resourceName));
+            return (0, _laravelNova.Capitalize)(this.resourceInformation.singularLabel);
         },
 
 
@@ -10361,6 +10517,8 @@ var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.j
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
 //
 //
 //
@@ -11056,7 +11214,7 @@ exports.default = {
          * Get the singular name for the resource
          */
         singularName: function singularName() {
-            return (0, _laravelNova.Capitalize)(_laravelNova.Inflector.singularize(this.resourceName));
+            return this.resourceInformation.singularLabel;
         },
 
 
@@ -11299,7 +11457,9 @@ exports.default = {
                                 response = _context2.sent;
 
 
-                                this.$toasted.show(this.__('The :resource was updated!', { resource: this.resourceInformation.singularLabel.toLowerCase() }), { type: 'success' });
+                                this.$toasted.show(this.__('The :resource was updated!', {
+                                    resource: this.resourceInformation.singularLabel.toLowerCase()
+                                }), { type: 'success' });
 
                                 this.$router.push({
                                     name: 'detail',
@@ -11357,7 +11517,9 @@ exports.default = {
                                 response = _context3.sent;
 
 
-                                this.$toasted.show(this.__('The :resource was updated!', { resource: this.resourceInformation.singularLabel.toLowerCase() }), { type: 'success' });
+                                this.$toasted.show(this.__('The :resource was updated!', {
+                                    resource: this.resourceInformation.singularLabel.toLowerCase()
+                                }), { type: 'success' });
 
                                 // Reset the form by refetching the fields
                                 this.getFields();
@@ -11426,7 +11588,7 @@ exports.default = {
             });
         },
         singularName: function singularName() {
-            return (0, _laravelNova.Capitalize)(_laravelNova.Inflector.singularize(this.resourceName));
+            return this.resourceInformation.singularLabel;
         }
     }
 }; //
@@ -32312,13 +32474,14 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("trix-editor", {
     ref: "theEditor",
+    staticClass: "trix-content",
     attrs: { value: _vm.value, placeholder: _vm.placeholder },
     on: {
-      "trix-change": _vm.onChange,
-      "trix-initialize": _vm.onInitialize,
-      "trix-file-accept": function(e) {
-        return e.preventDefault()
-      }
+      "trix-change": _vm.handleChange,
+      "trix-initialize": _vm.initialize,
+      "trix-attachment-add": _vm.handleAddFile,
+      "trix-attachment-remove": _vm.handleRemoveFile,
+      "trix-file-accept": _vm.handleFileAccept
     }
   })
 }
@@ -34196,7 +34359,7 @@ var render = function() {
             ],
             staticClass: "w-full form-control form-select",
             class: _vm.errorClasses,
-            attrs: { id: _vm.field.name },
+            attrs: { id: _vm.field.attribute },
             on: {
               change: function($event) {
                 var $$selectedVal = Array.prototype.filter
@@ -34345,40 +34508,30 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "overflow-hidden overflow-y-scroll max-h-90px" },
-        [
-          _c(
-            "ul",
-            { staticClass: "list-reset" },
-            _vm._l(_vm.formattedItems, function(item) {
-              return _c(
-                "li",
-                { staticClass: "text-xs text-80 leading-normal" },
-                [
-                  _c("span", {
-                    staticClass: "inline-block rounded-full w-2 h-2 mr-2",
-                    style: {
-                      backgroundColor: item.color
-                    }
-                  }),
-                  _vm._v(
-                    _vm._s(item.label) +
-                      " (" +
-                      _vm._s(item.value) +
-                      " - " +
-                      _vm._s(
-                        ((item.value * 100) / _vm.formattedTotal).toFixed(2)
-                      ) +
-                      "%)\n            "
-                  )
-                ]
+      _c("div", { staticClass: "overflow-hidden overflow-y-auto max-h-90px" }, [
+        _c(
+          "ul",
+          { staticClass: "list-reset" },
+          _vm._l(_vm.formattedItems, function(item) {
+            return _c("li", { staticClass: "text-xs text-80 leading-normal" }, [
+              _c("span", {
+                staticClass: "inline-block rounded-full w-2 h-2 mr-2",
+                style: {
+                  backgroundColor: item.color
+                }
+              }),
+              _vm._v(
+                _vm._s(item.label) +
+                  " (" +
+                  _vm._s(item.value) +
+                  " - " +
+                  _vm._s(((item.value * 100) / _vm.formattedTotal).toFixed(2)) +
+                  "%)\n            "
               )
-            })
-          )
-        ]
-      ),
+            ])
+          })
+        )
+      ]),
       _vm._v(" "),
       _c("div", {
         ref: "chart",
@@ -34576,9 +34729,11 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("span", { staticClass: "whitespace-no-wrap" }, [
-    _vm._v(_vm._s(_vm.field.value))
-  ])
+  return _vm.field.asHtml
+    ? _c("div", { domProps: { innerHTML: _vm._s(_vm.field.value) } })
+    : _c("span", { staticClass: "whitespace-no-wrap" }, [
+        _vm._v(_vm._s(_vm.field.value))
+      ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -35294,7 +35449,7 @@ var render = function() {
           staticClass: "w-full form-control form-input form-input-bordered",
           class: _vm.errorClasses,
           attrs: {
-            id: _vm.field.name,
+            id: _vm.field.attribute,
             dusk: _vm.field.attribute,
             type: "search",
             placeholder: _vm.field.name
@@ -35428,7 +35583,7 @@ var render = function() {
               staticClass: "w-full form-control form-input form-input-bordered",
               class: _vm.errorClasses,
               attrs: {
-                id: _vm.field.name,
+                id: _vm.field.attribute,
                 dusk: _vm.field.attribute,
                 min: _vm.inputMin,
                 max: _vm.inputMax,
@@ -35478,7 +35633,7 @@ var render = function() {
                   "w-full form-control form-input form-input-bordered",
                 class: _vm.errorClasses,
                 attrs: {
-                  id: _vm.field.name,
+                  id: _vm.field.attribute,
                   dusk: _vm.field.attribute,
                   min: _vm.inputMin,
                   max: _vm.inputMax,
@@ -35507,7 +35662,7 @@ var render = function() {
                   "w-full form-control form-input form-input-bordered",
                 class: _vm.errorClasses,
                 attrs: {
-                  id: _vm.field.name,
+                  id: _vm.field.attribute,
                   dusk: _vm.field.attribute,
                   min: _vm.inputMin,
                   max: _vm.inputMax,
@@ -35938,7 +36093,7 @@ var render = function() {
               staticClass: "w-full form-control form-input form-input-bordered",
               class: _vm.errorClasses,
               attrs: {
-                id: _vm.field.name,
+                id: _vm.field.attribute,
                 min: _vm.inputMin,
                 max: _vm.inputMax,
                 step: _vm.inputStep,
@@ -35986,7 +36141,7 @@ var render = function() {
                   "w-full form-control form-input form-input-bordered",
                 class: _vm.errorClasses,
                 attrs: {
-                  id: _vm.field.name,
+                  id: _vm.field.attribute,
                   min: _vm.inputMin,
                   max: _vm.inputMax,
                   step: _vm.inputStep,
@@ -36013,7 +36168,7 @@ var render = function() {
                   "w-full form-control form-input form-input-bordered",
                 class: _vm.errorClasses,
                 attrs: {
-                  id: _vm.field.name,
+                  id: _vm.field.attribute,
                   min: _vm.inputMin,
                   max: _vm.inputMax,
                   step: _vm.inputStep,
@@ -36931,7 +37086,7 @@ var render = function() {
           _c("checkbox", {
             staticClass: "py-2",
             attrs: {
-              id: _vm.field.name,
+              id: _vm.field.attribute,
               name: _vm.field.name,
               checked: _vm.checked
             },
@@ -37020,10 +37175,10 @@ var render = function() {
           _vm.resourceInformation.searchable && !_vm.viaHasOne
             ? _c(
                 "div",
-                { staticClass: "relative h-9 flex items-center mb-6" },
+                { staticClass: "relative h-9 mb-6" },
                 [
                   _c("icon", {
-                    staticClass: "absolute ml-3 text-70",
+                    staticClass: "absolute search-icon-center ml-3 text-70",
                     attrs: { type: "search" }
                   }),
                   _vm._v(" "),
@@ -38920,206 +39075,214 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "relative z-50 w-full max-w-xs" }, [
-    _vm.currentlySearching
-      ? _c("div", {
-          staticClass: "fixed pin bg-80 z-0 opacity-25",
-          on: { mousedown: _vm.closeSearch }
-        })
-      : _vm._e(),
-    _vm._v(" "),
-    _c("div", { staticClass: "relative" }, [
-      _c(
-        "div",
-        { staticClass: "relative flex items-center" },
-        [
-          _c("icon", {
-            staticClass: "absolute ml-3 text-70",
-            attrs: { type: "search" }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.searchTerm,
-                expression: "searchTerm"
-              }
-            ],
-            ref: "input",
-            staticClass:
-              "pl-search form-control form-input form-input-bordered w-full",
-            attrs: {
-              dusk: "global-search",
-              type: "search",
-              placeholder: "Search"
-            },
-            domProps: { value: _vm.searchTerm },
-            on: {
-              input: [
-                function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.searchTerm = $event.target.value
-                },
-                function($event) {
-                  $event.stopPropagation()
-                  return _vm.search($event)
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "on-clickaway",
+          rawName: "v-on-clickaway",
+          value: _vm.closeSearch,
+          expression: "closeSearch"
+        }
+      ],
+      staticClass: "relative z-50 w-full max-w-xs"
+    },
+    [
+      _c("div", { staticClass: "relative" }, [
+        _c(
+          "div",
+          { staticClass: "relative" },
+          [
+            _c("icon", {
+              staticClass: "absolute search-icon-center ml-3 text-70",
+              attrs: { type: "search" }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.searchTerm,
+                  expression: "searchTerm"
                 }
               ],
-              keydown: [
-                function($event) {
-                  $event.stopPropagation()
-                },
-                function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  $event.stopPropagation()
-                  return _vm.goToCurrentlySelectedResource($event)
-                },
-                function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "esc", 27, $event.key, "Escape")
-                  ) {
-                    return null
-                  }
-                  $event.stopPropagation()
-                  return _vm.closeSearch($event)
-                },
-                function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "down", 40, $event.key, [
-                      "Down",
-                      "ArrowDown"
-                    ])
-                  ) {
-                    return null
-                  }
-                  $event.preventDefault()
-                  _vm.move(1)
-                },
-                function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "up", 38, $event.key, [
-                      "Up",
-                      "ArrowUp"
-                    ])
-                  ) {
-                    return null
-                  }
-                  $event.preventDefault()
-                  _vm.move(-1)
-                }
-              ],
-              focus: _vm.openSearch
-            }
-          })
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _vm.shouldShowResults
-        ? _c(
-            "div",
-            {
-              ref: "container",
+              ref: "input",
               staticClass:
-                "overflow-hidden absolute rounded-lg shadow-lg w-full mt-2 max-h-search overflow-y-auto"
-            },
-            _vm._l(_vm.formattedResults, function(group) {
-              return _c("div", [
-                _c(
-                  "h3",
-                  {
-                    staticClass:
-                      "text-xs uppercase tracking-wide text-80 bg-40 py-2 px-3"
+                "pl-search form-control form-input form-input-bordered w-full",
+              attrs: {
+                dusk: "global-search",
+                type: "search",
+                placeholder: "Search"
+              },
+              domProps: { value: _vm.searchTerm },
+              on: {
+                input: [
+                  function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.searchTerm = $event.target.value
                   },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(group.resourceName) +
-                        "\n                "
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "ul",
-                  { staticClass: "list-reset" },
-                  _vm._l(group.items, function(item) {
-                    return _c(
-                      "li",
-                      {
-                        key: item.resourceName + " " + item.index,
-                        ref:
-                          item.index === _vm.highlightedResultIndex
-                            ? "selected"
-                            : null,
-                        refInFor: true
-                      },
-                      [
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "cursor-pointer flex items-center hover:bg-20 block py-2 px-3 no-underline font-normal",
-                            class: {
-                              "bg-white":
-                                _vm.highlightedResultIndex != item.index,
-                              "bg-20": _vm.highlightedResultIndex == item.index
-                            },
-                            attrs: {
-                              dusk: item.resourceName + " " + item.index
-                            },
-                            on: {
-                              click: function($event) {
-                                $event.preventDefault()
-                                _vm.navigate(item.index)
-                              }
-                            }
-                          },
-                          [
-                            item.avatar
-                              ? _c("img", {
-                                  staticClass: "h-8 w-8 rounded-full mr-3",
-                                  attrs: { src: item.avatar }
-                                })
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c("div", [
-                              _c("p", { staticClass: "text-90" }, [
-                                _vm._v(_vm._s(item.title))
-                              ]),
-                              _vm._v(" "),
-                              item.subTitle
-                                ? _c(
-                                    "p",
-                                    { staticClass: "text-xs mt-1 text-80" },
-                                    [_vm._v(_vm._s(item.subTitle))]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]
-                        )
-                      ]
-                    )
-                  })
-                )
-              ])
+                  function($event) {
+                    $event.stopPropagation()
+                    return _vm.search($event)
+                  }
+                ],
+                keydown: [
+                  function($event) {
+                    $event.stopPropagation()
+                  },
+                  function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    $event.stopPropagation()
+                    return _vm.goToCurrentlySelectedResource($event)
+                  },
+                  function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "esc", 27, $event.key, "Escape")
+                    ) {
+                      return null
+                    }
+                    $event.stopPropagation()
+                    return _vm.closeSearch($event)
+                  },
+                  function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "down", 40, $event.key, [
+                        "Down",
+                        "ArrowDown"
+                      ])
+                    ) {
+                      return null
+                    }
+                    $event.preventDefault()
+                    _vm.move(1)
+                  },
+                  function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "up", 38, $event.key, [
+                        "Up",
+                        "ArrowUp"
+                      ])
+                    ) {
+                      return null
+                    }
+                    $event.preventDefault()
+                    _vm.move(-1)
+                  }
+                ],
+                focus: _vm.openSearch
+              }
             })
-          )
-        : _vm._e()
-    ])
-  ])
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm.shouldShowResults
+          ? _c(
+              "div",
+              {
+                ref: "container",
+                staticClass:
+                  "overflow-hidden absolute rounded-lg shadow-lg w-full mt-2 max-h-search overflow-y-auto"
+              },
+              _vm._l(_vm.formattedResults, function(group) {
+                return _c("div", [
+                  _c(
+                    "h3",
+                    {
+                      staticClass:
+                        "text-xs uppercase tracking-wide text-80 bg-40 py-2 px-3"
+                    },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(group.resourceTitle) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "ul",
+                    { staticClass: "list-reset" },
+                    _vm._l(group.items, function(item) {
+                      return _c(
+                        "li",
+                        {
+                          key: item.resourceName + " " + item.index,
+                          ref:
+                            item.index === _vm.highlightedResultIndex
+                              ? "selected"
+                              : null,
+                          refInFor: true
+                        },
+                        [
+                          _c(
+                            "a",
+                            {
+                              staticClass:
+                                "cursor-pointer flex items-center hover:bg-20 block py-2 px-3 no-underline font-normal",
+                              class: {
+                                "bg-white":
+                                  _vm.highlightedResultIndex != item.index,
+                                "bg-20":
+                                  _vm.highlightedResultIndex == item.index
+                              },
+                              attrs: {
+                                dusk: item.resourceName + " " + item.index
+                              },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.navigate(item.index)
+                                }
+                              }
+                            },
+                            [
+                              item.avatar
+                                ? _c("img", {
+                                    staticClass: "h-8 w-8 rounded-full mr-3",
+                                    attrs: { src: item.avatar }
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c("div", [
+                                _c("p", { staticClass: "text-90" }, [
+                                  _vm._v(_vm._s(item.title))
+                                ]),
+                                _vm._v(" "),
+                                item.subTitle
+                                  ? _c(
+                                      "p",
+                                      { staticClass: "text-xs mt-1 text-80" },
+                                      [_vm._v(_vm._s(item.subTitle))]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]
+                          )
+                        ]
+                      )
+                    })
+                  )
+                ])
+              })
+            )
+          : _vm._e()
+      ])
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39807,29 +39970,36 @@ var render = function() {
               )
             : _vm._e(),
           _vm._v(" "),
-          _c("resource-table", {
-            ref: "resourceTable",
-            attrs: {
-              "authorized-to-relate": _vm.authorizedToRelate,
-              "resource-name": _vm.resourceName,
-              resources: _vm.resources,
-              "singular-name": _vm.singularName,
-              "selected-resources": _vm.selectedResources,
-              "selected-resource-ids": _vm.selectedResourceIds,
-              "actions-are-available": _vm.allActions.length > 0,
-              "should-show-checkboxes": _vm.shouldShowCheckBoxes,
-              "via-resource": _vm.viaResource,
-              "via-resource-id": _vm.viaResourceId,
-              "via-relationship": _vm.viaRelationship,
-              "relationship-type": _vm.relationshipType,
-              "update-selection-status": _vm.updateSelectionStatus
-            },
-            on: {
-              order: _vm.orderByField,
-              delete: _vm.deleteResources,
-              restore: _vm.restoreResources
-            }
-          }),
+          _c(
+            "div",
+            { staticClass: "overflow-hidden overflow-x-auto relative" },
+            [
+              _c("resource-table", {
+                ref: "resourceTable",
+                attrs: {
+                  "authorized-to-relate": _vm.authorizedToRelate,
+                  "resource-name": _vm.resourceName,
+                  resources: _vm.resources,
+                  "singular-name": _vm.singularName,
+                  "selected-resources": _vm.selectedResources,
+                  "selected-resource-ids": _vm.selectedResourceIds,
+                  "actions-are-available": _vm.allActions.length > 0,
+                  "should-show-checkboxes": _vm.shouldShowCheckBoxes,
+                  "via-resource": _vm.viaResource,
+                  "via-resource-id": _vm.viaResourceId,
+                  "via-relationship": _vm.viaRelationship,
+                  "relationship-type": _vm.relationshipType,
+                  "update-selection-status": _vm.updateSelectionStatus
+                },
+                on: {
+                  order: _vm.orderByField,
+                  delete: _vm.deleteResources,
+                  restore: _vm.restoreResources
+                }
+              })
+            ],
+            1
+          ),
           _vm._v(" "),
           _vm.resourceResponse
             ? _c("pagination-links", {
@@ -39938,7 +40108,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.resources }
                       },
                       [
                         _c(
@@ -40026,7 +40196,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.actions }
                       },
                       [
                         _c(
@@ -40117,7 +40287,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.filters }
                       },
                       [
                         _c(
@@ -40204,7 +40374,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.lenses }
                       },
                       [
                         _c(
@@ -40295,7 +40465,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.metrics }
                       },
                       [
                         _c(
@@ -40382,7 +40552,7 @@ var render = function() {
                       "a",
                       {
                         staticClass: "no-underline dim flex p-6",
-                        attrs: { href: "#" }
+                        attrs: { href: _vm.cards }
                       },
                       [
                         _c(
@@ -41399,7 +41569,7 @@ var render = function() {
   return _c("div", [
     _vm.expanded
       ? _c("div", {
-          staticClass: "markdown",
+          staticClass: "markdown leading-normal",
           domProps: { innerHTML: _vm._s(_vm.content) }
         })
       : _vm._e(),
@@ -42465,8 +42635,18 @@ var render = function() {
       { staticClass: "w-4/5 px-8 py-6" },
       [
         _c("trix", {
-          attrs: { name: "trixman", value: _vm.field.value, placeholder: "" },
-          on: { change: _vm.handleChange }
+          class: { "border-danger": _vm.hasError },
+          attrs: {
+            name: "trixman",
+            value: _vm.field.value,
+            placeholder: "",
+            "with-files": _vm.field.withFiles
+          },
+          on: {
+            change: _vm.handleChange,
+            "file-add": _vm.handleFileAdd,
+            "file-remove": _vm.handleFileRemove
+          }
         }),
         _vm._v(" "),
         _vm.hasError
@@ -42682,11 +42862,13 @@ var render = function() {
       { staticClass: "w-3/4 py-4" },
       [
         _vm._t("value", [
-          _vm.field.value
+          _vm.field.value && !_vm.field.asHtml
             ? _c("p", { staticClass: "text-90" }, [
                 _vm._v(_vm._s(_vm.field.value))
               ])
-            : _c("p", [_vm._v("—")])
+            : _vm.field.value && _vm.field.asHtml
+              ? _c("div", { domProps: { innerHTML: _vm._s(_vm.field.value) } })
+              : _c("p", [_vm._v("—")])
         ])
       ],
       2
@@ -42750,7 +42932,7 @@ var render = function() {
           staticClass: "w-full form-control form-input form-input-bordered",
           class: _vm.errorClasses,
           attrs: {
-            id: _vm.field.name,
+            id: _vm.field.attribute,
             dusk: _vm.field.attribute,
             type: "password",
             placeholder: _vm.field.name
@@ -43614,6 +43796,7 @@ var render = function() {
           _c("date-time-picker", {
             staticClass: "w-full form-control form-input form-input-bordered",
             attrs: {
+              field: _vm.field,
               name: _vm.field.name,
               value: _vm.value,
               dateFormat: "Y-m-d",

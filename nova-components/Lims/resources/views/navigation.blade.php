@@ -4,3 +4,22 @@
         Lims
     </span>
 </router-link>
+<ul class="list-reset mb-8">
+
+    @foreach (Sparclex\Lims\Tool::$resources as $resource)
+        @if($resource::$hideInNavigation)
+            @continue
+        @endif
+        <li class="leading-wide mb-4 text-sm">
+            <router-link :to="{
+                    name: 'index',
+                    params: {
+                        resourceName: '{{ $resource::uriKey() }}'
+                    }
+                }" class="text-white ml-8 no-underline dim">
+                {{ $resource::label() }}
+            </router-link>
+        </li>
+    @endforeach
+
+</ul>

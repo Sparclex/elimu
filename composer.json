@@ -14,7 +14,9 @@
         "laravel/nova": "*",
         "laravel/tinker": "^1.0",
         "nathanmac/parser": "^4.3",
-        "sparclex/lims": "*"
+        "sparclex/lims": "*",
+        "sparclex/select-has-many": "*",
+        "sparclex/lims-theme": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",
@@ -72,6 +74,10 @@
         {
             "type": "path",
             "url": "./nova-components/Lims"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/SelectHasMany"
         }
     ]
 }

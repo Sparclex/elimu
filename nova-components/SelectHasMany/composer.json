@@ -1,5 +1,5 @@
 {
-    "name": "sparclex/html-readonly",
+    "name": "sparclex/select-has-many",
     "description": "A Laravel Nova field.",
     "keywords": [
         "laravel",
@@ -11,13 +11,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Sparclex\\HtmlReadonly\\": "src/"
+            "Sparclex\\SelectHasMany\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Sparclex\\HtmlReadonly\\FieldServiceProvider"
+                "Sparclex\\SelectHasMany\\FieldServiceProvider"
             ]
         }
     },

@@ -7,6 +7,9 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 abstract class Resource extends NovaResource
 {
+    public static $displayInNavigation = false;
+
+    public static $hideInNavigation = false;
     /**
      * Build an "index" query for the given resource.
      *

@@ -13,6 +13,7 @@ use Symfony\Component\Finder\Finder;
 
 class Tool extends BaseTool
 {
+    public static $resources = [];
     /**
      * Perform any tasks that need to happen when the tool is booted.
      *
@@ -34,7 +35,7 @@ class Tool extends BaseTool
      */
     public function renderNavigation()
     {
-        //return view('Lims::navigation');
+        return view('Lims::navigation');
     }
 
     public function bootFields() {
@@ -62,5 +63,6 @@ class Tool extends BaseTool
         Nova::resources(
             collect($resources)->sort()->all()
         );
+        self::$resources = collect($resources)->sort()->all();
     }
 }

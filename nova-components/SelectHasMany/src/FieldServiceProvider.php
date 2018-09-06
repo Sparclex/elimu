@@ -1,6 +1,6 @@
 <?php
 
-namespace Sparclex\HtmlReadonly;
+namespace Sparclex\SelectHasMany;
 
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
@@ -16,8 +16,8 @@ class FieldServiceProvider extends ServiceProvider
     public function boot()
     {
         Nova::serving(function (ServingNova $event) {
-            Nova::script('html-readonly', __DIR__.'/../dist/js/field.js');
-            Nova::style('html-readonly', __DIR__.'/../dist/css/field.css');
+            Nova::script('select-has-many', __DIR__.'/../dist/js/field.js');
+            Nova::style('select-has-many', __DIR__.'/../dist/css/field.css');
         });
     }
 

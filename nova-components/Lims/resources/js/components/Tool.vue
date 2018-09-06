@@ -1,27 +1,117 @@
 <template>
     <div>
-        <heading class="mb-6">{{ title }}</heading>
+        <heading class="mb-6">Laboratory Information Management System</heading>
 
-        <card class="bg-90 flex flex-col items-center justify-center" style="min-height: 300px">
-            <svg class="spin fill-80 mb-6" width="69" height="72" viewBox="0 0 23 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.12 20.455A12.184 12.184 0 0 1 11.5 24a12.18 12.18 0 0 1-9.333-4.319c4.772 3.933 11.88 3.687 16.36-.738a7.571 7.571 0 0 0 0-10.8c-3.018-2.982-7.912-2.982-10.931 0a3.245 3.245 0 0 0 0 4.628 3.342 3.342 0 0 0 4.685 0 1.114 1.114 0 0 1 1.561 0 1.082 1.082 0 0 1 0 1.543 5.57 5.57 0 0 1-7.808 0 5.408 5.408 0 0 1 0-7.714c3.881-3.834 10.174-3.834 14.055 0a9.734 9.734 0 0 1 .03 13.855zM4.472 5.057a7.571 7.571 0 0 0 0 10.8c3.018 2.982 7.912 2.982 10.931 0a3.245 3.245 0 0 0 0-4.628 3.342 3.342 0 0 0-4.685 0 1.114 1.114 0 0 1-1.561 0 1.082 1.082 0 0 1 0-1.543 5.57 5.57 0 0 1 7.808 0 5.408 5.408 0 0 1 0 7.714c-3.881 3.834-10.174 3.834-14.055 0a9.734 9.734 0 0 1-.015-13.87C5.096 1.35 8.138 0 11.5 0c3.75 0 7.105 1.68 9.333 4.319C16.06.386 8.953.632 4.473 5.057z" fill-rule="evenodd"/></svg>
-
-            <h1 class="text-white text-4xl text-90 font-light mb-6">
-                We're in a black hole.
-            </h1>
-
-            <p class="text-white-50% text-lg">
-                You can edit this tool's component at:
-                <code class="ml-1 border border-80 text-sm font-mono text-white bg-black rounded px-2 py-1">/nova-tools//resources/js/components/Tool.vue</code>
-            </p>
-        </card>
+        <loading-card :loading="loading" class="overflow-hidden">
+            <h3 class="mr-3 text-base text-80 font-bold mb-4 px-4 pt-4">Sample Batch import</h3>
+            <div class="flex border-b border-40">
+                <div class="w-1/5 px-8 py-6">
+                    <label for="study" class="inline-block text-80 h-9 pt-2">Study</label>
+                </div>
+                <div class="w-1/2 px-8 py-6">
+                    <select
+                        class="form-control form-select mb-3 w-full" id="study"
+                    >
+                        <option v-for="study in studies" :value="study.id">{{study.study_id}} {{study.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="w-1/5 px-8 py-6">
+                    <label for="sampleImporter" class="inline-block text-80 h-9 pt-2">CSV</label>
+                </div>
+                <div class="w-1/2 px-8 py-6">
+                     <span class="form-file mr-4">
+                        <input
+                            ref="fileField"
+                            class="form-file-input"
+                            type="file"
+                            id="sampleImporter"
+                            name="name"
+                            @change="changeFile"
+                        />
+                        <label for="sampleImporter" class="form-file-btn btn btn-default btn-primary">
+                            {{__('Choose File')}}
+                        </label>
+                    </span>
+                </div>
+            </div>
+            <div style="max-height: 300px; overflow: scroll">
+                <table cellpadding="0" cellspacing="0" class="table w-full overflow-x-scroll" v-if="isDataLoaded">
+                    <thead>
+                    <tr>
+                        <th v-for="header in headers" class="text-left">{{header}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="row in data">
+                        <td v-for="column in row">{{column}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <div class="bg-30 flex px-8 py-4">
+                    <loading-button @click="performImport" :progress="progress"/>
+                </div>
+            </div>
+        </loading-card>
     </div>
 </template>
 
 <script>
+    import LoadingButton from "./LoadingButton";
+    import api from '../api';
+    const Papa = require('papaparse');
     export default {
-        mounted() {
-            //
+        components: {LoadingButton},
+        data() {
+            return {
+                progress: 0,
+                studies: [],
+                data: [],
+                loading: true,
+                file: false
+            };
         },
+        mounted() {
+            api.fetchAvailableStudies().then(({data}) => this.studies = data).then(() => this.loading = false);
+        },
+        methods: {
+            changeFile() {
+                this.data = [];
+                this.file = this.$refs.fileField.files[0]
+                Papa.parse(this.file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    step: (row) => {
+                        this.data.push(row.data[0]);
+                    },
+                    complete: () => {
+                    }
+                });
+            },
+            performImport() {
+                api.importBatchSamples(this.data).then(({data}) => {
+                    this.$toasted.show(data.message, { type: 'success' })
+                }).catch(({response}) => {
+                    this.$toasted.show(response.data.message, { type: 'error' });
+                });
+                this.data = [];
+                this.file = false;
+            }
+        },
+        computed: {
+            headers() {
+                if (!this.data.length) {
+                    return [];
+                }
+                return Object.keys(this.data[0]);
+            },
+            isDataLoaded() {
+                return this.headers.length;
+            }
+        }
     }
 </script>
 

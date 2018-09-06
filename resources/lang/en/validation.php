@@ -112,6 +112,7 @@ return [
     'unique'               => 'The :attribute has already been taken.',
     'uploaded'             => 'The :attribute failed to upload.',
     'url'                  => 'The :attribute format is invalid.',
+    'existing_storage'     => 'There is no storage size defined on this study for the selected sample type.',
 
     /*
     |--------------------------------------------------------------------------
