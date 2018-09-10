@@ -266,7 +266,7 @@ aws4@^1.6.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
 
-axios@^0.18:
+"axios@>=0.15 <1.0", axios@^0.18:
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
   dependencies:
@@ -2211,6 +2211,14 @@ forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
 
+form-backend-validation@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/form-backend-validation/-/form-backend-validation-2.3.3.tgz#1ed31e95ad031c68921bfe15c947ad5eb93b9600"
+  dependencies:
+    prettier "^1.10.2"
+  optionalDependencies:
+    axios ">=0.15 <1.0"
+
 form-data@~2.3.1:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-2.3.2.tgz#4970498be604c20c005d4f5c23aecd21d6b49099"
@@ -2693,6 +2701,10 @@ indexof@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
 
+inflector-js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/inflector-js/-/inflector-js-1.0.1.tgz#8f2b8dae06ba8c1a846e40a196a5e132721be0e0"
+
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -3135,6 +3147,13 @@ laravel-mix@^2.0:
     webpack-merge "^4.1.0"
     webpack-notifier "^1.5.1"
     yargs "^8.0.2"
+
+laravel-nova@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/laravel-nova/-/laravel-nova-1.0.3.tgz#9bd1af8b2eb36bd82fcd98cbaec610782ffd6ace"
+  dependencies:
+    form-backend-validation "^2.3.3"
+    inflector-js "^1.0.1"
 
 lazy-cache@^1.0.3:
   version "1.0.4"
@@ -3924,6 +3943,10 @@ pako@~1.0.5:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
 
+papaparse@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-4.6.0.tgz#4e3b8d6bf9f7900da437912794ec292207526867"
+
 parallel-transform@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/parallel-transform/-/parallel-transform-1.1.0.tgz#d410f065b05da23081fcd10f28854c29bda33b06"
@@ -4376,7 +4399,7 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@^1.7.0:
+prettier@^1.10.2, prettier@^1.7.0:
   version "1.14.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
 

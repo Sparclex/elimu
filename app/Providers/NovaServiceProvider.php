@@ -2,11 +2,10 @@
 
 namespace App\Providers;
 
+use App\Tools\SampleBatchImporter;
 use Laravel\Nova\Nova;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\NovaApplicationServiceProvider;
-use Sparclex\Lims\Tool;
-use Sparclex\Lims\ToolServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -55,6 +54,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
+            new \Tightenco\NovaReleases\LatestRelease,
         ];
     }
 
@@ -66,7 +66,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function tools()
     {
         return [
-            new Tool
+            new SampleBatchImporter,
         ];
     }
 

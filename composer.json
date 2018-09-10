@@ -9,14 +9,14 @@
     "type": "project",
     "require": {
         "php": "^7.1.3",
+        "alexbowers/nova-prepopulate-searchable": "^1.0",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
         "laravel/nova": "*",
         "laravel/tinker": "^1.0",
         "nathanmac/parser": "^4.3",
-        "sparclex/lims": "*",
         "sparclex/select-has-many": "*",
-        "sparclex/lims-theme": "*"
+        "tightenco/nova-releases": "^0.1.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",
@@ -70,10 +70,6 @@
         {
             "type": "path",
             "url": "./nova"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/Lims"
         },
         {
             "type": "path",

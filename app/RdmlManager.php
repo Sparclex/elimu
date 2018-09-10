@@ -146,7 +146,46 @@ class RdmlManager
 
     public function getExperimentRuns()
     {
-        return $this->rdml['experiment']['run'];
+        return collect($this->rdml['experiment']['run']);
+    }
+
+    public function getData()
+    {
+        $data = [];
+        foreach ($this->getExperimentRuns() as $run) {
+            foreach ($run['react'] as $react) {
+                if (! isset($data[$react['sample']['@id']])) {
+                    $data[$react['sample']['@id']] = [];
+                }
+                $data[$react['sample']['@id']][$react['data']['tar']['@id']] = $react['data']['adp'];
+            }
+        }
+
+        return $data;
+    }
+
+    public function getChartData()
+    {
+        $data = [];
+        foreach ($this->getExperimentRuns() as $run) {
+            foreach ($run['react'] as $react) {
+                if (! isset($data[$react['sample']['@id']])) {
+                    $data[$react['sample']['@id']] = [];
+                }
+                $data[$react['sample']['@id']][] = [
+                    'label' => $react['data']['tar']['@id'],
+                    'data' => collect($react['data']['adp'])->map(
+                    function ($item) {
+                        return $item['fluor'];
+                    }),
+                    'borderColor' => 'red',
+                    'backgroundColor' => 'red',
+                    'lineTension' => 0.3
+                ];
+            }
+        }
+
+        return $data;
     }
 
     private function computeCq($adp, $threshold)
@@ -159,7 +198,7 @@ class RdmlManager
             $lastPoint = $point;
         }
 
-        return NAN;
+        return null;
     }
 
     private function determineIntersect($pointA, $pointB, $y)

@@ -69,5 +69,8 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+
+        Route::middleware('nova')->prefix('nova-vendor/lims')->namespace(
+            $this->namespace)->group(base_path('routes/nova-api.php'));
     }
 }

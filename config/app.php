@@ -151,6 +151,7 @@ return [
          * Package Service Providers...
          */
 
+        Nathanmac\Utilities\Parser\ParserServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -160,7 +161,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Nathanmac\Utilities\Parser\ParserServiceProvider::class
+        \App\Providers\LimsServiceProvider::class,
 
     ],
 

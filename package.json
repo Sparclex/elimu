@@ -7,37 +7,20 @@
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "build-tagging": "cd nova-components/Tagging && npm run dev",
-        "build-tagging-prod": "cd nova-components/Tagging && npm run prod",
-        "build-storage": "cd nova-components/Storage && npm run dev",
-        "build-storage-prod": "cd nova-components/Storage && npm run prod",
-        "build-StorageSize": "cd nova-components/StorageSize && npm run dev",
-        "build-StorageSize-prod": "cd nova-components/StorageSize && npm run prod",
-        "build-multiselect": "cd nova-components/Multiselect && npm run dev",
-        "build-multiselect-prod": "cd nova-components/Multiselect && npm run prod",
-        "build-html-readonly": "cd nova-components/HtmlReadonly && npm run dev",
-        "build-html-readonly-prod": "cd nova-components/HtmlReadonly && npm run prod",
-        "build-introductionCard": "cd nova-components/IntroductionCard && npm run dev",
-        "build-introductionCard-prod": "cd nova-components/IntroductionCard && npm run prod",
-        "build-lims-getting-started-card": "cd nova-components/LimsGettingStartedCard && npm run dev",
-        "build-lims-getting-started-card-prod": "cd nova-components/LimsGettingStartedCard && npm run prod",
-        "build-lims-importer": "cd nova-components/LimsImporter && npm run dev",
-        "build-lims-importer-prod": "cd nova-components/LimsImporter && npm run prod",
-        "build-lims": "cd nova-components/Lims && npm run dev",
-        "build-lims-prod": "cd nova-components/Lims && npm run prod",
-        "build-select-has-many": "cd nova-components/SelectHasMany && npm run dev",
-        "build-select-has-many-prod": "cd nova-components/SelectHasMany && npm run prod"
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
         "axios": "^0.18",
         "bootstrap": "^4.0.0",
+        "chart.js": "^2.7.2",
         "cross-env": "^5.1",
-        "jquery": "^3.2",
         "laravel-mix": "^2.0",
         "lodash": "^4.17.5",
+        "papaparse": "^4.6.0",
         "popper.js": "^1.12",
         "vue": "^2.5.7"
     },
-    "dependencies": []
+    "dependencies": {
+        "laravel-nova": "^1.0.3"
+    }
 }
