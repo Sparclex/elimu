@@ -2,18 +2,26 @@
 
 namespace Tests\Feature;
 
+use App\Models\Sample;
 use App\Models\SampleInformation;
 use App\Models\SampleType;
 use App\Models\Study;
-use App\Models\Sample;
-use Illuminate\Support\Carbon;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Tests\TestCase;
 
 class SampleBatchImporterTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $user = factory(User::class)->create();
+        Auth::loginUsingId($user->id);
+    }
 
     /**
      * @test
@@ -21,92 +29,99 @@ class SampleBatchImporterTest extends TestCase
     public function it_should_import_a_single_sample()
     {
         $study = factory(Study::class)->create();
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
             'samples' => [
                 [
-                    'sample_type' => 'Sample type 1',
+                    'sampleType' => 'Sample type 1',
                     'quantity' => '0',
-                    'sample_id' => 'abc',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
-                ]
-            ]
-        ]);
-        $this->assertDatabaseHas('sample_informations', [
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
+        $this->assertDatabaseHas(
+            'sample_informations', [
             'sample_id' => 'abc',
-            'subject_id' => 'abc'
+            'subject_id' => 'abc',
         ]);
-        $this->assertDatabaseHas('sample_types', [
+        $this->assertDatabaseHas(
+            'sample_types', [
             'name' => 'Sample type 1',
         ]);
-        $this->assertDatabaseHas('samples', [
+        $this->assertDatabaseHas(
+            'samples', [
             'sample_information_id' => 1,
             'sample_type_id' => 1,
-            'study_id' => $study->id
+            'study_id' => $study->id,
         ]);
     }
 
     /**
      * @test
      */
-    public function it_should_import_multiple_samples() {
+    public function it_should_import_multiple_samples()
+    {
         $study = factory(Study::class)->create();
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
             'samples' => [
                 [
-                    'sample_type' => 'Sample type 1',
+                    'sampleType' => 'Sample type 1',
                     'quantity' => '0',
-                    'sample_id' => 'abc',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
                 ],
                 [
-                    'sample_type' => 'Sample type 1',
+                    'sampleType' => 'Sample type 1',
                     'quantity' => '0',
-                    'sample_id' => 'bcd',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
+                    'sampleId' => 'bcd',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
                 ],
                 [
-                    'sample_type' => 'Sample type 1',
+                    'sampleType' => 'Sample type 1',
                     'quantity' => '0',
-                    'sample_id' => 'cde',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
+                    'sampleId' => 'cde',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
                 ],
                 [
-                    'sample_type' => 'Sample type 1',
+                    'sampleType' => 'Sample type 1',
                     'quantity' => '0',
-                    'sample_id' => 'def',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
-                ]
-            ]
-        ]);
+                    'sampleId' => 'def',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
         $this->assertEquals(4, SampleInformation::count());
         $this->assertEquals(1, SampleType::count());
         $this->assertEquals(4, Sample::count());
 
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
             'samples' => [
                 [
-                    'sample_type' => 'Sample type 2',
+                    'sampleType' => 'Sample type 2',
                     'quantity' => '0',
-                    'sample_id' => 'abc',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
-                ]
-            ]
-        ]);
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
         $this->assertEquals(4, SampleInformation::count());
         $this->assertEquals(2, SampleType::count());
         $this->assertEquals(5, Sample::count());
@@ -115,21 +130,23 @@ class SampleBatchImporterTest extends TestCase
     /**
      * @test
      */
-    public function it_should_ignore_already_existing_data() {
+    public function it_should_ignore_already_existing_data()
+    {
         $sample = factory(Sample::class)->create(['quantity' => '0']);
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $sample->study->id,
             'samples' => [
                 [
-                    'sample_type' => $sample->sample_type_id,
+                    'sampleType' => $sample->sampleType->name,
                     'quantity' => '0',
-                    'sample_id' => $sample->sampleInformation->sample_id,
-                    'subject_id' => $sample->sampleInformation->subject_id,
-                    'collected_at' => $sample->sampleInformation->collected_at,
-                    'visit_id' => $sample->sampleInformation->visit_id
-                ]
-            ]
-        ]);
+                    'sampleId' => $sample->sampleInformation->sample_id,
+                    'subjectId' => $sample->sampleInformation->subject_id,
+                    'collectionDate' => $sample->sampleInformation->collected_at->format('Y-m-d H:i'),
+                    'visitId' => $sample->sampleInformation->visit_id,
+                ],
+            ],
+        ])->assertStatus(200);
         $this->assertEquals(1, SampleInformation::count());
         $this->assertEquals(1, SampleType::count());
         $this->assertEquals(1, Sample::count());
@@ -138,43 +155,97 @@ class SampleBatchImporterTest extends TestCase
     /**
      * @test
      */
-    public function it_should_only_create_new_sample_types() {
+    public function it_should_only_create_new_sample_types()
+    {
         $study = factory(Study::class)->create();
         $sampleType = factory(SampleType::class)->create();
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
             'samples' => [
                 [
-                    'sample_type' => $sampleType->name,
+                    'sampleType' => $sampleType->name,
                     'quantity' => '0',
-                    'sample_id' => 'abc',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
-                ]
-            ]
-        ]);
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
         $this->assertEquals(1, SampleInformation::count());
         $this->assertEquals(1, SampleType::count());
         $this->assertEquals(1, Sample::count());
 
-        $this->post('/nova-vendor/lims/import-samples', [
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
             'samples' => [
                 [
-                    'sample_type' => $sampleType->name . "-new",
+                    'sampleType' => $sampleType->name."-new",
                     'quantity' => '0',
-                    'sample_id' => 'abc',
-                    'subject_id' => 'abc',
-                    'collected_at' => Carbon::now()->format('Y-m-d'),
-                    'visit_id' => 'abc'
-                ]
-            ]
-        ]);
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
 
         $this->assertEquals(1, SampleInformation::count());
         $this->assertEquals(2, SampleType::count());
         $this->assertEquals(2, Sample::count());
+    }
 
+    /**
+     * @test
+     */
+    public function it_should_store_an_imported_sample()
+    {
+        $study = factory(Study::class)->create();
+        $sampleType = factory(SampleType::class)->create();
+        $study->storageSizes()->create(
+            [
+                'sample_type_id' => $sampleType->id,
+                'size' => 2,
+            ]);
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
+            'study' => $study->id,
+            'samples' => [
+                [
+                    'sampleType' => $sampleType->name,
+                    'quantity' => '1',
+                    'sampleId' => 'abc',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
+        $this->assertDatabaseHas('storage', [
+            'sample_id' => Sample::latest()->first()->id,
+            'box' => 1,
+            'position' => 1
+        ]);
+        $this->json(
+            'POST', '/nova-vendor/lims/import-samples', [
+            'study' => $study->id,
+            'samples' => [
+                [
+                    'sampleType' => $sampleType->name,
+                    'quantity' => '2',
+                    'sampleId' => 'cde',
+                    'subjectId' => 'abc',
+                    'collectionDate' => Carbon::now()->format('Y-m-d H:i'),
+                    'visitId' => 'abc',
+                ],
+            ],
+        ])->assertStatus(200);
+        $this->assertDatabaseHas('storage', [
+            'sample_id' => Sample::where('quantity', 2)->first()->id,
+            'box' => 2,
+            'position' => 1
+        ]);
     }
 }

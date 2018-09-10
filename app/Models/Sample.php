@@ -7,6 +7,8 @@ use App\Observers\AutoStorageSaver;
 
 class Sample extends Model
 {
+    protected $fillable = ['sample_type_id', 'sample_information_id', 'study_id', 'quantity'];
+
     public function study()
     {
         return $this->belongsTo(Study::class);
