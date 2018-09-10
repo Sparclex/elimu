@@ -2,13 +2,17 @@
 
 namespace App\Nova;
 
+use App\Actions\ChangeValidationStatus;
 use App\Fields\SampleStatusField;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Trix;
+use Tightenco\NovaReleases\LatestRelease;
 
 class Experiment extends Resource
 {
@@ -48,8 +52,17 @@ class Experiment extends Resource
         return [
             ID::make()->hideFromIndex(),
             BelongsTo::make('Assay'),
-            BelongsTo::make('Processing Log', 'processingLog', ProcessingLog::class),
-            BelongsToMany::make('Samples')->fields(new SampleStatusField),
+            BelongsTo::make('Requester', 'requester', User::class)->rules('required', 'exists:people,id')->searchable(),
+            DateTime::make('Requested at')->rules('required', 'date'),
+            DateTime::make('Processed at')->rules('date'),
+            BelongsTo::make('Receiver', 'receiver', User::class)->rules('required', 'exists:people,id')->searchable(),
+            BelongsTo::make('Collector', 'collector', User::class)->rules('required', 'exists:people,id')->searchable(),
+            Trix::make('Comment')->hideFromIndex(),
+            BelongsToMany::make('Samples')->actions(function () {
+                return [
+                    new ChangeValidationStatus()
+                ];
+            })->fields(new SampleStatusField),
             HasMany::make('Results')
         ];
     }

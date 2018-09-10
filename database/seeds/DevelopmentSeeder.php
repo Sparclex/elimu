@@ -19,6 +19,5 @@ class DevelopmentSeeder extends Seeder
         $this->call(StudySeeder::class);
         $this->call(SampleInformationSeeder::class);
         $this->call(AssaySeeder::class);
-        $this->call(ProcessingLogSeeder::class);
     }
 }

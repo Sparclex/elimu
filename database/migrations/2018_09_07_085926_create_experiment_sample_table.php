@@ -16,7 +16,7 @@ class CreateExperimentSampleTable extends Migration
         Schema::create('experiment_sample', function (Blueprint $table) {
             $table->bigInteger('sample_id')->unsigned();
             $table->bigInteger('experiment_id')->unsigned();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('Pending');
             $table->timestamps();
 
             $table->primary(['sample_id', 'experiment_id']);

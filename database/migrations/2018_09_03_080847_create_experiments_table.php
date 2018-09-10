@@ -16,13 +16,18 @@ class CreateExperimentsTable extends Migration
         Schema::create('experiments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('assay_id')->unsigned();
-            $table->bigInteger('processing_log_id')->unsigned();
+            $table->timestamp('requested_at')->nullable();
+            $table->timestamp('processed_at')->nullable();
+            $table->text('comment')->nullable();
+            $table->unsignedBigInteger('requester_id')->nullable();
+            $table->unsignedBigInteger('receiver_id')->nullable();
+            $table->unsignedBigInteger('collector_id')->nullable();
             $table->timestamps();
 
-            $table->unique(['assay_id', 'processing_log_id']);
-
             $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
-            $table->foreign('processing_log_id')->references('id')->on('processing_logs')->onDelete('CASCADE');
+            $table->foreign('requester_id')->references('id')->on('users')->onDelete('SET NULL');
+            $table->foreign('receiver_id')->references('id')->on('users')->onDelete('SET NULL');
+            $table->foreign('collector_id')->references('id')->on('users')->onDelete('SET NULL');
         });
     }
 

@@ -37,6 +37,16 @@ class InputParameter extends Resource
         'id',
     ];
 
+    public static function label()
+    {
+        return 'Input Parameters';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Input Parameter';
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
