@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StorageSize extends Model
 {
+    protected $fillable = ['sample_type_id', 'study_id', 'size'];
+
     public function study() {
         return $this->belongsTo(Study::class);
     }

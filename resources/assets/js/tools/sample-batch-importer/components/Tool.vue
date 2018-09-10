@@ -11,7 +11,7 @@
                 <div class="w-1/2 px-8 py-6">
                     <select
                         class="form-control form-select mb-3 w-full" id="study"
-                    >
+                    v-model="selectedStudy">
                         <option v-for="study in studies" :value="study.id">{{study.study_id}} {{study.name}}</option>
                     </select>
                 </div>
@@ -71,7 +71,8 @@
                 studies: [],
                 data: [],
                 loading: true,
-                file: false
+                file: false,
+                selectedStudy: false
             };
         },
         mounted() {
@@ -92,7 +93,7 @@
                 });
             },
             performImport() {
-                api.importBatchSamples(this.data).then(({data}) => {
+                api.importBatchSamples(this.selectedStudy, this.data).then(({data}) => {
                     this.$toasted.show(data.message, { type: 'success' })
                 }).catch(({response}) => {
                     this.$toasted.show(response.data.message, { type: 'error' });
