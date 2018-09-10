@@ -17,7 +17,7 @@ class CreateSampleInformationsTable extends Migration
             $table->bigIncrements('id');
             $table->string('sample_id');
             $table->string('subject_id');
-            $table->timestamp('date')->nullable();
+            $table->timestamp('collected_at')->nullable();
             $table->string('visit_id');
             $table->timestamps();
         });
