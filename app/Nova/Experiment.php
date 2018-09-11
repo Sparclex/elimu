@@ -2,9 +2,6 @@
 
 namespace App\Nova;
 
-use App\Actions\ChangeValidationStatus;
-use App\Fields\SampleStatusField;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -12,7 +9,6 @@ use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Trix;
-use Tightenco\NovaReleases\LatestRelease;
 
 class Experiment extends Resource
 {
@@ -26,9 +22,12 @@ class Experiment extends Resource
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
-     * @var string
+     * @return string
      */
-    public static $title = 'name';
+    public function title()
+    {
+        return $this->assay->name;
+    }
 
     /**
      * The columns that should be searched.
@@ -54,16 +53,14 @@ class Experiment extends Resource
             BelongsTo::make('Assay'),
             BelongsTo::make('Requester', 'requester', User::class)->rules('required', 'exists:people,id')->searchable(),
             DateTime::make('Requested at')->rules('required', 'date'),
-            DateTime::make('Processed at')->rules('date'),
-            BelongsTo::make('Receiver', 'receiver', User::class)->rules('required', 'exists:people,id')->searchable(),
-            BelongsTo::make('Collector', 'collector', User::class)->rules('required', 'exists:people,id')->searchable(),
+            DateTime::make('Processed at')->rules('date')->hideFromIndex(),
+            BelongsTo::make('Receiver', 'receiver', User::class)->rules(
+                'required', 'exists:people,id')->searchable()->hideFromIndex(),
+            BelongsTo::make('Collector', 'collector', User::class)->rules(
+                'required', 'exists:people,id')->searchable()->hideFromIndex(),
             Trix::make('Comment')->hideFromIndex(),
-            BelongsToMany::make('Samples')->actions(function () {
-                return [
-                    new ChangeValidationStatus()
-                ];
-            })->fields(new SampleStatusField),
-            HasMany::make('Results')
+            BelongsToMany::make('Samples'),
+            HasMany::make('Data'),
         ];
     }
 

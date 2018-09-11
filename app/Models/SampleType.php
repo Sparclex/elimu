@@ -19,11 +19,15 @@ class SampleType extends Model
         });
     }
 
-    public function storageSizes() {
-        return $this->hasMany(StorageSize::class);
-    }
-
     public function samples() {
         return $this->belongsToMany(Sample::class);
+    }
+
+    public function studies() {
+        return $this->belongsToMany(Study::class, 'storage_sizes');
+    }
+
+    public function getSizeAttribute() {
+        return optional($this->pivot)->size;
     }
 }

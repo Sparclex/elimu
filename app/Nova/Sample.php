@@ -4,12 +4,15 @@ namespace App\Nova;
 
 use App\Actions\ChangeValidationStatus;
 use App\Actions\RequestExperiment;
+use App\Fields\Data;
+use App\Fields\DataPanel;
 use App\Fields\SampleStatusField;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Panel;
 
 class Sample extends Resource
 {
@@ -61,12 +64,8 @@ class Sample extends Resource
             Number::make('Quantity', 'quantity')->rules(
                 'nullable', 'numeric', 'existing_storage:study,sampleType')->help(
                 'Enter 0 if this sample should not be stored.'),
-            BelongsToMany::make('Experiments')->actions(
-                function () {
-                    return [
-                        new ChangeValidationStatus(),
-                    ];
-                })->fields(new SampleStatusField),
+            new DataPanel('Data' ),
+            BelongsToMany::make('Experiments')
         ];
     }
 

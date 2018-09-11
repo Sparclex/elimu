@@ -6,22 +6,13 @@ use App\Models\Sample;
 use App\Models\SampleInformation;
 use App\Models\SampleType;
 use App\Models\Study;
-use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Tests\TestCase;
+use Tests\NovaTest;
 
-class SampleBatchImporterTest extends TestCase
+class SampleBatchImporterTest extends NovaTest
 {
     use RefreshDatabase;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $user = factory(User::class)->create();
-        Auth::loginUsingId($user->id);
-    }
 
     /**
      * @test
@@ -54,8 +45,8 @@ class SampleBatchImporterTest extends TestCase
         ]);
         $this->assertDatabaseHas(
             'samples', [
-            'sample_information_id' => 1,
-            'sample_type_id' => 1,
+            'sample_information_id' => SampleInformation::where('sample_id', 'abc')->first()->id,
+            'sample_type_id' => SampleType::where('name', 'Sample type 1')->first()->id,
             'study_id' => $study->id,
         ]);
     }
@@ -204,11 +195,7 @@ class SampleBatchImporterTest extends TestCase
     {
         $study = factory(Study::class)->create();
         $sampleType = factory(SampleType::class)->create();
-        $study->storageSizes()->create(
-            [
-                'sample_type_id' => $sampleType->id,
-                'size' => 2,
-            ]);
+        $study->sampleTypes()->attach($sampleType->id, ['size' => 2]);
         $this->json(
             'POST', '/nova-vendor/lims/import-samples', [
             'study' => $study->id,
@@ -223,10 +210,11 @@ class SampleBatchImporterTest extends TestCase
                 ],
             ],
         ])->assertStatus(200);
-        $this->assertDatabaseHas('storage', [
+        $this->assertDatabaseHas(
+            'storage', [
             'sample_id' => Sample::latest()->first()->id,
             'box' => 1,
-            'position' => 1
+            'position' => 1,
         ]);
         $this->json(
             'POST', '/nova-vendor/lims/import-samples', [
@@ -242,10 +230,11 @@ class SampleBatchImporterTest extends TestCase
                 ],
             ],
         ])->assertStatus(200);
-        $this->assertDatabaseHas('storage', [
+        $this->assertDatabaseHas(
+            'storage', [
             'sample_id' => Sample::where('quantity', 2)->first()->id,
             'box' => 2,
-            'position' => 1
+            'position' => 1,
         ]);
     }
 }

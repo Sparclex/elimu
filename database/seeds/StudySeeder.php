@@ -15,21 +15,18 @@ class StudySeeder extends Seeder
         $this->call(SampleTypeSeeder::class);
         foreacH ($studies as $study) {
 
-            $study->storageSizes()->create(
-                [
-                    'sample_type_id' => 1,
-                    'size' => 5,
-                ]);
-            $study->storageSizes()->create(
-                [
-                    'sample_type_id' => 2,
-                    'size' => 5,
-                ]);
-            $study->storageSizes()->create(
-                [
-                    'sample_type_id' => 3,
-                    'size' => 5,
-                ]);
+            $study->sampleTypes()->attach(
+                1, [
+                     'size' => 5,
+                 ]);
+            $study->sampleTypes()->attach(
+                2, [
+                'size' => 5,
+            ]);
+            $study->sampleTypes()->attach(
+                3, [
+                'size' => 5,
+            ]);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Fields\StorageSizeField;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
@@ -46,8 +47,8 @@ class Study extends Resource
             ID::make()->hideFromDetail()->hideFromIndex(),
             Text::make('Study ID')->sortable()->creationRules('required', 'unique:studies,study_id')->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
             Text::make('Name')->sortable()->creationRules('required', 'unique:studies,name')->updateRules('required', 'unique:studies,name,{{resourceId}}'),
-            HasMany::make('Storage Sizes', 'storageSizes', StorageSize::class),
             HasMany::make('Samples'),
+            BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)->fields(new StorageSizeField)
         ];
     }
 

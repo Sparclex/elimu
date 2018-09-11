@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Database\Seeder;
 
 class DevelopmentSeeder extends Seeder
@@ -16,8 +17,7 @@ class DevelopmentSeeder extends Seeder
             'password' => \Hash::make('12345'),
             'name' => 'Silvan Wehner'
         ]);
-        $this->call(StudySeeder::class);
-        $this->call(SampleInformationSeeder::class);
         $this->call(AssaySeeder::class);
+        $this->call(SampleSeeder::class);
     }
 }

@@ -3,5 +3,6 @@
     "/tools/sample-batch-importer/js/tool.js": "/tools/sample-batch-importer/js/tool.js",
     "/tools/status-field/js/field.js": "/tools/status-field/js/field.js",
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/css/app.css": "/css/app.css",
+    "/tools/data-field/js/field.js": "/tools/data-field/js/field.js"
 }

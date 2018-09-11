@@ -2168,7 +2168,7 @@ exports.default = {
 
     computed: {
         showHideLabel: function showHideLabel() {
-            return !this.expanded ? 'Show Content' : 'Hide Content';
+            return !this.expanded ? this.__('Show Content') : this.__('Hide Content');
         }
     }
 };
@@ -2738,6 +2738,10 @@ exports.default = {
         }
     }
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -35310,7 +35314,9 @@ var render = function() {
                     ])
                   : _c("span", [
                       _vm._v(
-                        "\n                    No Increase\n                "
+                        "\n                    " +
+                          _vm._s(_vm.__("No Increase")) +
+                          "\n                "
                       )
                     ])
               ])
@@ -35318,7 +35324,9 @@ var render = function() {
                 _vm.previous == "0" && _vm.value != "0"
                   ? _c("span", [
                       _vm._v(
-                        "\n                    No Prior Data\n                "
+                        "\n                    " +
+                          _vm._s(_vm.__("No Prior Data")) +
+                          "\n                "
                       )
                     ])
                   : _vm._e(),
@@ -35326,14 +35334,20 @@ var render = function() {
                 _vm.value == "0" && _vm.previous != "0"
                   ? _c("span", [
                       _vm._v(
-                        "\n                    No Current Data\n                "
+                        "\n                    " +
+                          _vm._s(_vm.__("No Current Data")) +
+                          "\n                "
                       )
                     ])
                   : _vm._e(),
                 _vm._v(" "),
                 _vm.value == "0" && _vm.previous == "0"
                   ? _c("span", [
-                      _vm._v("\n                    No Data\n                ")
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.__("No Data")) +
+                          "\n                "
+                      )
                     ])
                   : _vm._e()
               ])
@@ -37196,7 +37210,7 @@ var render = function() {
                     attrs: {
                       "data-testid": "search-input",
                       dusk: "search",
-                      placeholder: "Search",
+                      placeholder: _vm.__("Search"),
                       type: "search"
                     },
                     domProps: { value: _vm.search },
@@ -37614,7 +37628,9 @@ var render = function() {
                                           },
                                           [
                                             _vm._v(
-                                              "\n                                Trashed:\n                            "
+                                              "\n                                " +
+                                                _vm._s(_vm.__("Trashed")) +
+                                                ":\n                            "
                                             )
                                           ]
                                         ),
@@ -37902,11 +37918,16 @@ var render = function() {
                         { staticClass: "text-base text-80 font-normal mb-6" },
                         [
                           _vm._v(
-                            "\n                    No " +
+                            "\n                    " +
                               _vm._s(
-                                _vm.resourceInformation.label.toLowerCase()
+                                _vm.__(
+                                  "No :resource matched the given criteria.",
+                                  {
+                                    resource: _vm.resourceInformation.label.toLowerCase()
+                                  }
+                                )
                               ) +
-                              " matched the given criteria.\n                "
+                              "\n                "
                           )
                         ]
                       ),
@@ -42294,6 +42315,10 @@ var render = function() {
       [
         _c("form-label", [
           _vm._v("\n            " + _vm._s(_vm.field.name) + "\n        ")
+        ]),
+        _vm._v(" "),
+        _c("help-text", [
+          _vm._v("\n            " + _vm._s(_vm.field.helpText) + "\n        ")
         ])
       ],
       1

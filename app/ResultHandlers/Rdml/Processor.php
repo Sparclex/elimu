@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\ResultHandlers\Rdml;
 
 use Nathanmac\Utilities\Parser\Facades\Parser;
 
@@ -8,7 +8,7 @@ use Nathanmac\Utilities\Parser\Facades\Parser;
  * Extract relevant data from an rdml
  *
  */
-class RdmlManager
+class Processor implements ProcessorContract
 {
     /**
      * The whole data extracted from a rdml
@@ -44,7 +44,7 @@ class RdmlManager
      * @param string $rdmlFile
      * @param array $thresholds
      */
-    public function __construct($rdmlFile, array $thresholds)
+    public function __construct($rdmlFile, array $thresholds = [])
     {
         $this->rdml = collect(Parser::xml($rdmlFile));
         $this->thresholds = $thresholds;
@@ -52,11 +52,18 @@ class RdmlManager
         $this->cyclesOfQuantification = collect();
     }
 
+    public function withTresholds(array $thresholds)
+    {
+        $this->thresholds = $thresholds;
+
+        return $this;
+    }
+
     /**
      * Creates a new Rdml Manger instance
      *
      * @param string $rdmlFile
-     * @return \App\RdmlManager
+     * @return \App\Manager
      */
     public static function make($rdmlFile, array $thresholds)
     {
@@ -175,12 +182,12 @@ class RdmlManager
                 $data[$react['sample']['@id']][] = [
                     'label' => $react['data']['tar']['@id'],
                     'data' => collect($react['data']['adp'])->map(
-                    function ($item) {
-                        return $item['fluor'];
-                    }),
+                        function ($item) {
+                            return $item['fluor'];
+                        }),
                     'borderColor' => 'red',
                     'backgroundColor' => 'red',
-                    'lineTension' => 0.3
+                    'lineTension' => 0.3,
                 ];
             }
         }
@@ -210,5 +217,38 @@ class RdmlManager
 
         // x = (y - b) / m
         return ($y - $b) / $slope;
+    }
+
+    /**
+     * Returns the ids of all control samples
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getControlSamples()
+    {
+        return $this->getSamples()->reject(
+            function ($sample) {
+                return $sample['type'] == 'unkn';
+            })->pluck('@id');
+    }
+
+    public function getSampleTargets()
+    {
+        $data = [];
+        $controlSamples = $this->getControlSamples();
+        foreach ($this->getExperimentRuns() as $run) {
+            foreach ($run['react'] as $react) {
+                if ($controlSamples->contains($react['sample']['@id'])) {
+                    continue;
+                }
+                $data[] = [
+                    'sample' => $react['sample']['@id'],
+                    'target' => $react['data']['tar']['@id'],
+                    'react' => $react['@id'],
+                ];
+            }
+        }
+
+        return collect($data);
     }
 }

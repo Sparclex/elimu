@@ -5,13 +5,12 @@ namespace App\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
-use App\Fields\Result as ResultField;
+use ZipArchive;
 
-class Result extends Resource
+class Data extends Resource
 {
     public static $globallySearchable = false;
 
@@ -20,7 +19,7 @@ class Result extends Resource
      *
      * @var string
      */
-    public static $model = 'App\Models\Result';
+    public static $model = 'App\Models\Data';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -50,9 +49,22 @@ class Result extends Resource
             ID::make()->sortable(),
             BelongsTo::make('Experiment')->rules('required', 'exists:experiments,id'),
             Select::make('Type')->options(array_combine($types, $types))->onlyOnForms(),
-            File::make('file')->onlyOnForms()->prunable(),
+            File::make('File')->onlyOnForms()->prunable()->store(
+                function (Request $request) {
+                    $zip = new ZipArchive;
+                    $file = $request->file('file');
+                    if ($zip->open($file->getRealPath()) !== true) {
+                        dump('error');
+                        throw new \Exception('Error unzipping');
+                    }
+                    $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $path = 'app/experiment-data/'.$request->experiment;
+                    $zip->extractTo(storage_path($path), [$filename.".xml"]);
+                    $zip->close();
+
+                    return ['file' => $path . '/'.$filename.".xml"];
+                })->creationRules('required', 'file')->updateRules('file'),
             DateTime::make('Created At')->exceptOnForms(),
-            ResultField::make('Result')->onlyOnDetail(),
         ];
     }
 

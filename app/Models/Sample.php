@@ -30,10 +30,6 @@ class Sample extends Model
     }
 
     public function experiments() {
-        return $this->belongsToMany(Experiment::class)->withPivot('status')->withTimestamps();
-    }
-
-    public function getStatusAttribute() {
-        return optional($this->pivot)->status;
+        return $this->belongsToMany(Experiment::class, 'experiment_requests')->withTimestamps();
     }
 }

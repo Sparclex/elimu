@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Study extends Model
 {
-    public function storageSizes() {
-        return $this->hasMany(StorageSize::class);
-    }
 
     public function samples() {
         return $this->hasMany(Sample::class);
+    }
+
+    public function sampleTypes() {
+        return $this->belongsToMany(SampleType::class, 'storage_sizes')->withPivot('size');
     }
 }

@@ -1,16 +1,17 @@
 <?php
 
+use App\ResultHandlers\Rdml\Processor;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 
 Route::redirect('/', '/nova');
 
 Route::get('/test', function() {
-    $manager = new \App\RdmlManager(file_get_contents(storage_path('app/rdml.xml')), [
+    $manager = new Processor(file_get_contents(base_path('tests/resources/one-sample.xml')), [
         'Pspp18S' => 100,
         'HsRNaseP' => 100,
         'PfvarATS' => 200,
     ]);
-    $data = $manager->getChartData();
+    $data = $manager->getControlSamples();
 
-    return compact('data');
+    return $data;
 });

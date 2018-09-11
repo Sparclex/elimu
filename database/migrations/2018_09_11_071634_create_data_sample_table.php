@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExperimentSampleTable extends Migration
+class CreateDataSampleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateExperimentSampleTable extends Migration
      */
     public function up()
     {
-        Schema::create('experiment_sample', function (Blueprint $table) {
+        Schema::create('data_sample', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->bigInteger('sample_id')->unsigned();
-            $table->bigInteger('experiment_id')->unsigned();
+            $table->bigInteger('data_id')->unsigned();
+            $table->string('target');
             $table->string('status')->default('Pending');
-            $table->timestamps();
-
-            $table->primary(['sample_id', 'experiment_id']);
+            $table->text('additional')->nullable();
             $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
-            $table->foreign('experiment_id')->references('id')->on('experiments')->onDelete('CASCADE');
+            $table->foreign('data_id')->references('id')->on('data')->onDelete('CASCADE');
         });
     }
 
@@ -32,6 +32,6 @@ class CreateExperimentSampleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('experiment_sample');
+        Schema::dropIfExists('data_sample');
     }
 }

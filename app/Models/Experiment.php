@@ -19,24 +19,14 @@ class Experiment extends Model
         return $this->belongsTo(Assay::class);
     }
 
-    public function processingLog()
-    {
-        return $this->belongsTo(ProcessingLog::class);
-    }
-
     public function samples()
     {
-        return $this->belongsToMany(Sample::class)->withPivot('status');
+        return $this->belongsToMany(Sample::class, 'experiment_requests');
     }
 
-    public function getStatusAttribute()
+    public function data()
     {
-        return optional($this->pivot)->status;
-    }
-
-    public function results()
-    {
-        return $this->hasMany(Result::class);
+        return $this->hasMany(Data::class);
     }
 
     public function receiver()
@@ -53,4 +43,5 @@ class Experiment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateResultsTable extends Migration
+class CreateDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateResultsTable extends Migration
      */
     public function up()
     {
-        Schema::create('results', function (Blueprint $table) {
+        Schema::create('data', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('experiment_id')->unsigned();
             $table->string('type');
@@ -21,6 +21,7 @@ class CreateResultsTable extends Migration
             $table->timestamps();
 
             $table->foreign('experiment_id')->references('id')->on('experiments')->onDelete('CASCADE');
+            $table->unique('experiment_id');
         });
     }
 

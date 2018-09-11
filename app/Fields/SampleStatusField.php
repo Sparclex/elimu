@@ -13,7 +13,7 @@ class SampleStatusField
             Status::make('Status')
                 ->loadingWhen('Pending')
                 ->failedWhen('Declined')
-                ->successWhen('Accepted')
+                ->successWhen('Accepted')->sortable(),
         ];
     }
 }

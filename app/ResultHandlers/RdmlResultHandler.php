@@ -2,7 +2,7 @@
 
 namespace App\ResultHandlers;
 
-use App\RdmlManager;
+use App\Manager;
 use Illuminate\Support\Facades\Storage;
 
 class RdmlResultHandler extends ResultHandler
@@ -10,7 +10,7 @@ class RdmlResultHandler extends ResultHandler
     public function handle()
     {
         try {
-            $rdmlManager = new RdmlManager(
+            $rdmlManager = new Manager(
                 Storage::disk('public')->get($this->filename), [
                 'Pspp18S' => 100,
                 'HsRNaseP' => 100,
