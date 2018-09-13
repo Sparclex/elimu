@@ -26,7 +26,7 @@ class Experiment extends Resource
      */
     public function title()
     {
-        return $this->assay->name;
+        return "Experiment: ".$this->id." (".$this->assay->name.")";
     }
 
     /**

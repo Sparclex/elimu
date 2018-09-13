@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Http\File;
 
 class DataFile implements Rule
 {
@@ -16,11 +16,12 @@ class DataFile implements Rule
      */
     public function passes($attribute, $value)
     {
-        if(! $value instanceof UploadedFile) {
+        if(! $value instanceof File) {
             return false;
         }
-        switch($value->getClientOriginalExtension()) {
+        switch($value->getExtension()) {
             case 'rdml':
+            case 'zip':
                 return $this->isValidRdml($value);
             case 'csv':
                 return $this->isValidCsv($value);
@@ -39,12 +40,12 @@ class DataFile implements Rule
         return 'The given file is not a parsable result file.';
     }
 
-    protected function isValidRdml($value)
+    protected function isValidRdml(File $value)
     {
         return true;
     }
 
-    protected function isValidCsv($value)
+    protected function isValidCsv(File $value)
     {
         return true;
     }

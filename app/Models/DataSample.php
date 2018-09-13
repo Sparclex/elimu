@@ -12,6 +12,13 @@ class DataSample extends Model
         return $this->belongsTo(Data::class);
     }
 
+    public function getDataAttribute($value) {
+        if($value) {
+            return number_format((float) $value, 2, '.', '\'');
+        }
+        return 'Non Ampl.';
+    }
+
     public function sample() {
         return $this->belongsTo(Sample::class);
     }
