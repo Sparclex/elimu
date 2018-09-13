@@ -4,21 +4,21 @@ namespace App\Fields;
 
 use Laravel\Nova\Fields\Field;
 
-class Result extends Field
+class AdditionalData extends Field
 {
     /**
      * The field's component.
      *
      * @var string
      */
-    public $component = 'result';
+    public $component = 'additional-data';
 
     public $showOnCreation = false;
 
     public $showOnUpdate = false;
 
-    public function __construct()
+    public function __construct($attribute, $resolveCallback = null)
     {
-        parent::__construct('');
+        parent::__construct('', $attribute, $resolveCallback);
     }
 }

@@ -17,9 +17,12 @@ class CreateDataSampleTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('sample_id')->unsigned();
             $table->bigInteger('data_id')->unsigned();
+            $table->string('data')->nullable();
             $table->string('target');
             $table->string('status')->default('Pending');
             $table->text('additional')->nullable();
+
+            $table->timestamps();
             $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
             $table->foreign('data_id')->references('id')->on('data')->onDelete('CASCADE');
         });

@@ -3,10 +3,13 @@
 namespace App\ResultHandlers\Rdml;
 
 use App\ResultHandlers\Extractor as ExtractorContract;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Extractor implements ExtractorContract
 {
+    private static $conrolLabels = ['Neg', 'Pos', 'NTC'];
+
     /**
      * @var \App\ResultHandlers\Rdml\ProcessorContract
      */
@@ -19,29 +22,34 @@ class Extractor implements ExtractorContract
 
     /**
      * @param $dataId integer representing the data / file in the database
-     * @return array missing sample warnings
+     * @return boolean
      */
     public function handle($dataId)
     {
-        $sampleData = $this->manager->getSampleTargets();
+        $sampleData = $this->manager->cyclesOfQuantification()->reject(
+            function ($sample) {
+                return in_array($sample['sample'], self::$conrolLabels);
+            });
         $sampleIds = $this->getDatabaseIdSampleIds($sampleData->pluck('sample')->toArray());
         $data = [];
-        $missingMessages = [];
+        $createdAt = Carbon::now();
         foreach ($sampleData as $sample) {
             if (! isset($sampleIds[$sample['sample']])) {
-                $missingMessages[$sample['sample']] = 'Sample with ID '.$sample['sample'].' does not exist in Database but is listed in result';
-                continue;
+                return false;
             }
             $data[] = [
+                'data' => $sample['cq'],
                 'sample_id' => $sampleIds[$sample['sample']],
                 'target' => $sample['target'],
-                'additional' => $sample['react'],
+                'additional' => serialize(array_except($sample, ['target', 'sample', 'cq'])),
                 'data_id' => $dataId,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
             ];
         }
         DB::table('data_sample')->insert($data);
 
-        return array_values($missingMessages);
+        return true;
     }
 
     private function getDatabaseIdSampleIds($sampleIds)

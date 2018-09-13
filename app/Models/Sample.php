@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
-use App\Observers\AutoStorageSaver;
 
 class Sample extends Model
 {
@@ -29,7 +29,13 @@ class Sample extends Model
         return $this->hasOne(Storage::class);
     }
 
-    public function experiments() {
+    public function experiments()
+    {
         return $this->belongsToMany(Experiment::class, 'experiment_requests')->withTimestamps();
+    }
+
+    public function data()
+    {
+        return $this->hasMany(DataSample::class);
     }
 }

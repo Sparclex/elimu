@@ -68,7 +68,7 @@ class SampleInformation extends Resource
                 ->updateRules('required', 'unique:sample_informations,sample_id,{{resourceId}}'),
             Text::make('Subject ID')->rules('required'),
             Text::make('Visit', 'visit_id')->rules('required'),
-            DateTime::make('Date')->rules('required'),
+            DateTime::make('Collected at')->rules('required'),
             /*Trix::make('Comment'),
             BelongsTo::make('Delivered by', 'deliverer', Person::class)->rules('exists:people,id'),
             BelongsTo::make('Received by', 'receiver', Person::class)->rules('exists:people,id'),*/

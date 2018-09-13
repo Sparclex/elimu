@@ -2,13 +2,18 @@
 
 namespace App\Nova;
 
+use App\Actions\ChangeValidationStatus;
+use App\Fields\SampleDataFields;
+use App\Rules\DataFile;
+use App\Utility\RDML;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
-use ZipArchive;
+use Laravel\Nova\Fields\Text;
 
 class Data extends Resource
 {
@@ -21,12 +26,10 @@ class Data extends Resource
      */
     public static $model = 'App\Models\Data';
 
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
-    public static $title = 'id';
+    public function title()
+    {
+        return $this->experiment->assay->name;
+    }
 
     /**
      * The columns that should be searched.
@@ -51,19 +54,8 @@ class Data extends Resource
             Select::make('Type')->options(array_combine($types, $types))->onlyOnForms(),
             File::make('File')->onlyOnForms()->prunable()->store(
                 function (Request $request) {
-                    $zip = new ZipArchive;
-                    $file = $request->file('file');
-                    if ($zip->open($file->getRealPath()) !== true) {
-                        dump('error');
-                        throw new \Exception('Error unzipping');
-                    }
-                    $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $path = 'app/experiment-data/'.$request->experiment;
-                    $zip->extractTo(storage_path($path), [$filename.".xml"]);
-                    $zip->close();
-
-                    return ['file' => $path . '/'.$filename.".xml"];
-                })->creationRules('required', 'file')->updateRules('file'),
+                    return ['file' => RDML::toXml($request->file('file'), $request->experiment)];
+                })->creationRules('required', new DataFile())->updateRules('file'),
             DateTime::make('Created At')->exceptOnForms(),
         ];
     }

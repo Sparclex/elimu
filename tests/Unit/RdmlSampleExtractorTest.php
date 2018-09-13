@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Data;
+use App\Models\DataSample;
 use App\Models\Sample;
 use App\Models\SampleInformation;
 use App\ResultHandlers\Rdml\Extractor;
@@ -14,6 +15,12 @@ class RdmlSampleExtractorTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp()
+    {
+        parent::setUp();
+        Data::unsetEventDispatcher();
+    }
+
     /**
      * @test
      */
@@ -24,50 +31,35 @@ class RdmlSampleExtractorTest extends TestCase
             [
                 'sample_information_id' => factory(SampleInformation::class)->create(['sample_id' => '9181971'])->id,
             ]);
-        $extractor = new Extractor(new Processor(file_get_contents(base_path('tests/resources/single-sample.xml'))));
+        $extractor = new Extractor(
+            new Processor(
+                file_get_contents(base_path('tests/resources/single-sample.xml')), [
+                'PfvarATS' => 100,
+                'HsRNaseP' => 200,
+                'Pspp18S' => 200,
+            ]));
         $extractor->handle($data->id);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'PfvarATS',
-            'additional' => '14',
-        ]);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'PfvarATS',
-            'additional' => '26',
-        ]);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'HsRNaseP',
-            'additional' => '14',
-        ]);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'HsRNaseP',
-            'additional' => '26',
-        ]);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'Pspp18S',
-            'additional' => '14',
-        ]);
-        $this->assertDatabaseHas(
-            'data_sample', [
-            'sample_id' => $sample->id,
-            'data_id' => $data->id,
-            'target' => 'Pspp18S',
-            'additional' => '26',
-        ]);
+        $this->assertEquals(
+            2, DataSample::where(
+            [
+                'sample_id' => $sample->id,
+                'data_id' => $data->id,
+                'target' => 'PfvarATS',
+            ])->count());
+        $this->assertEquals(
+            2, DataSample::where(
+            [
+                'sample_id' => $sample->id,
+                'data_id' => $data->id,
+                'target' => 'HsRNaseP',
+            ])->count());
+        $this->assertEquals(
+            2, DataSample::where(
+            [
+                'sample_id' => $sample->id,
+                'data_id' => $data->id,
+                'target' => 'Pspp18S',
+            ])->count());
     }
 
     /**
@@ -92,7 +84,13 @@ class RdmlSampleExtractorTest extends TestCase
             [
                 'sample_information_id' => factory(SampleInformation::class)->create(['sample_id' => '8181970'])->id,
             ]);
-        $extractor = new Extractor(new Processor(file_get_contents(base_path('tests/resources/multiple-samples.xml'))));
+        $extractor = new Extractor(
+            new Processor(
+                file_get_contents(base_path('tests/resources/multiple-samples.xml')), [
+                'PfvarATS' => 100,
+                'HsRNaseP' => 200,
+                'Pspp18S' => 200,
+            ]));
         $extractor->handle($data->id);
         $this->assertDatabaseHas(
             'data_sample', [
@@ -127,10 +125,13 @@ class RdmlSampleExtractorTest extends TestCase
     {
         $data = factory(Data::class)->create();
 
-        $extractor = new Extractor(new Processor(file_get_contents(base_path('tests/resources/single-sample.xml'))));
-        $this->assertEquals(
-            [
-                'Sample with ID 9181971 does not exist in Database but is listed in result',
-            ], $extractor->handle($data->id));
+        $extractor = new Extractor(
+            new Processor(
+                file_get_contents(base_path('tests/resources/single-sample.xml')), [
+                'PfvarATS' => 100,
+                'HsRNaseP' => 200,
+                'Pspp18S' => 200,
+            ]));
+        $this->assertFalse($extractor->handle($data->id));
     }
 }

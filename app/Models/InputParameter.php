@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class InputParameter extends Model
 {
     protected $casts = [
-        'parameters' => 'array'
+        'parameters' => 'collection'
     ];
 
     public function assay() {

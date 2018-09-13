@@ -1,13 +1,13 @@
 <template>
-    <div>
+    <div v-if="displayData">
         <canvas id="rdml-result" style="width: 100%" height="300"></canvas>
-        <pre>{{data}}</pre>
     </div>
 </template>
 <script>
     import Chart from 'chart.js';
+
     export default {
-        props: ['data'],
+        props: ['displayData'],
         data() {
             return {
                 chart: null,
@@ -15,31 +15,30 @@
             }
         },
         mounted() {
-
+            console.log(this.displayData);
             this.chart = new Chart(document.getElementById("rdml-result"), {
                 type: 'line',
                 data: {
-                    labels: [],
-                    datasets: this.datasets
+                    labels: Array.from(Array(this.displayData[0].data.length).keys()),
+                    datasets: this.displayData
                 },
                 options: {
                     scales: {
                         yAxes: [{
-                            ticks: {
-                                beginAtZero:true
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Fluor'
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Cycles'
                             }
                         }]
                     }
                 }
             });
-        },
-        computed: {
-            datasets() {
-                return this.data[this.selectedSampleId];
-            },
-            labels() {
-                return this.data[this.selectedSampleId];
-            },
         }
     }
 </script>

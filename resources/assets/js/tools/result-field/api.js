@@ -1,8 +1,5 @@
 export default {
-    fetchAvailableStudies() {
-        return Nova.request().get('/nova-vendor/lims/studies');
+    fetchData(id) {
+        return Nova.request().get('/nova-vendor/lims/sample-data/' + id);
     },
-    importBatchSamples(samples) {
-        return Nova.request().post('/nova-vendor/lims/import-samples', {samples});
-    }
 }

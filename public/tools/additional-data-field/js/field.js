@@ -60,39 +60,39 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 274);
+/******/ 	return __webpack_require__(__webpack_require__.s = 285);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 274:
+/***/ 285:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(275);
+module.exports = __webpack_require__(286);
 
 
 /***/ }),
 
-/***/ 275:
+/***/ 286:
 /***/ (function(module, exports, __webpack_require__) {
 
 Nova.booting(function (Vue, router) {
-    Vue.component('index-data', __webpack_require__(276));
-    Vue.component('detail-data', __webpack_require__(279));
-    Vue.component('form-data', __webpack_require__(282));
+    Vue.component('index-additional-data', __webpack_require__(287));
+    Vue.component('detail-additional-data', __webpack_require__(290));
+    Vue.component('form-additional-data', __webpack_require__(293));
 });
 
 /***/ }),
 
-/***/ 276:
+/***/ 287:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(277)
+var __vue_script__ = __webpack_require__(288)
 /* template */
-var __vue_template__ = __webpack_require__(278)
+var __vue_template__ = __webpack_require__(289)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -109,7 +109,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/tools/data-field/components/IndexField.vue"
+Component.options.__file = "resources/assets/js/tools/additional-data-field/components/IndexField.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -118,9 +118,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-14d29e22", Component.options)
+    hotAPI.createRecord("data-v-79db3b0e", Component.options)
   } else {
-    hotAPI.reload("data-v-14d29e22", Component.options)
+    hotAPI.reload("data-v-79db3b0e", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -132,7 +132,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 277:
+/***/ 288:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -148,7 +148,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ 278:
+/***/ 289:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -163,21 +163,21 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-14d29e22", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-79db3b0e", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ 279:
+/***/ 290:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(280)
+var __vue_script__ = __webpack_require__(291)
 /* template */
-var __vue_template__ = __webpack_require__(281)
+var __vue_template__ = __webpack_require__(292)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -194,7 +194,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/tools/data-field/components/DetailField.vue"
+Component.options.__file = "resources/assets/js/tools/additional-data-field/components/DetailField.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -203,9 +203,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-56715412", Component.options)
+    hotAPI.createRecord("data-v-386bd3c8", Component.options)
   } else {
-    hotAPI.reload("data-v-56715412", Component.options)
+    hotAPI.reload("data-v-386bd3c8", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -217,7 +217,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 280:
+/***/ 291:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -238,89 +238,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['resourceName', 'resourceId', 'resource', 'field'],
-
-    data: function data() {
-        return {
-            resources: []
-        };
-    },
-
-    methods: {
-        /**
-         * Handle the actionExecuted event and pass it up the chain.
-         */
-        actionExecuted: function actionExecuted() {
-            this.$emit('actionExecuted');
-        }
-    }
+    props: ['resource', 'resourceName', 'resourceId', 'field']
 });
 
 /***/ }),
 
-/***/ 281:
+/***/ 292:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -329,118 +254,28 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    [
-      _c("heading", { staticClass: "mb-3" }, [_vm._v(_vm._s(_vm.field.name))]),
-      _vm._v(" "),
-      _c("card", [
+    _vm._l(_vm.field.value, function(value, key) {
+      return _c("field-wrapper", { key: key }, [
         _c(
-          "table",
-          {
-            staticClass: "table w-full",
-            attrs: {
-              cellpadding: "0",
-              cellspacing: "0",
-              "data-testid": "resource-table"
-            }
-          },
+          "div",
+          { staticClass: "w-1/4 py-4" },
           [
-            _c("thead", [
-              _c(
-                "tr",
-                [
-                  _c(
-                    "th",
-                    {
-                      class: {
-                        "w-16": _vm.shouldShowCheckboxes,
-                        "w-8": !_vm.shouldShowCheckboxes
-                      }
-                    },
-                    [_vm._v(" \n                ")]
-                  ),
-                  _vm._v(" "),
-                  _vm._l(_vm.fields, function(field) {
-                    return _c(
-                      "th",
-                      { class: "text-" + field.textAlign },
-                      [
-                        field.sortable
-                          ? _c(
-                              "sortable-icon",
-                              {
-                                attrs: {
-                                  "resource-name": _vm.resourceName,
-                                  "uri-key": field.attribute
-                                }
-                              },
-                              [
-                                _vm._v(
-                                  "\n                        " +
-                                    _vm._s(field.indexName) +
-                                    "\n                    "
-                                )
-                              ]
-                            )
-                          : _c("span", [
-                              _vm._v(
-                                "\n                    " +
-                                  _vm._s(field.indexName) +
-                                  "\n                "
-                              )
-                            ])
-                      ],
-                      1
-                    )
-                  }),
-                  _vm._v(" "),
-                  _c("th", [_vm._v(" ")])
-                ],
-                2
+            _c("form-label", { attrs: { for: _vm.field.name } }, [
+              _vm._v(
+                "\n                " +
+                  _vm._s(key.charAt(0).toUpperCase() + key.slice(1)) +
+                  "\n            "
               )
-            ]),
-            _vm._v(" "),
-            _c(
-              "tbody",
-              _vm._l(_vm.resources, function(resource, index) {
-                return _c("resource-table-row", {
-                  key: resource.id.value,
-                  tag: "tr",
-                  attrs: {
-                    testId: _vm.resourceName + "-items-" + index,
-                    "delete-resource": _vm.deleteResource,
-                    "restore-resource": _vm.restoreResource,
-                    resource: resource,
-                    "resource-name": _vm.resourceName,
-                    "relationship-type": _vm.relationshipType,
-                    "via-relationship": _vm.viaRelationship,
-                    "via-resource": _vm.viaResource,
-                    "via-resource-id": _vm.viaResourceId,
-                    "via-many-to-many": _vm.viaManyToMany,
-                    checked: _vm.selectedResources.indexOf(resource) > -1,
-                    "actions-are-available": _vm.actionsAreAvailable,
-                    "should-show-checkboxes": _vm.shouldShowCheckboxes,
-                    "update-selection-status": _vm.updateSelectionStatus
-                  }
-                })
-              })
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c("resource-index", {
-        attrs: {
-          "resource-name": _vm.field.resourceName,
-          "via-resource": _vm.resourceName,
-          "via-resource-id": _vm.resourceId,
-          "via-relationship": _vm.field.belongsToManyRelationship,
-          "relationship-type": "belongsToMany",
-          "load-cards": false
-        },
-        on: { actionExecuted: _vm.actionExecuted }
-      })
-    ],
-    1
+            ])
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "w-3/4 py-4" }, [
+          _vm._v("\n            " + _vm._s(value) + "\n        ")
+        ])
+      ])
+    })
   )
 }
 var staticRenderFns = []
@@ -449,21 +284,21 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-56715412", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-386bd3c8", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ 282:
+/***/ 293:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(283)
+var __vue_script__ = __webpack_require__(294)
 /* template */
-var __vue_template__ = __webpack_require__(284)
+var __vue_template__ = __webpack_require__(295)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -480,7 +315,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/tools/data-field/components/FormField.vue"
+Component.options.__file = "resources/assets/js/tools/additional-data-field/components/FormField.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -489,9 +324,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-fdc39d82", Component.options)
+    hotAPI.createRecord("data-v-dffdb316", Component.options)
   } else {
-    hotAPI.reload("data-v-fdc39d82", Component.options)
+    hotAPI.reload("data-v-dffdb316", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -503,7 +338,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 283:
+/***/ 294:
 /***/ (function(module, exports) {
 
 //
@@ -513,7 +348,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 284:
+/***/ 295:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -528,7 +363,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-fdc39d82", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-dffdb316", module.exports)
   }
 }
 

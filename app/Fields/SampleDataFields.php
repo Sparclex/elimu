@@ -3,9 +3,9 @@
 namespace App\Fields;
 
 
-use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Number;
 
-class SampleStatusField
+class SampleDataFields
 {
     public function __invoke()
     {
@@ -14,6 +14,9 @@ class SampleStatusField
                 ->loadingWhen('Pending')
                 ->failedWhen('Declined')
                 ->successWhen('Accepted')->sortable(),
+            Number::make('Cq', function () {
+                return 4.4;
+            })
         ];
     }
 }

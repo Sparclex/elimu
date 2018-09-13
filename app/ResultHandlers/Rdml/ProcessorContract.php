@@ -4,5 +4,8 @@ namespace App\ResultHandlers\Rdml;
 
 interface ProcessorContract
 {
-    public function getSampleTargets();
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function cyclesOfQuantification();
 }

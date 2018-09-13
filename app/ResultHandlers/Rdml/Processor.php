@@ -103,11 +103,12 @@ class Processor implements ProcessorContract
                     [
                         'well' => $this->determineWell(
                             $format['columns'], $format['rowLabel'], $format['columnLabel'], $react['@id']),
+                        'reactId' => $react['@id'],
                         'fluor' => $dyes[$target['dyeId']['@id']]['@id'],
                         'target' => $target['@id'],
                         'content' => $sample['type'],
                         'sample' => $sample['@id'],
-                        'Cq' => $this->computeCq($react['data']['adp'], $this->thresholds[$target['@id']]),
+                        'cq' => $this->computeCq($react['data']['adp'], $this->thresholds[$target['@id']]),
                     ]);
             }
         }
@@ -134,6 +135,24 @@ class Processor implements ProcessorContract
         }
 
         return sprintf('%02d', $number);
+    }
+
+    public function determinePosition($numberOfColumns, $rowLabel, $columnLabel, $well)
+    {
+        $offset = 1;
+        if (strtolower($rowLabel) == 'abc') {
+            $rowDigit = array_search(strtolower(substr($well, 0, 1)), $this->alphabet);
+        } else {
+            $rowDigit = (int) substr($well, 0, 2);
+            $offset = 2;
+        }
+
+        if (strtolower($columnLabel) == 'abc') {
+            $columnDigit = substr($well, $offset, 1);
+        } else {
+            $columnDigit = (int) substr($well, $offset, 2);
+        }
+        return ($rowDigit) * $numberOfColumns + $columnDigit;
     }
 
     public function getSamples()
@@ -195,6 +214,46 @@ class Processor implements ProcessorContract
         return $data;
     }
 
+    public function getChartDataFor($sampleId, $position, $target)
+    {
+        foreach ($this->getExperimentRuns() as $run) {
+            $format = $run['pcrFormat'];
+            $reactId = $this->determinePosition(
+                $format['columns'], $format['rowLabel'], $format['columnLabel'],
+                $position);
+            foreach ($run['react'] as $react) {
+                if ($react['@id'] == $reactId && $react['data']['tar']['@id'] == $target && $react['sample']['@id'] == $sampleId) {
+                    return [
+                        [
+                            'label' => $target,
+                            'data' => collect($react['data']['adp'])->map(
+                                function ($item, $key) {
+                                    return [
+                                        'x' => $key + 1,
+                                        'y' => $item['fluor']
+                                    ];
+                                }),
+                            'borderColor' => '#4099de',
+                            'backgroundColor' => '#4099de',
+                            'fill' => false,
+                            'lineTension' => 0.3,
+                        ],
+                        [
+                            'label' => 'Threshold',
+                            'data' => array_fill(0 , count($react['data']['adp']), $this->thresholds[$target]),
+                            'borderColor' => '#b3b9bf',
+                            'backgroundColor' => '#b3b9bf',
+                            'fill' => false,
+                            'lineTension' => 0.3,
+                        ]
+                    ];
+                }
+            }
+        }
+
+        return [];
+    }
+
     private function computeCq($adp, $threshold)
     {
         $lastPoint = null;
@@ -217,19 +276,6 @@ class Processor implements ProcessorContract
 
         // x = (y - b) / m
         return ($y - $b) / $slope;
-    }
-
-    /**
-     * Returns the ids of all control samples
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getControlSamples()
-    {
-        return $this->getSamples()->reject(
-            function ($sample) {
-                return $sample['type'] == 'unkn';
-            })->pluck('@id');
     }
 
     public function getSampleTargets()

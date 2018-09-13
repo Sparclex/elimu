@@ -27,6 +27,7 @@ class LimsServiceProvider extends ServiceProvider
             Nova::script('result-field', public_path('tools/result-field/js/field.js'));
             Nova::script('status-field', public_path('tools/status-field/js/field.js'));
             Nova::script('data-field', public_path('tools/data-field/js/field.js'));
+            Nova::script('data-field', public_path('tools/additional-data-field/js/field.js'));
         });
     }
 
