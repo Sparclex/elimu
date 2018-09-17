@@ -66,7 +66,7 @@ class Sample extends Resource
             Number::make('Quantity', 'quantity')->rules(
                 'nullable', 'numeric', 'existing_storage:study,sampleType')->help(
                 'Enter 0 if this sample should not be stored.'),
-            HasMany::make('Data', 'data', DataSample::class),
+            HasMany::make('Data', 'data', SampleData::class),
             BelongsToMany::make('Experiments')
         ];
     }

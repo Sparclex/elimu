@@ -35,15 +35,6 @@
     <sample id="8181970">
         <type>unkn</type>
     </sample>
-    <sample id="NTC">
-        <type>ntc</type>
-    </sample>
-    <sample id="Pos">
-        <type>pos</type>
-    </sample>
-    <sample id="Neg">
-        <type>neg</type>
-    </sample>
     <target id="PfvarATS">
         <type>toi</type>
         <dyeId id="FAM"/>

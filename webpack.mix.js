@@ -1,5 +1,5 @@
 let mix = require('laravel-mix');
-
+let tailwindcss = require('tailwindcss');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -18,3 +18,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
     .js('resources/assets/js/tools/status-field/field.js', 'public/tools/status-field/js')
     .js('resources/assets/js/tools/data-field/field.js', 'public/tools/data-field/js')
     .js('resources/assets/js/tools/additional-data-field/field.js', 'public/tools/additional-data-field/js')
+    .options({
+        processCssUrls: false,
+        postCss: [ tailwindcss('tailwind.js') ],
+    });

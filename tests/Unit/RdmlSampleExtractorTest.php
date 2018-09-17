@@ -3,7 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\Data;
-use App\Models\DataSample;
+use App\Models\Experiment;
+use App\Models\SampleData;
 use App\Models\Sample;
 use App\Models\SampleInformation;
 use App\ResultHandlers\Rdml\Extractor;
@@ -26,7 +27,7 @@ class RdmlSampleExtractorTest extends TestCase
      */
     public function it_should_extract_one_sample_from_the_rdml()
     {
-        $data = factory(Data::class)->create();
+        $experiment = factory(Experiment::class)->create();
         $sample = factory(Sample::class)->create(
             [
                 'sample_information_id' => factory(SampleInformation::class)->create(['sample_id' => '9181971'])->id,
@@ -38,26 +39,26 @@ class RdmlSampleExtractorTest extends TestCase
                 'HsRNaseP' => 200,
                 'Pspp18S' => 200,
             ]));
-        $extractor->handle($data->id);
+        $extractor->handle($experiment->id);
         $this->assertEquals(
-            2, DataSample::where(
+            2, SampleData::where(
             [
                 'sample_id' => $sample->id,
-                'data_id' => $data->id,
+                'experiment_id' => $experiment->id,
                 'target' => 'PfvarATS',
             ])->count());
         $this->assertEquals(
-            2, DataSample::where(
+            2, SampleData::where(
             [
                 'sample_id' => $sample->id,
-                'data_id' => $data->id,
+                'experiment_id' => $experiment->id,
                 'target' => 'HsRNaseP',
             ])->count());
         $this->assertEquals(
-            2, DataSample::where(
+            2, SampleData::where(
             [
                 'sample_id' => $sample->id,
-                'data_id' => $data->id,
+                'experiment_id' => $experiment->id,
                 'target' => 'Pspp18S',
             ])->count());
     }
@@ -67,7 +68,7 @@ class RdmlSampleExtractorTest extends TestCase
      */
     public function it_should_extract_multiple_sample_from_the_rdml()
     {
-        $data = factory(Data::class)->create();
+        $experiment = factory(Experiment::class)->create();
         $sample1 = factory(Sample::class)->create(
             [
                 'sample_information_id' => factory(SampleInformation::class)->create(['sample_id' => '6181968'])->id,
@@ -91,29 +92,29 @@ class RdmlSampleExtractorTest extends TestCase
                 'HsRNaseP' => 200,
                 'Pspp18S' => 200,
             ]));
-        $extractor->handle($data->id);
+        $extractor->handle($experiment->id);
         $this->assertDatabaseHas(
-            'data_sample', [
+            'sample_data', [
             'sample_id' => $sample1->id,
-            'data_id' => $data->id,
+            'experiment_id' => $experiment->id,
             'target' => 'PfvarATS',
         ]);
         $this->assertDatabaseHas(
-            'data_sample', [
+            'sample_data', [
             'sample_id' => $sample2->id,
-            'data_id' => $data->id,
+            'experiment_id' => $experiment->id,
             'target' => 'PfvarATS',
         ]);
         $this->assertDatabaseHas(
-            'data_sample', [
+            'sample_data', [
             'sample_id' => $sample3->id,
-            'data_id' => $data->id,
+            'experiment_id' => $experiment->id,
             'target' => 'PfvarATS',
         ]);
         $this->assertDatabaseHas(
-            'data_sample', [
+            'sample_data', [
             'sample_id' => $sample4->id,
-            'data_id' => $data->id,
+            'experiment_id' => $experiment->id,
             'target' => 'PfvarATS',
         ]);
     }
@@ -123,7 +124,7 @@ class RdmlSampleExtractorTest extends TestCase
      */
     public function it_should_inform_about_missing_samples()
     {
-        $data = factory(Data::class)->create();
+        $experiment = factory(Experiment::class)->create();
 
         $extractor = new Extractor(
             new Processor(
@@ -132,6 +133,6 @@ class RdmlSampleExtractorTest extends TestCase
                 'HsRNaseP' => 200,
                 'Pspp18S' => 200,
             ]));
-        $this->assertFalse($extractor->handle($data->id));
+        $this->assertFalse($extractor->handle($experiment->id));
     }
 }

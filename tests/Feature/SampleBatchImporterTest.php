@@ -237,4 +237,11 @@ class SampleBatchImporterTest extends NovaTest
             'position' => 1,
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_not_be_reachable_for_guests() {
+
+    }
 }

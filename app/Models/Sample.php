@@ -36,6 +36,6 @@ class Sample extends Model
 
     public function data()
     {
-        return $this->hasMany(DataSample::class);
+        return $this->hasMany(SampleData::class);
     }
 }

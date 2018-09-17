@@ -9,6 +9,6 @@ abstract class NovaTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->actingAs($this->factory(User::class)->create());
+        $this->actingAs(factory(User::class)->create());
     }
 }

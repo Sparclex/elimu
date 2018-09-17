@@ -21,10 +21,10 @@ class Extractor implements ExtractorContract
     }
 
     /**
-     * @param $dataId integer representing the data / file in the database
+     * @param $experiment integer representing the data / file in the database
      * @return boolean
      */
-    public function handle($dataId)
+    public function handle($experiment)
     {
         $sampleData = $this->manager->cyclesOfQuantification()->reject(
             function ($sample) {
@@ -38,16 +38,17 @@ class Extractor implements ExtractorContract
                 return false;
             }
             $data[] = [
-                'data' => $sample['cq'],
+                'primary_value' => $sample['cq'],
+                'secondary_value' => $sample['well'],
                 'sample_id' => $sampleIds[$sample['sample']],
                 'target' => $sample['target'],
-                'additional' => serialize(array_except($sample, ['target', 'sample', 'cq'])),
-                'data_id' => $dataId,
+                'additional' => serialize(array_except($sample, ['well', 'target', 'sample', 'cq'])),
+                'experiment_id' => $experiment,
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ];
         }
-        DB::table('data_sample')->insert($data);
+        DB::table('sample_data')->insert($data);
 
         return true;
     }

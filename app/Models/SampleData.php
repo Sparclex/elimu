@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DataSample extends Model
+class SampleData extends Model
 {
-    protected $table = 'data_sample';
+    protected $table = 'sample_data';
 
     public function data() {
         return $this->belongsTo(Data::class);
@@ -28,5 +28,8 @@ class DataSample extends Model
     }
     public function setAdditionalAttribute($value) {
         return serialize($value);
+    }
+    public function experiment() {
+        return $this->belongsTo(Experiment::class);
     }
 }

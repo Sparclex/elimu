@@ -11,12 +11,7 @@
         <firstName></firstName>
         <lastName></lastName>
         <email></email>
-        <labName>BIO-RAD LABORATORIES</labName>
-        <labAddress></labAddress>
-    </experimenter>
-    <dye id="FAM">
-        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
-    </dye>
+        <labName>BIO
     <dye id="Cy5">
         <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
     </dye>

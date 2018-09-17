@@ -60,39 +60,39 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 285);
+/******/ 	return __webpack_require__(__webpack_require__.s = 279);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 285:
+/***/ 279:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(286);
+module.exports = __webpack_require__(280);
 
 
 /***/ }),
 
-/***/ 286:
+/***/ 280:
 /***/ (function(module, exports, __webpack_require__) {
 
 Nova.booting(function (Vue, router) {
-    Vue.component('index-additional-data', __webpack_require__(287));
-    Vue.component('detail-additional-data', __webpack_require__(290));
-    Vue.component('form-additional-data', __webpack_require__(293));
+    Vue.component('index-additional-data', __webpack_require__(281));
+    Vue.component('detail-additional-data', __webpack_require__(284));
+    Vue.component('form-additional-data', __webpack_require__(287));
 });
 
 /***/ }),
 
-/***/ 287:
+/***/ 281:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(288)
+var __vue_script__ = __webpack_require__(282)
 /* template */
-var __vue_template__ = __webpack_require__(289)
+var __vue_template__ = __webpack_require__(283)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -132,7 +132,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 288:
+/***/ 282:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -148,7 +148,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ 289:
+/***/ 283:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -169,15 +169,15 @@ if (false) {
 
 /***/ }),
 
-/***/ 290:
+/***/ 284:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(291)
+var __vue_script__ = __webpack_require__(285)
 /* template */
-var __vue_template__ = __webpack_require__(292)
+var __vue_template__ = __webpack_require__(286)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -217,7 +217,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 291:
+/***/ 285:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -245,7 +245,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ 292:
+/***/ 286:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -290,15 +290,15 @@ if (false) {
 
 /***/ }),
 
-/***/ 293:
+/***/ 287:
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(294)
+var __vue_script__ = __webpack_require__(288)
 /* template */
-var __vue_template__ = __webpack_require__(295)
+var __vue_template__ = __webpack_require__(289)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -338,7 +338,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 294:
+/***/ 288:
 /***/ (function(module, exports) {
 
 //
@@ -348,7 +348,7 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ 295:
+/***/ 289:
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {

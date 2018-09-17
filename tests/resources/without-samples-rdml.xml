@@ -23,18 +23,6 @@
     <dye id="VIC">
         <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
     </dye>
-    <sample id="5181967">
-        <type>unkn</type>
-    </sample>
-    <sample id="6181968">
-        <type>unkn</type>
-    </sample>
-    <sample id="7181969">
-        <type>unkn</type>
-    </sample>
-    <sample id="8181970">
-        <type>unkn</type>
-    </sample>
     <sample id="NTC">
         <type>ntc</type>
     </sample>

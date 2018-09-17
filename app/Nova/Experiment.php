@@ -2,11 +2,13 @@
 
 namespace App\Nova;
 
+use App\Rules\DataFile;
+use App\Utility\RDML;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Trix;
 
@@ -48,19 +50,30 @@ class Experiment extends Resource
      */
     public function fields(Request $request)
     {
+
+
+        return array_merge(
+            [
+                ID::make()->hideFromIndex(),
+                BelongsTo::make('Assay')->hideWhenUpdating(),
+                BelongsTo::make('Requester', 'requester', User::class)->rules(
+                    'required', 'exists:people,id')->searchable()->hideWhenUpdating(),
+                DateTime::make('Requested at')->rules('required', 'date')->hideWhenUpdating(),
+                Trix::make('Comment')->hideFromIndex(),
+
+                BelongsToMany::make('Samples'),
+
+            ], $this->dataFields($request));
+    }
+
+    public function dataFields(Request $request)
+    {
+
         return [
-            ID::make()->hideFromIndex(),
-            BelongsTo::make('Assay'),
-            BelongsTo::make('Requester', 'requester', User::class)->rules('required', 'exists:people,id')->searchable(),
-            DateTime::make('Requested at')->rules('required', 'date'),
-            DateTime::make('Processed at')->rules('date')->hideFromIndex(),
-            BelongsTo::make('Receiver', 'receiver', User::class)->rules(
-                'required', 'exists:people,id')->searchable()->hideFromIndex(),
-            BelongsTo::make('Collector', 'collector', User::class)->rules(
-                'required', 'exists:people,id')->searchable()->hideFromIndex(),
-            Trix::make('Comment')->hideFromIndex(),
-            BelongsToMany::make('Samples'),
-            HasMany::make('Data'),
+            File::make('File')->onlyOnForms()->prunable()->store(
+                function (Request $request) {
+                    return ['file' => RDML::toXml($request->file('file'), $request->experiment)];
+                })->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
         ];
     }
 

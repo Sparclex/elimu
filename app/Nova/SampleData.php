@@ -10,16 +10,15 @@ use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
-class DataSample extends Resource
+class SampleData extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Models\DataSample';
+    public static $model = 'App\Models\SampleData';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -48,8 +47,9 @@ class DataSample extends Resource
         return [
             ID::make()->sortable()->onlyOnForms(),
             Text::make('Target')->sortable(),
-            BelongsTo::make('Assay', 'data', Data::class),
-            Text::make('Data')->sortable(),
+            BelongsTo::make('Experiment', 'experiment', Experiment::class),
+            Text::make('Data', 'primary_value')->sortable(),
+            Text::make('Additional Data', 'secondary_value')->sortable(),
             AdditionalData::make('additional'),
             Status::make('Status')
                 ->loadingWhen('Pending')

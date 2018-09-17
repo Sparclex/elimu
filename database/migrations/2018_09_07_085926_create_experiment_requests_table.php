@@ -9,7 +9,8 @@ class CreateExperimentRequestsTable extends Migration
     /**
      * Run the migrations.
      *
-     * @return void
+     * @return voidc
+     *
      */
     public function up()
     {
