@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47910c466c7c8930ac94990a48c2e9a8",
+    "content-hash": "3381448445d905363f72789060e1bcbd",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -1089,17 +1089,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "1.0.19",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:sparclex/nova.git",
-                "reference": "b74cf1c82b4b1ac3433c639f6d563b921afb3e9f"
+                "url": "git@github.com:laravel/nova.git",
+                "reference": "128428b44cacd13acd04cd9ec5c3f877c4dd7f6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/sparclex%2Fnova/repository/archive.zip?sha=b74cf1c82b4b1ac3433c639f6d563b921afb3e9f",
-                "reference": "b74cf1c82b4b1ac3433c639f6d563b921afb3e9f",
-                "shasum": ""
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-128428b44cacd13acd04cd9ec5c3f877c4dd7f6b-zip-d3f762.zip",
+                "reference": "128428b44cacd13acd04cd9ec5c3f877c4dd7f6b",
+                "shasum": "1605f542b8a65834fe380a3c5d509290e82fd0ce"
             },
             "require": {
                 "cakephp/chronos": "~1.0",
@@ -1154,7 +1154,7 @@
                 "admin",
                 "laravel"
             ],
-            "time": "2018-09-19T19:05:24+00:00"
+            "time": "2018-09-21T19:30:33+00:00"
         },
         {
             "name": "laravel/tinker",

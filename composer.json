@@ -72,8 +72,8 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://gitlab.com/sparclex/nova"
+            "type": "composer",
+            "url": "https://nova.laravel.com"
         },
         {
             "type": "path",
