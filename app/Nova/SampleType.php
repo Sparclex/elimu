@@ -33,8 +33,6 @@ class SampleType extends Resource
         'name',
     ];
 
-    public static $globallySearchable = false;
-
     public static function singularLabel()
     {
         return 'Sample Type';

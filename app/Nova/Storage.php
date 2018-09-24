@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Nova;
-
+use App\Nova\Filters\Sample;
+use App\Nova\Filters\Study;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
@@ -71,7 +72,10 @@ class Storage extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            new Study(),
+            new Sample()
+        ];
     }
 
     /**
@@ -105,6 +109,10 @@ class Storage extends Resource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query;
+        $query->getQuery()->orders = [];
+        return $query->orderBy('study_id')
+            ->orderBy('sample_type_id')
+            ->orderByDesc('box')
+            ->orderByDesc('position');
     }
 }

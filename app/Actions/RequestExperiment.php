@@ -28,13 +28,17 @@ class RequestExperiment extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
+        if ($models->pluck('study_id')->unique()->count() > 1) {
+            return Action::danger('Only select samples from the same study');
+        }
         $experiment = new Experiment();
         $experiment->requester_id = Auth::id();
         $experiment->requested_at = Carbon::now();
         $experiment->assay_id = $fields->assay;
+        $experiment->study_id = $models->first()->sampleInformation->study_id;
         $experiment->save();
         $experiment->samples()->saveMany($models);
-        Action::redirect(Nova::path(). "/resources/experiments/".$experiment->id);
+        return Action::redirect(Nova::path() . "/resources/experiments/" . $experiment->id);
     }
 
     /**
@@ -44,9 +48,10 @@ class RequestExperiment extends Action
      */
     public function fields()
     {
-
         return [
-            Select::make('Assay')->options(Assay::pluck('name', 'id'))->rules('required', 'exists:assays,id'),
+            Select::make('Assay')
+                ->options(Assay::pluck('name', 'id'))
+                ->rules('required', 'exists:assays,id'),
         ];
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Nova;
 
 use App\Actions\ChangeValidationStatus;
+use App\Actions\GenerateReport;
 use App\Actions\RequestExperiment;
 use App\Fields\Data;
 use App\Fields\DataPanel;
+use App\Fields\DownloadReport;
 use App\Fields\SampleDataFields;
 use App\Fields\SampleStatusField;
 use Illuminate\Http\Request;
@@ -18,6 +20,7 @@ use Laravel\Nova\Panel;
 
 class Sample extends Resource
 {
+    public static $globallySearchable = false;
     /**
      * The model the resource corresponds to.
      *
@@ -30,9 +33,7 @@ class Sample extends Resource
      *
      * @var array
      */
-    public static $search = [
-        'subject_id',
-    ];
+    public static $search = [];
 
     public function title()
     {
@@ -53,19 +54,18 @@ class Sample extends Resource
     public function fields(Request $request)
     {
         $sampleInformationId = $request->get('sampleInformation');
-        $studyId = $request->get('study');
 
         return [
             ID::make()->sortable()->hideFromIndex()->hideFromDetail(),
-            BelongsTo::make('Study')->searchable()->rules('required', 'exists:studies,id'),
             BelongsTo::make('Type', 'sampleType', SampleType::class)->rules(
-                'required', 'exists:sample_types,id',
-                'unique:samples,sample_type_id,NULL,id,sample_information_id,'.$sampleInformationId.',study_id,'.$studyId),
+                'required',
+                'unique:samples,sample_type_id,NULL,id,sample_information_id,'.$sampleInformationId),
             BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)->rules(
-                'required', 'exists:sample_informations,id'),
+                'required'),
             Number::make('Quantity', 'quantity')->rules(
                 'nullable', 'numeric', 'existing_storage:study,sampleType')->help(
                 'Enter 0 if this sample should not be stored.'),
+            DownloadReport::make($this->id),
             HasMany::make('Data', 'data', SampleData::class),
             BelongsToMany::make('Experiments')
         ];

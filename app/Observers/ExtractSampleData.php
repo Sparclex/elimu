@@ -10,6 +10,7 @@ class ExtractSampleData
 {
     public function __construct($model)
     {
+        dump($model->file);
         if(!$model->file) {
             return;
         }

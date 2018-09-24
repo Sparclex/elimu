@@ -28,7 +28,7 @@ class Experiment extends Resource
      */
     public function title()
     {
-        return "Experiment: ".$this->id." (".$this->assay->name.")";
+        return "Experiment: " . $this->id . " (" . $this->assay->name . ")";
     }
 
     /**
@@ -52,28 +52,22 @@ class Experiment extends Resource
     {
 
 
-        return array_merge(
-            [
-                ID::make()->hideFromIndex(),
-                BelongsTo::make('Assay')->hideWhenUpdating(),
-                BelongsTo::make('Requester', 'requester', User::class)->rules(
-                    'required', 'exists:people,id')->searchable()->hideWhenUpdating(),
-                DateTime::make('Requested at')->rules('required', 'date')->hideWhenUpdating(),
-                Trix::make('Comment')->hideFromIndex(),
-
-                BelongsToMany::make('Samples'),
-
-            ], $this->dataFields($request));
-    }
-
-    public function dataFields(Request $request)
-    {
-
         return [
+            ID::make()->hideFromIndex(),
+            BelongsTo::make('Assay')->hideWhenUpdating(),
+            BelongsTo::make('Requester', 'requester', User::class)->rules(
+                'required', 'exists:people,id')->searchable()->hideWhenUpdating(),
+            DateTime::make('Requested at')->rules('required', 'date')->hideWhenUpdating(),
+            Trix::make('Comment')->hideFromIndex(),
+
+            BelongsToMany::make('Samples'),
             File::make('File')->onlyOnForms()->prunable()->store(
                 function (Request $request) {
-                    return ['file' => RDML::toXml($request->file('file'), $request->experiment)];
+                    $file = RDML::toXml($request->file('file'));
+                    dump($file);
+                    return ['file' => $file];
                 })->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
+
         ];
     }
 

@@ -16,6 +16,7 @@ class CreateExperimentsTable extends Migration
         Schema::create(
             'experiments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('study_id')->unsigned();
             $table->bigInteger('assay_id')->unsigned();
             $table->timestamp('requested_at')->nullable();
             $table->text('comment')->nullable();
@@ -24,6 +25,7 @@ class CreateExperimentsTable extends Migration
             $table->timestamps();
 
             $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
             $table->foreign('requester_id')->references('id')->on('users')->onDelete('SET NULL');
         });
     }

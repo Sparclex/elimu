@@ -5,6 +5,7 @@ namespace App\Utility;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 
 class RDML
@@ -52,17 +53,17 @@ class RDML
      * @return string
      * @throws \Exception
      */
-    public static function toXml(UploadedFile $file, $id)
+    public static function toXml(UploadedFile $file)
     {
         $zip = new \ZipArchive();
         if ($zip->open($file->getRealPath()) !== true) {
             throw new \Exception('Cannot unpack the rdml file');
         }
-        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $zip->extractTo(storage_path('app/experiment-data/'.$id), [$filename.".xml"]);
+        $storagePath = 'experiment-data/'.Str::random(40);
+        $zip->extractTo(storage_path('app/'.$storagePath));
         $zip->close();
-
-        return 'experiment-data/'.$id.'/'.$filename.".xml";
+        $file = Storage::files($storagePath)[0];
+        return $file;
     }
 
     public function isValid()

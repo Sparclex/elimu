@@ -13,6 +13,10 @@ class SampleInformation extends Model
     ];
 
     protected $fillable = [
-        'sample_id', 'subject_id', 'collected_at', 'visit_id'
+        'sample_id', 'subject_id', 'collected_at', 'visit_id', 'study_id'
     ];
+
+    public function study() {
+        return $this->belongsTo(Study::class);
+    }
 }

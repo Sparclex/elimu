@@ -4,9 +4,7 @@ namespace App\Providers;
 
 use App\Models\Sample;
 use App\Observers\AutoStorageSaver;
-use App\Manager;
 use App\ResultHandlers\Rdml\ProcessorContract;
-use App\Rules\StorageSizeExists;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
@@ -21,13 +19,9 @@ class LimsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Validator::extend('existing_storage', StorageSizeExists::class."@validate");
         Sample::observe(AutoStorageSaver::class);
         Nova::serving(function (ServingNova $event) {
-            Nova::script('result-field', public_path('tools/result-field/js/field.js'));
-            Nova::script('status-field', public_path('tools/status-field/js/field.js'));
-            Nova::script('data-field', public_path('tools/data-field/js/field.js'));
-            Nova::script('data-field', public_path('tools/additional-data-field/js/field.js'));
+            Nova::script('custom-tools', public_path('js/custom-tools.js'));
         });
     }
 

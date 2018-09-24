@@ -13,6 +13,7 @@ use Laravel\Nova\Fields\Text;
 
 class SampleData extends Resource
 {
+    public static $globallySearchable = false;
     /**
      * The model the resource corresponds to.
      *
@@ -32,9 +33,7 @@ class SampleData extends Resource
      *
      * @var array
      */
-    public static $search = [
-        'id',
-    ];
+    public static $search = [];
 
     /**
      * Get the fields displayed by the resource.

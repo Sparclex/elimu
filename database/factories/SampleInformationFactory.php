@@ -8,5 +8,8 @@ $factory->define(\App\Models\SampleInformation::class, function (Faker $faker) {
         'sample_id' => $faker->unique->md5,
         'collected_at' => $faker->dateTimeThisYear,
         'visit_id' => $faker->randomElement(['V1', 'V2', 'V2+14', 'CH+14']),
+        'study_id' => function () {
+            return factory(\App\Models\Study::class)->create()->id;
+        }
     ];
 });

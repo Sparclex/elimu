@@ -10,9 +10,6 @@ $factory->define(\App\Models\Sample::class, function (Faker $faker) {
         'sample_information_id' => function() {
             return factory(\App\Models\SampleInformation::class)->create()->id;
         },
-        'study_id' => function() {
-            return factory(\App\Models\Study::class)->create()->id;
-        },
         'quantity' => $faker->randomNumber(1)
     ];
 });

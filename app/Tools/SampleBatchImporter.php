@@ -15,7 +15,6 @@ class SampleBatchImporter extends Tool
      */
     public function boot()
     {
-        Nova::script('Lims', public_path('tools/sample-batch-importer/js/tool.js'));
     }
 
     /**
