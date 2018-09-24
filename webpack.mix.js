@@ -13,11 +13,7 @@ let tailwindcss = require('tailwindcss');
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
-    .js('resources/assets/js/tools/sample-batch-importer/tool.js', 'public/tools/sample-batch-importer/js')
-    .js('resources/assets/js/tools/result-field/field.js', 'public/tools/result-field/js')
-    .js('resources/assets/js/tools/status-field/field.js', 'public/tools/status-field/js')
-    .js('resources/assets/js/tools/data-field/field.js', 'public/tools/data-field/js')
-    .js('resources/assets/js/tools/additional-data-field/field.js', 'public/tools/additional-data-field/js')
+    .js('resources/assets/js/tools/custom-tools', 'public/js')
     .options({
         processCssUrls: false,
         postCss: [ tailwindcss('tailwind.js') ],

@@ -1,0 +1,6 @@
+require('./additional-data-field/field')
+require('./data-field/field')
+require('./download-report-field/field')
+require('./result-field/field')
+require('./sample-batch-importer/tool')
+require('./status-field/field')
