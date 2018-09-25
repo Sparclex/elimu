@@ -2,25 +2,25 @@
 
 namespace App\Nova;
 
-use App\Actions\ChangeValidationStatus;
-use App\Actions\GenerateReport;
 use App\Actions\RequestExperiment;
-use App\Fields\Data;
+use App\Exports\SampleExport;
 use App\Fields\DataPanel;
 use App\Fields\DownloadReport;
-use App\Fields\SampleDataFields;
 use App\Fields\SampleStatusField;
+use App\Nova\Lenses\SampleRegistry;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Panel;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Sample extends Resource
 {
     public static $globallySearchable = false;
+
+    public static $with = ['sampleInformation'];
     /**
      * The model the resource corresponds to.
      *
@@ -37,12 +37,12 @@ class Sample extends Resource
 
     public function title()
     {
-        return "Brady Nr. ".$this->sampleInformation->sample_id;
+        return "Brady Nr. " . $this->sampleInformation->sample_id;
     }
 
     public function subtitle()
     {
-        return 'Study: ('.$this->study->study_id.') '.$this->study->name;
+        return 'Study: (' . $this->sampleInformation->study->study_id . ') ' . $this->sampleInformation->study->name;
     }
 
     /**
@@ -59,7 +59,7 @@ class Sample extends Resource
             ID::make()->sortable()->hideFromIndex()->hideFromDetail(),
             BelongsTo::make('Type', 'sampleType', SampleType::class)->rules(
                 'required',
-                'unique:samples,sample_type_id,NULL,id,sample_information_id,'.$sampleInformationId),
+                'unique:samples,sample_type_id,NULL,id,sample_information_id,' . $sampleInformationId),
             BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)->rules(
                 'required'),
             Number::make('Quantity', 'quantity')->rules(
@@ -101,7 +101,9 @@ class Sample extends Resource
      */
     public function lenses(Request $request)
     {
-        return [];
+        return [
+            new SampleRegistry()
+        ];
     }
 
     /**
@@ -112,6 +114,9 @@ class Sample extends Resource
      */
     public function actions(Request $request)
     {
-        return [new RequestExperiment()];
+        return [
+            new RequestExperiment(),
+            (new DownloadExcel())->withHeadings()
+        ];
     }
 }

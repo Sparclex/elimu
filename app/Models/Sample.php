@@ -2,12 +2,20 @@
 
 namespace App\Models;
 
-
+use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Sample extends Model
 {
     protected $fillable = ['sample_type_id', 'sample_information_id', 'study_id', 'quantity'];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy('sampleInformation'));
+    }
 
     public function study()
     {

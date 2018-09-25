@@ -17,14 +17,14 @@ class CreateExperimentsTable extends Migration
             'experiments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('study_id')->unsigned();
-            $table->bigInteger('assay_id')->unsigned();
+            $table->bigInteger('reagent_id')->unsigned();
             $table->timestamp('requested_at')->nullable();
+            $table->bigInteger('requester_id')->unsigned()->nullable();
             $table->text('comment')->nullable();
-            $table->unsignedBigInteger('requester_id')->nullable();
             $table->string('file')->nullable();
             $table->timestamps();
 
-            $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
+            $table->foreign('reagent_id')->references('id')->on('reagents')->onDelete('CASCADE');
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
             $table->foreign('requester_id')->references('id')->on('users')->onDelete('SET NULL');
         });

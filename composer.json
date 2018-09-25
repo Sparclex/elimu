@@ -9,6 +9,7 @@
     "type": "project",
     "require": {
         "php": "^7.1.3",
+        "ext-zip": "*",
         "alexbowers/nova-prepopulate-searchable": "^1.0",
         "barryvdh/laravel-dompdf": "^0.8.3",
         "epartment/nova-dependency-container": "^1.1",
@@ -16,10 +17,10 @@
         "laravel/framework": "5.7.*",
         "laravel/nova": "*",
         "laravel/tinker": "^1.0",
+        "maatwebsite/laravel-nova-excel": "^1.0",
         "nathanmac/parser": "^4.3",
         "sparclex/select-has-many": "*",
-        "tightenco/nova-releases": "^0.1.2",
-        "ext-zip": "*"
+        "tightenco/nova-releases": "^0.1.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",

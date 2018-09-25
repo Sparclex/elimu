@@ -2,14 +2,15 @@
 
 namespace App\Policies;
 
+use App\Models\Storage;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StoragePolicy
 {
-    use HandlesAuthorization;
+    use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function delete(User $user) {
-        return true;
+    public function view(User $user, Storage $storage) {
+        return $user->study_id == $storage->study_id;
     }
 }

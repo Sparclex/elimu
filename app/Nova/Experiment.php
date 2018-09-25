@@ -14,6 +14,8 @@ use Laravel\Nova\Fields\Trix;
 
 class Experiment extends Resource
 {
+    public static $with = ['reagent', 'reagent.assay', 'requester'];
+
     /**
      * The model the resource corresponds to.
      *
@@ -28,7 +30,7 @@ class Experiment extends Resource
      */
     public function title()
     {
-        return "Experiment: " . $this->id . " (" . $this->assay->name . ")";
+        return "Experiment: " . $this->id . " (" . $this->reagent->assay->name . ")";
     }
 
     /**
@@ -54,7 +56,8 @@ class Experiment extends Resource
 
         return [
             ID::make()->hideFromIndex(),
-            BelongsTo::make('Assay')->hideWhenUpdating(),
+            BelongsTo::make('Assay', 'reagent', Reagent::class)->hideWhenUpdating(),
+            BelongsTo::make('Study')->onlyOnDetail(),
             BelongsTo::make('Requester', 'requester', User::class)->rules(
                 'required', 'exists:people,id')->searchable()->hideWhenUpdating(),
             DateTime::make('Requested at')->rules('required', 'date')->hideWhenUpdating(),

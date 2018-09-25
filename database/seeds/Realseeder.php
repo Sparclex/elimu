@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Experiment;
+use App\Models\Reagent;
 use App\Models\Sample;
 use App\Models\SampleInformation;
 use App\Models\Storage;
@@ -17,8 +18,8 @@ class Realseeder extends Seeder
      */
     public function run()
     {
-        $assay = factory(\App\Models\Assay::class)->create();
-
+        $reagent = factory(Reagent::class)->create();
+        $assay = $reagent->assay;
         $this->call(UserSeeder::class);
         $study = factory(Study::class)->create();
         $sampleType = factory(\App\Models\SampleType::class)->create();
@@ -61,8 +62,8 @@ class Realseeder extends Seeder
         $experiment = Experiment::create(
             [
                 'study_id' => $study->id,
-                'assay_id' => 1,
                 'requester_id' => 1,
+                'reagent_id' => $reagent->id,
                 'requested_at' => Carbon::now(),
             ]);
         $experiment->samples()->saveMany([

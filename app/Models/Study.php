@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Study extends Model
 {
 
-    public function samples() {
-        return $this->hasMany(Sample::class);
+    public function sampleInformations() {
+        return $this->hasMany(SampleInformation::class);
     }
 
     public function sampleTypes() {

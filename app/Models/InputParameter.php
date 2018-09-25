@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
 
 class InputParameter extends Model
@@ -10,11 +11,20 @@ class InputParameter extends Model
         'parameters' => 'collection'
     ];
 
-    public function assay() {
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
+    public function assay()
+    {
         return $this->belongsTo(Assay::class);
     }
 
-    public function study() {
+    public function study()
+    {
         return $this->belongsTo(Study::class);
     }
 }

@@ -57,7 +57,7 @@ class InputParameter extends Resource
     {
         return [
             ID::make()->sortable()->onlyOnForms(),
-            BelongsTo::make('Study')->rules('required', 'exists:studies,id'),
+            BelongsTo::make('Study')->rules('required', 'exists:studies,id')->onlyOnDetail(),
             BelongsTo::make('Assay')->rules('required', 'exists:assays,id'),
             Text::make('Name')->rules('nullable'),
             Code::make('Parameters')->json()->hideWhenCreating()->rules('required', 'json'),

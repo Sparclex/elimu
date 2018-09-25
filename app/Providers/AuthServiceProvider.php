@@ -2,10 +2,28 @@
 
 namespace App\Providers;
 
+use App\Models\Assay;
+use App\Models\Experiment;
+use App\Models\InputParameter;
+use App\Models\Sample;
+use App\Models\SampleData;
+use App\Models\SampleInformation;
+use App\Models\SampleType;
+use App\Models\Storage;
+use App\Models\Study;
+use App\Policies\AssayPolicy;
+use App\Policies\ExperimentPolicy;
+use App\Policies\InputParameterPolicy;
+use App\Policies\SampleDataPolicy;
+use App\Policies\SampleInformationPolicy;
+use App\Policies\SamplePolicy;
+use App\Policies\SampleTypePolicy;
 use App\Policies\StoragePolicy;
-use App\Storage;
-use Illuminate\Support\Facades\Gate;
+use App\Policies\StudyPolicy;
+use App\Policies\UserPolicy;
+use App\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,6 +33,15 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        Assay::class => AssayPolicy::class,
+        Experiment::class => ExperimentPolicy::class,
+        InputParameter::class => InputParameterPolicy::class,
+        SampleData::class => SampleDataPolicy::class,
+        SampleInformation::class => SampleInformationPolicy::class,
+        Sample::class => SamplePolicy::class,
+        SampleType::class => SampleTypePolicy::class,
+        Study::class => StudyPolicy::class,
+        User::class => UserPolicy::class,
         Storage::class => StoragePolicy::class
     ];
 
@@ -27,6 +54,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::before(function ($user, $ability) {
+            if (in_array($user->email, [
+                'silvan.wehner@gmail.com'
+            ])) {
+                return;
+            }
+        });
     }
 }

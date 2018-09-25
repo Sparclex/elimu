@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\ExtractSampleData;
+use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,9 +20,16 @@ class Experiment extends Model
         'saved' => ExtractSampleData::class,
     ];
 
-    public function assay()
+    protected static function boot()
     {
-        return $this->belongsTo(Assay::class);
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
+    public function reagent()
+    {
+        return $this->belongsTo(Reagent::class);
     }
 
     public function samples()
@@ -37,6 +45,10 @@ class Experiment extends Model
     public function requester()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function study() {
+        return $this->belongsTo(Study::class);
     }
 
     public function getInputParametersAttribute() {

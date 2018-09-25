@@ -19,7 +19,7 @@ class AutoStorageSaver
         if ($sample->getOriginal('quantity') > $sample->quantity) {
             Storage::where([
                 'sample_id' => $sample->id,
-                'study_id' => $sample->study_id,
+                'study_id' => $sample->sampleInformation->study_id,
                 'sample_type_id' => $sample->sample_type_id
             ])->orderByDesc('id')
                 ->limit($sample->getOriginal('quantity') - $sample->quantity)
@@ -27,7 +27,7 @@ class AutoStorageSaver
         } else if ($sample->getOriginal('quantity') < $sample->quantity) {
             Storage::generateStoragePosition(
                 $sample->id,
-                $sample->study_id,
+                $sample->sampleInformation->study_id,
                 $sample->sample_type_id,
                 $sample->quantity - $sample->getOriginal('quantity'));
         }
@@ -41,6 +41,6 @@ class AutoStorageSaver
      */
     public function created(Sample $sample)
     {
-        Storage::generateStoragePosition($sample->id, $sample->study_id, $sample->sample_type_id, $sample->quantity);
+        Storage::generateStoragePosition($sample->id, $sample->sampleInformation->study_id, $sample->sample_type_id, $sample->quantity);
     }
 }

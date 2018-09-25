@@ -46,7 +46,7 @@ class Storage extends Resource
     {
         return [
             ID::make()->sortable()->onlyOnForms(),
-            BelongsTo::make('Study'),
+            BelongsTo::make('Study')->onlyOnDetail(),
             BelongsTo::make('Sample'),
             Number::make('Box'),
             Number::make('Position'),

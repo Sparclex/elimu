@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,13 @@ class Storage extends Model
     protected $table = 'storage';
 
     protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
 
     public function sample()
     {
@@ -30,29 +38,33 @@ class Storage extends Model
     {
         $size = StorageSize::sizeFor($studyId, $sampleTypeId);
 
-        if (! $size) {
+        if (!$size) {
             return false;
         }
         $storage = self::latestPosition($studyId, $sampleTypeId);
 
         $newPositions = new Collection();
-        for($i = 0; $i < $quantity; $i++) {
+        for ($i = 0; $i < $quantity; $i++) {
             $storage = $newPositions[] = $storage->nextPosition($size, $sampleId);
         }
-        if($quantity === 1) {
+        if ($quantity === 1) {
             $position = $newPositions->first();
             return $create ? $position->save() : $position;
         } else {
-            return $create ? $newPositions->each(function($position) {$position->save();}) : $newPositions;
+            return $create ? $newPositions->each(function ($position) {
+                $position->save();
+            }) : $newPositions;
         }
     }
 
-    public static function latestPosition($studyId, $sampleTypeId) {
+    public static function latestPosition($studyId, $sampleTypeId)
+    {
         return self::where('study_id', $studyId)->where('sample_type_id', $sampleTypeId)->orderByDesc('id')->first()
             ?? new Storage(['box' => 1, 'position' => 0, 'sample_type_id' => $sampleTypeId, 'study_id' => $studyId]);
     }
 
-    public function nextPosition($size, $sampleId) {
+    public function nextPosition($size, $sampleId)
+    {
         $storage = new Storage([
             'box' => 1,
             'position' => 1,
@@ -70,7 +82,8 @@ class Storage extends Model
         return $storage;
     }
 
-    public function exceedsBoxSize($size) {
+    public function exceedsBoxSize($size)
+    {
         return $this->position + 1 > $size;
     }
 }

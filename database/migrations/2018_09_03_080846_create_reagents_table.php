@@ -14,7 +14,7 @@ class CreateReagentsTable extends Migration
     public function up()
     {
         Schema::create('reagents', function (Blueprint $table) {
-            $table->bigInteger('id');
+            $table->bigIncrements('id');
             $table->string('lot')->unique();
             $table->string('name');
             $table->date('expires_at')->nullable();
