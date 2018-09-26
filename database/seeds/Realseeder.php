@@ -8,6 +8,7 @@ use App\Models\Storage;
 use App\Models\Study;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Realseeder extends Seeder
 {
@@ -18,10 +19,14 @@ class Realseeder extends Seeder
      */
     public function run()
     {
+
         $reagent = factory(Reagent::class)->create();
         $assay = $reagent->assay;
-        $this->call(UserSeeder::class);
         $study = factory(Study::class)->create();
+        $this->call(UserSeeder::class);
+        Auth::loginUsingId(1);
+        Auth::user()->study_id = $study->id;
+        Auth::user()->save();
         $sampleType = factory(\App\Models\SampleType::class)->create();
         $study->sampleTypes()->attach($sampleType->id, ['size' => 3]);
         \App\Models\InputParameter::create(

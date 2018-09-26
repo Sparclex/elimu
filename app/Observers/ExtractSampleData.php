@@ -13,8 +13,8 @@ class ExtractSampleData
         if(!$model->file) {
             return;
         }
-        $parameters = $model->assay->inputParameters()->first();
-        $thresholds = $parameters->parameters->mapWithKeys(function($row) {
+        $parameters = $model->input_parameters;
+        $thresholds = $parameters->mapWithKeys(function($row) {
             return [
                 $row['target'] => $row['threshold']
             ];

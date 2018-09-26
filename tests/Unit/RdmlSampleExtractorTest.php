@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Models\Data;
+
 use App\Models\Experiment;
-use App\Models\SampleData;
 use App\Models\Sample;
+use App\Models\SampleData;
 use App\Models\SampleInformation;
 use App\ResultHandlers\Rdml\Extractor;
 use App\ResultHandlers\Rdml\Processor;
@@ -19,7 +19,8 @@ class RdmlSampleExtractorTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Data::unsetEventDispatcher();
+
+        Sample::unsetEventDispatcher();
     }
 
     /**

@@ -67,7 +67,6 @@ class Experiment extends Resource
             File::make('File')->onlyOnForms()->prunable()->store(
                 function (Request $request) {
                     $file = RDML::toXml($request->file('file'));
-                    dump($file);
                     return ['file' => $file];
                 })->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
 
