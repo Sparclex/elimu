@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use App\Models\Study;
+use Illuminate\Routing\Controller;
 
 class StudyListController extends Controller
 {

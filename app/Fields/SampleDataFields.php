@@ -2,7 +2,6 @@
 
 namespace App\Fields;
 
-
 use Laravel\Nova\Fields\Number;
 
 class SampleDataFields

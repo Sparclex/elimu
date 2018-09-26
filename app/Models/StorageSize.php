@@ -10,23 +10,6 @@ class StorageSize extends Model
 {
     protected $fillable = ['sample_type_id', 'study_id', 'size'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
-    }
-
-    public function study()
-    {
-        return $this->belongsTo(Study::class);
-    }
-
-    public function sampleType()
-    {
-        return $this->belongsTo(SampleType::class);
-    }
-
     public static function sizeFor($study_id, $sample_type_id)
     {
         $size = self::where('study_id', $study_id)
@@ -45,5 +28,22 @@ class StorageSize extends Model
             return $names->names;
         }
         return new Collection();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
+    public function study()
+    {
+        return $this->belongsTo(Study::class);
+    }
+
+    public function sampleType()
+    {
+        return $this->belongsTo(SampleType::class);
     }
 }

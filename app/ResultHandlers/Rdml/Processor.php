@@ -52,13 +52,6 @@ class Processor implements ProcessorContract
         $this->cyclesOfQuantification = collect();
     }
 
-    public function withTresholds(array $thresholds)
-    {
-        $this->thresholds = $thresholds;
-
-        return $this;
-    }
-
     /**
      * Creates a new Rdml Manger instance
      *
@@ -68,6 +61,13 @@ class Processor implements ProcessorContract
     public static function make($rdmlFile, array $thresholds)
     {
         return (new self($rdmlFile, $thresholds))->parse();
+    }
+
+    public function withTresholds(array $thresholds)
+    {
+        $this->thresholds = $thresholds;
+
+        return $this;
     }
 
     /**
@@ -102,57 +102,23 @@ class Processor implements ProcessorContract
                 $this->cyclesOfQuantification->push(
                     [
                         'well' => $this->determineWell(
-                            $format['columns'], $format['rowLabel'], $format['columnLabel'], $react['@id']),
+                            $format['columns'],
+                            $format['rowLabel'],
+                            $format['columnLabel'],
+                            $react['@id']
+                        ),
                         'reactId' => $react['@id'],
                         'fluor' => $dyes[$target['dyeId']['@id']]['@id'],
                         'target' => $target['@id'],
                         'content' => $sample['type'],
                         'sample' => $sample['@id'],
                         'cq' => $this->computeCq($react['data']['adp'], $this->thresholds[$target['@id']]),
-                    ]);
+                    ]
+                );
             }
         }
 
         return $this->cyclesOfQuantification = $this->cyclesOfQuantification->sortBy('well')->sortByDesc('target');
-    }
-
-    private function determineWell($numberOfColumns, $rowLabel, $columnLabel, $id)
-    {
-        $id = (int) $id;
-        $column = $id % $numberOfColumns;
-        $row = (($id - $column) / $numberOfColumns) + 1;
-
-        return $this->convertNumberToLabel($rowLabel, $row).$this->convertNumberToLabel($columnLabel, $column);
-    }
-
-    private function convertNumberToLabel($label, $number)
-    {
-        if ($label === 'ABC') {
-            return strtoupper($this->alphabet[$number - 1]);
-        }
-        if ($label === 'abc') {
-            return $this->alphabet[$number - 1];
-        }
-
-        return sprintf('%02d', $number);
-    }
-
-    public function determinePosition($numberOfColumns, $rowLabel, $columnLabel, $well)
-    {
-        $offset = 1;
-        if (strtolower($rowLabel) == 'abc') {
-            $rowDigit = array_search(strtolower(substr($well, 0, 1)), $this->alphabet);
-        } else {
-            $rowDigit = (int) substr($well, 0, 2);
-            $offset = 2;
-        }
-
-        if (strtolower($columnLabel) == 'abc') {
-            $columnDigit = substr($well, $offset, 1);
-        } else {
-            $columnDigit = (int) substr($well, $offset, 2);
-        }
-        return ($rowDigit) * $numberOfColumns + $columnDigit;
     }
 
     public function getSamples()
@@ -175,83 +141,25 @@ class Processor implements ProcessorContract
         return collect($this->rdml['experiment']['run']);
     }
 
-    public function getData()
+    private function determineWell($numberOfColumns, $rowLabel, $columnLabel, $id)
     {
-        $data = [];
-        foreach ($this->getExperimentRuns() as $run) {
-            foreach ($run['react'] as $react) {
-                if (! isset($data[$react['sample']['@id']])) {
-                    $data[$react['sample']['@id']] = [];
-                }
-                $data[$react['sample']['@id']][$react['data']['tar']['@id']] = $react['data']['adp'];
-            }
-        }
+        $id = (int)$id;
+        $column = $id % $numberOfColumns;
+        $row = (($id - $column) / $numberOfColumns) + 1;
 
-        return $data;
+        return $this->convertNumberToLabel($rowLabel, $row) . $this->convertNumberToLabel($columnLabel, $column);
     }
 
-    public function getChartData()
+    private function convertNumberToLabel($label, $number)
     {
-        $data = [];
-        foreach ($this->getExperimentRuns() as $run) {
-            foreach ($run['react'] as $react) {
-                if (! isset($data[$react['sample']['@id']])) {
-                    $data[$react['sample']['@id']] = [];
-                }
-                $data[$react['sample']['@id']][] = [
-                    'label' => $react['data']['tar']['@id'],
-                    'data' => collect($react['data']['adp'])->map(
-                        function ($item) {
-                            return $item['fluor'];
-                        }),
-                    'borderColor' => 'red',
-                    'backgroundColor' => 'red',
-                    'lineTension' => 0.3,
-                ];
-            }
+        if ($label === 'ABC') {
+            return strtoupper($this->alphabet[$number - 1]);
+        }
+        if ($label === 'abc') {
+            return $this->alphabet[$number - 1];
         }
 
-        return $data;
-    }
-
-    public function getChartDataFor($sampleId, $position, $target)
-    {
-        foreach ($this->getExperimentRuns() as $run) {
-            $format = $run['pcrFormat'];
-            $reactId = $this->determinePosition(
-                $format['columns'], $format['rowLabel'], $format['columnLabel'],
-                $position);
-            foreach ($run['react'] as $react) {
-                if ($react['@id'] == $reactId && $react['data']['tar']['@id'] == $target && $react['sample']['@id'] == $sampleId) {
-                    return [
-                        [
-                            'label' => $target,
-                            'data' => collect($react['data']['adp'])->map(
-                                function ($item, $key) {
-                                    return [
-                                        'x' => $key + 1,
-                                        'y' => $item['fluor']
-                                    ];
-                                }),
-                            'borderColor' => '#4099de',
-                            'backgroundColor' => '#4099de',
-                            'fill' => false,
-                            'lineTension' => 0.3,
-                        ],
-                        [
-                            'label' => 'Threshold',
-                            'data' => array_fill(0 , count($react['data']['adp']), $this->thresholds[$target]),
-                            'borderColor' => '#b3b9bf',
-                            'backgroundColor' => '#b3b9bf',
-                            'fill' => false,
-                            'lineTension' => 0.3,
-                        ]
-                    ];
-                }
-            }
-        }
-
-        return [];
+        return sprintf('%02d', $number);
     }
 
     private function computeCq($adp, $threshold)
@@ -276,6 +184,109 @@ class Processor implements ProcessorContract
 
         // x = (y - b) / m
         return ($y - $b) / $slope;
+    }
+
+    public function getData()
+    {
+        $data = [];
+        foreach ($this->getExperimentRuns() as $run) {
+            foreach ($run['react'] as $react) {
+                if (!isset($data[$react['sample']['@id']])) {
+                    $data[$react['sample']['@id']] = [];
+                }
+                $data[$react['sample']['@id']][$react['data']['tar']['@id']] = $react['data']['adp'];
+            }
+        }
+
+        return $data;
+    }
+
+    public function getChartData()
+    {
+        $data = [];
+        foreach ($this->getExperimentRuns() as $run) {
+            foreach ($run['react'] as $react) {
+                if (!isset($data[$react['sample']['@id']])) {
+                    $data[$react['sample']['@id']] = [];
+                }
+                $data[$react['sample']['@id']][] = [
+                    'label' => $react['data']['tar']['@id'],
+                    'data' => collect($react['data']['adp'])->map(
+                        function ($item) {
+                            return $item['fluor'];
+                        }
+                    ),
+                    'borderColor' => 'red',
+                    'backgroundColor' => 'red',
+                    'lineTension' => 0.3,
+                ];
+            }
+        }
+
+        return $data;
+    }
+
+    public function getChartDataFor($sampleId, $position, $target)
+    {
+        foreach ($this->getExperimentRuns() as $run) {
+            $format = $run['pcrFormat'];
+            $reactId = $this->determinePosition(
+                $format['columns'],
+                $format['rowLabel'],
+                $format['columnLabel'],
+                $position
+            );
+            foreach ($run['react'] as $react) {
+                if ($react['@id'] == $reactId &&
+                    $react['data']['tar']['@id'] == $target && $react['sample']['@id'] == $sampleId) {
+                    return [
+                        [
+                            'label' => $target,
+                            'data' => collect($react['data']['adp'])->map(
+                                function ($item, $key) {
+                                    return [
+                                        'x' => $key + 1,
+                                        'y' => $item['fluor']
+                                    ];
+                                }
+                            ),
+                            'borderColor' => '#4099de',
+                            'backgroundColor' => '#4099de',
+                            'fill' => false,
+                            'lineTension' => 0.3,
+                        ],
+                        [
+                            'label' => 'Threshold',
+                            'data' => array_fill(0, count($react['data']['adp']), $this->thresholds[$target]),
+                            'borderColor' => '#b3b9bf',
+                            'backgroundColor' => '#b3b9bf',
+                            'fill' => false,
+                            'lineTension' => 0.3,
+                        ]
+                    ];
+                }
+            }
+        }
+
+        return [];
+    }
+
+    public function determinePosition($numberOfColumns, $rowLabel, $columnLabel, $well)
+    {
+        $offset = 1;
+        if (strtolower($rowLabel) == 'abc') {
+            $rowDigit = array_search(strtolower(substr($well, 0, 1)), $this->alphabet);
+        } else {
+            $rowDigit = (int)substr($well, 0, 2);
+            $offset = 2;
+        }
+
+        if (strtolower($columnLabel) == 'abc') {
+            $columnDigit = substr($well, $offset, 1);
+        } else {
+            $columnDigit = (int)substr($well, $offset, 2);
+        }
+        return ($rowDigit) * $numberOfColumns + $columnDigit;
     }
 
     public function getSampleTargets()

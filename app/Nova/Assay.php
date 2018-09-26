@@ -44,7 +44,10 @@ class Assay extends Resource
     {
         return [
             ID::make()->hideFromIndex(),
-            Text::make('Name')->sortable()->creationRules('required', 'unique:assays,name')->updateRules('required', 'unique:assays,name,{{resourceId}}'),
+            Text::make('Name')->sortable()->creationRules('required', 'unique:assays,name')->updateRules(
+                'required',
+                'unique:assays,name,{{resourceId}}'
+            ),
             Text::make('SOP')->rules('required'),
             HasOne::make('Input Parameters', 'inputParameters', InputParameter::class)
         ];

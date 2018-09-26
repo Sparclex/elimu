@@ -6,7 +6,8 @@ use App\User;
 
 trait OnlyAvailableForChosenStudy
 {
-    public function viewAny(User $user) {
+    public function viewAny(User $user)
+    {
         return $user->study_id;
     }
 }

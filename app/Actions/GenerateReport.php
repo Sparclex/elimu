@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Models\Sample;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -26,7 +25,6 @@ class GenerateReport extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-
     }
 
     /**
@@ -38,7 +36,7 @@ class GenerateReport extends Action
     {
         $availableAssays = [];
         dump($this->sample);
-        foreach($this->sample->experiments as $experiment) {
+        foreach ($this->sample->experiments as $experiment) {
             $availableAssays[] = $experiment->assay;
         }
         dump($availableAssays);

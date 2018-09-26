@@ -3,18 +3,12 @@
 namespace App\Actions;
 
 use App\Fields\Status;
-use App\Models\Assay;
-use App\Models\Experiment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Fields\Select;
-use Laravel\Nova\Nova;
 
 class ChangeValidationStatus extends Action
 {
@@ -29,7 +23,7 @@ class ChangeValidationStatus extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        foreach($models as $model) {
+        foreach ($models as $model) {
             $model->status = $fields->status;
             $model->save();
         }

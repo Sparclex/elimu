@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Nova;
+
 use App\Nova\Filters\Sample;
 use App\Nova\Filters\Study;
 use Illuminate\Http\Request;
@@ -35,6 +36,22 @@ class Storage extends Resource
     public static $search = [
         'id',
     ];
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        $query->getQuery()->orders = [];
+        return $query->orderBy('study_id')
+            ->orderBy('sample_type_id')
+            ->orderByDesc('box')
+            ->orderByDesc('position');
+    }
 
     /**
      * Get the fields displayed by the resource.
@@ -98,21 +115,5 @@ class Storage extends Resource
     public function actions(Request $request)
     {
         return [];
-    }
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        $query->getQuery()->orders = [];
-        return $query->orderBy('study_id')
-            ->orderBy('sample_type_id')
-            ->orderByDesc('box')
-            ->orderByDesc('position');
     }
 }

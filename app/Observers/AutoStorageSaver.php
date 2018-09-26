@@ -24,12 +24,13 @@ class AutoStorageSaver
             ])->orderByDesc('id')
                 ->limit($sample->getOriginal('quantity') - $sample->quantity)
                 ->delete();
-        } else if ($sample->getOriginal('quantity') < $sample->quantity) {
+        } elseif ($sample->getOriginal('quantity') < $sample->quantity) {
             Storage::generateStoragePosition(
                 $sample->id,
                 $sample->sampleInformation->study_id,
                 $sample->sample_type_id,
-                $sample->quantity - $sample->getOriginal('quantity'));
+                $sample->quantity - $sample->getOriginal('quantity')
+            );
         }
     }
 
@@ -41,6 +42,11 @@ class AutoStorageSaver
      */
     public function created(Sample $sample)
     {
-        Storage::generateStoragePosition($sample->id, $sample->sampleInformation->study_id, $sample->sample_type_id, $sample->quantity);
+        Storage::generateStoragePosition(
+            $sample->id,
+            $sample->sampleInformation->study_id,
+            $sample->sample_type_id,
+            $sample->quantity
+        );
     }
 }

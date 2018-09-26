@@ -12,22 +12,25 @@ class SampleType extends Model
     public static function boot()
     {
         parent::boot();
-        Pivot::creating(function(Pivot $pivot) {
-            if($pivot->getTable() == 'storage_places') {
+        Pivot::creating(function (Pivot $pivot) {
+            if ($pivot->getTable() == 'storage_places') {
                 $pivot->stores = true;
             }
         });
     }
 
-    public function samples() {
+    public function samples()
+    {
         return $this->belongsToMany(Sample::class);
     }
 
-    public function studies() {
+    public function studies()
+    {
         return $this->belongsToMany(Study::class, 'storage_sizes');
     }
 
-    public function getSizeAttribute() {
+    public function getSizeAttribute()
+    {
         return optional($this->pivot)->size;
     }
 }

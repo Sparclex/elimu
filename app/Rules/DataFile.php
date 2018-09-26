@@ -44,23 +44,12 @@ class DataFile implements Rule
                     return false;
             }
         } catch (\Exception $e) {
-            dump($e->getMessage());
             $this->message = $e->getMessage();
 
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return $this->message;
     }
 
     /**
@@ -85,11 +74,6 @@ class DataFile implements Rule
         $this->validateSampleIds(array_pluck($rdml->getSamples(), '@id'));
     }
 
-    protected function validateCsv(File $file)
-    {
-        throw new \Error();
-    }
-
     protected function validateSampleIds($sampleIds)
     {
         $existingSampleIds = DB::table('experiment_requests')
@@ -111,15 +95,30 @@ class DataFile implements Rule
         }
         $error = '';
         if (count($missingInFile)) {
-            $error .= "The following sample ids were requested for the experiment but missing in the file: " . implode(', ',
-                    $missingInFile);
+            $error .= "The following sample ids were requested for the experiment but missing in the file: " .
+                implode(', ', $missingInFile);
         }
-        if(count($missingInDb)) {
-            $error .= "The following sample ids were present in the file but not requested for this experiment: " . implode(', ',
-                    $missingInDb);
+        if (count($missingInDb)) {
+            $error .= "The following sample ids were present in the file but not requested for this experiment: " .
+                implode(', ', $missingInDb);
         }
-        if(strlen($error)) {
+        if (strlen($error)) {
             throw new \Exception($error);
         }
+    }
+
+    protected function validateCsv(File $file)
+    {
+        throw new \Error();
+    }
+
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message()
+    {
+        return $this->message;
     }
 }

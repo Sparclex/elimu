@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Study extends Model
 {
 
-    public function sampleInformations() {
+    public function sampleInformations()
+    {
         return $this->hasMany(SampleInformation::class);
     }
 
-    public function sampleTypes() {
+    public function sampleTypes()
+    {
         return $this->belongsToMany(SampleType::class, 'storage_sizes')->withPivot('size');
     }
 }

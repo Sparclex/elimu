@@ -29,12 +29,13 @@ class Extractor implements ExtractorContract
         $sampleData = $this->manager->cyclesOfQuantification()->reject(
             function ($sample) {
                 return in_array($sample['sample'], self::$conrolLabels);
-            });
+            }
+        );
         $sampleIds = $this->getDatabaseIdSampleIds($sampleData->pluck('sample')->toArray());
         $data = [];
         $createdAt = Carbon::now();
         foreach ($sampleData as $sample) {
-            if (! isset($sampleIds[$sample['sample']])) {
+            if (!isset($sampleIds[$sample['sample']])) {
                 return false;
             }
             $data[] = [
@@ -56,8 +57,14 @@ class Extractor implements ExtractorContract
     private function getDatabaseIdSampleIds($sampleIds)
     {
         return DB::table('sample_informations')->whereIn(
-            'sample_id', $sampleIds)->join(
-            'samples', ['sample_informations.id' => 'sample_information_id'])->pluck(
-            'samples.id', 'sample_informations.sample_id');
+            'sample_id',
+            $sampleIds
+        )->join(
+            'samples',
+            ['sample_informations.id' => 'sample_information_id']
+        )->pluck(
+            'samples.id',
+            'sample_informations.sample_id'
+        );
     }
 }

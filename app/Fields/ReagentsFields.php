@@ -32,7 +32,8 @@ class ReagentsFields extends Field
         ];
     }
 
-    public function getRules(NovaRequest $request) {
+    public function getRules(NovaRequest $request)
+    {
         return [
             'form.assay' => 'required|exists:assays,id',
             'form.useExisting' => 'required|boolean',

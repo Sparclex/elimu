@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Tools\SampleBatchImporter;
-use Laravel\Nova\Nova;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -20,6 +20,28 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     }
 
     /**
+     * Get the tools that should be listed in the Nova sidebar.
+     *
+     * @return array
+     */
+    public function tools()
+    {
+        return [
+            new SampleBatchImporter,
+        ];
+    }
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
      * Register the Nova routes.
      *
      * @return void
@@ -27,9 +49,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-                ->withAuthenticationRoutes()
-                ->withPasswordResetRoutes()
-                ->register();
+            ->withAuthenticationRoutes()
+            ->withPasswordResetRoutes()
+            ->register();
     }
 
     /**
@@ -56,27 +78,5 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return [
             new \Tightenco\NovaReleases\LatestRelease,
         ];
-    }
-
-    /**
-     * Get the tools that should be listed in the Nova sidebar.
-     *
-     * @return array
-     */
-    public function tools()
-    {
-        return [
-            new SampleBatchImporter,
-        ];
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }

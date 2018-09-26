@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class Sample extends Model
 {

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Experiment;
 use App\Models\Sample;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Laravel\Nova\Actions\Action;
 
 class SampleReportController extends Controller
@@ -19,12 +18,13 @@ class SampleReportController extends Controller
         return Action::download(route('report-download', compact('experiment', 'sample')), 'report.pdf');
     }
 
-    public function download(Sample $sample, Experiment $experiment) {
+    public function download(Sample $sample, Experiment $experiment)
+    {
         $sampleData = $sample->data()->where('experiment_id', $experiment->id)->get();
         abort_if(!$sampleData, 404);
         return \PDF::loadView('pdfs.sample-report', compact('sample', 'sampleData', 'experiment'))
             ->setPaper('a4', 'landscape')
             ->stream('experiment-report_sample-' . $sample->sampleInformation->sample_id
-                . '_experiment-'.$experiment->assay->name.'-'.$experiment->id.'.pdf');
+                . '_experiment-' . $experiment->assay->name . '-' . $experiment->id . '.pdf');
     }
 }

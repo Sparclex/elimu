@@ -12,28 +12,6 @@ class Storage extends Model
 
     protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
-    }
-
-    public function sample()
-    {
-        return $this->belongsTo(Sample::class);
-    }
-
-    public function sampleType()
-    {
-        return $this->belongsTo(SampleType::class);
-    }
-
-    public function study()
-    {
-        return $this->belongsTo(Study::class);
-    }
-
     public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
         $size = StorageSize::sizeFor($studyId, $sampleTypeId);
@@ -80,6 +58,28 @@ class Storage extends Model
             $storage->position = $this->position + 1;
         }
         return $storage;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
+    public function sample()
+    {
+        return $this->belongsTo(Sample::class);
+    }
+
+    public function sampleType()
+    {
+        return $this->belongsTo(SampleType::class);
+    }
+
+    public function study()
+    {
+        return $this->belongsTo(Study::class);
     }
 
     public function exceedsBoxSize($size)

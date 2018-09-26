@@ -10,11 +10,11 @@ class ExtractSampleData
 {
     public function __construct($model)
     {
-        if(!$model->file) {
+        if (!$model->file) {
             return;
         }
         $parameters = $model->input_parameters;
-        $thresholds = $parameters->mapWithKeys(function($row) {
+        $thresholds = $parameters->mapWithKeys(function ($row) {
             return [
                 $row['target'] => $row['threshold']
             ];

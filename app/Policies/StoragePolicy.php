@@ -10,7 +10,8 @@ class StoragePolicy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, Storage $storage) {
+    public function view(User $user, Storage $storage)
+    {
         return $user->study_id == $storage->study_id;
     }
 }

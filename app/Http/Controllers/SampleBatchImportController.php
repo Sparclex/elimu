@@ -17,15 +17,17 @@ class SampleBatchImportController extends Controller
     public function handle(Request $request)
     {
         $data = $this->validate(
-            $request, [
-            'study' => 'required|exists:studies,id',
-            'samples.*.sampleId' => 'required',
-            'samples.*.subjectId' => 'required',
-            'samples.*.collectionDate' => 'required|date_format:Y-m-d H:i',
-            'samples.*.visitId' => 'required|string',
-            'samples.*.quantity' => 'nullable|numeric',
-            'samples.*.sampleType' => 'required|string',
-        ], [
+            $request,
+            [
+                'study' => 'required|exists:studies,id',
+                'samples.*.sampleId' => 'required',
+                'samples.*.subjectId' => 'required',
+                'samples.*.collectionDate' => 'required|date_format:Y-m-d H:i',
+                'samples.*.visitId' => 'required|string',
+                'samples.*.quantity' => 'nullable|numeric',
+                'samples.*.sampleType' => 'required|string',
+            ],
+            [
                 'samples.*.sampleid' => [
                     'required' => 'Column sampleId is missing',
                 ],
@@ -44,13 +46,15 @@ class SampleBatchImportController extends Controller
                 'samples.*.sampleType' => [
                     'required' => 'Column sampleType is missing',
                 ],
-            ]);
+            ]
+        );
         $samples = collect($data['samples']);
-        $sampleTypes = $samples->pluck('sampleType')->map(function($item) {
+        $sampleTypes = $samples->pluck('sampleType')->map(function ($item) {
             return trim($item);
         })->unique();
         $newSampleTypes = $sampleTypes->diff(
-            SampleType::whereIn('name', $sampleTypes->toArray())->pluck('name'));
+            SampleType::whereIn('name', $sampleTypes->toArray())->pluck('name')
+        );
         foreach ($newSampleTypes as $type) {
             SampleType::create(['name' => $type]);
         }
@@ -59,23 +63,27 @@ class SampleBatchImportController extends Controller
             $sampleInformations = SampleInformation::firstOrCreate(
                 [
                     'sample_id' => $sample['sampleId'],
-                ], [
+                ],
+                [
                     'subject_id' => $sample['subjectId'],
                     'collected_at' => Carbon::createFromFormat('Y-m-d H:i', $sample['collectionDate']),
                     'visit_id' => $sample['visitId']
-                ]);
+                ]
+            );
             Sample::firstOrCreate(
                 [
                     'sample_type_id' => $storedSampleTypes[$sample['sampleType']],
                     'sample_information_id' => $sampleInformations->id,
                     'study_id' => $data['study'],
-                ], [
+                ],
+                [
                     'quantity' => $sample['quantity'],
-                ]);
+                ]
+            );
         }
 
         return [
-            'message' => count($samples)." samples successfully imported",
+            'message' => count($samples) . " samples successfully imported",
             'sampleTypes' => $storedSampleTypes,
         ];
     }

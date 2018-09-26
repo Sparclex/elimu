@@ -12,11 +12,13 @@ class Reagent extends Model
         'expires_at'
     ];
 
-    public function assay() {
+    public function assay()
+    {
         return $this->belongsTo(Assay::class);
     }
 
-    public function experiments() {
+    public function experiments()
+    {
         return $this->hasMany(Experiment::class);
     }
 }

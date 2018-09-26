@@ -2,10 +2,7 @@
 
 namespace App\Nova\Lenses;
 
-use App\Nova\SampleType;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -35,10 +32,10 @@ class SampleRegistry extends Lens
                 'position',
                 'box'
             ])
-            ->join('storage', 'samples.id', '=', 'storage.sample_id')
-            ->join('sample_informations', 'samples.sample_information_id', 'sample_informations.id')
-            ->join('studies', 'studies.id', 'sample_informations.study_id')
-            ->join('sample_types', 'sample_types.id', 'samples.sample_type_id')
+                ->join('storage', 'samples.id', '=', 'storage.sample_id')
+                ->join('sample_informations', 'samples.sample_information_id', 'sample_informations.id')
+                ->join('studies', 'studies.id', 'sample_informations.study_id')
+                ->join('sample_types', 'sample_types.id', 'samples.sample_type_id')
         ));
     }
 

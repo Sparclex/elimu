@@ -14,5 +14,5 @@ abstract class ResultHandler
         $this->parameters = $parameters;
     }
 
-    public abstract function handle();
+    abstract public function handle();
 }

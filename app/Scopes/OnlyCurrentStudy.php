@@ -28,11 +28,10 @@ class OnlyCurrentStudy implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        if($this->relation) {
+        if ($this->relation) {
             $builder->whereHas($this->relation);
         } else {
             $builder->where('study_id', Auth::user()->study_id);
         }
-
     }
 }

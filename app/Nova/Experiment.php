@@ -22,6 +22,15 @@ class Experiment extends Resource
      * @var string
      */
     public static $model = 'App\Models\Experiment';
+    /**
+     * The columns that should be searched.
+     *
+     * @var array
+     */
+    public static $search = [
+        'name',
+    ];
+    public static $globallySearchable = false;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -32,17 +41,6 @@ class Experiment extends Resource
     {
         return "Experiment: " . $this->id . " (" . $this->reagent->assay->name . ")";
     }
-
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
-    public static $search = [
-        'name',
-    ];
-
-    public static $globallySearchable = false;
 
     /**
      * Get the fields displayed by the resource.
@@ -59,7 +57,9 @@ class Experiment extends Resource
             BelongsTo::make('Assay', 'reagent', Reagent::class)->hideWhenUpdating(),
             BelongsTo::make('Study')->onlyOnDetail(),
             BelongsTo::make('Requester', 'requester', User::class)->rules(
-                'required', 'exists:people,id')->searchable()->hideWhenUpdating(),
+                'required',
+                'exists:people,id'
+            )->searchable()->hideWhenUpdating(),
             DateTime::make('Requested at')->rules('required', 'date')->hideWhenUpdating(),
             Trix::make('Comment')->hideFromIndex(),
 
@@ -68,7 +68,8 @@ class Experiment extends Resource
                 function (Request $request) {
                     $file = RDML::toXml($request->file('file'));
                     return ['file' => $file];
-                })->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
+                }
+            )->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
 
         ];
     }

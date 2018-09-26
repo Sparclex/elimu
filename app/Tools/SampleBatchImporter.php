@@ -2,8 +2,6 @@
 
 namespace App\Tools;
 
-
-use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
 
 class SampleBatchImporter extends Tool

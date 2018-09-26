@@ -2,17 +2,13 @@
 
 namespace App\Nova;
 
+use App\Fields\HtmlReadonly;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Trix;
-use App\Fields\HtmlReadonly;
 
 class SampleInformation extends Resource
 {
@@ -31,18 +27,6 @@ class SampleInformation extends Resource
     public static $search = [
     ];
 
-
-
-    public function title()
-    {
-        return "Sample ID ".$this->sample_id;
-    }
-
-    public function subtitle()
-    {
-        return 'Study: ('.$this->study->study_id.') '.$this->study->name;
-    }
-
     public static function label()
     {
         return 'Sample Informations';
@@ -51,6 +35,16 @@ class SampleInformation extends Resource
     public static function singularLabel()
     {
         return 'Sample Information';
+    }
+
+    public function title()
+    {
+        return "Sample ID " . $this->sample_id;
+    }
+
+    public function subtitle()
+    {
+        return 'Study: (' . $this->study->study_id . ') ' . $this->study->name;
     }
 
     /**

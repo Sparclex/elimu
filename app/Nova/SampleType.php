@@ -42,6 +42,7 @@ class SampleType extends Resource
     {
         return 'Sample Types';
     }
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -52,7 +53,10 @@ class SampleType extends Resource
     {
         return [
             ID::make()->sortable()->onlyOnForms(),
-            Text::make('Name')->sortable()->creationRules('required', 'unique:sample_types,name')->updateRules('required', 'unique:sample_types,name,{{resourceId}}'),
+            Text::make('Name')->sortable()->creationRules(
+                'required',
+                'unique:sample_types,name'
+            )->updateRules('required', 'unique:sample_types,name,{{resourceId}}'),
             BelongsToMany::make('Study', 'studies', Study::class)->fields(new StorageSizeField)
         ];
     }

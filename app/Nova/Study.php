@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 
 class Study extends Resource
@@ -32,7 +31,7 @@ class Study extends Resource
 
     public function title()
     {
-        return $this->study_id.": ".str_limit($this->name, 20);
+        return $this->study_id . ": " . str_limit($this->name, 20);
     }
 
     /**
@@ -45,8 +44,14 @@ class Study extends Resource
     {
         return [
             ID::make()->hideFromDetail()->hideFromIndex(),
-            Text::make('Study ID')->sortable()->creationRules('required', 'unique:studies,study_id')->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
-            Text::make('Name')->sortable()->creationRules('required', 'unique:studies,name')->updateRules('required', 'unique:studies,name,{{resourceId}}'),
+            Text::make('Study ID')->sortable()->creationRules(
+                'required',
+                'unique:studies,study_id'
+            )->updateRules('required', 'unique:studies,study_id,{{resourceId}}'),
+            Text::make('Name')->sortable()->creationRules('required', 'unique:studies,name')->updateRules(
+                'required',
+                'unique:studies,name,{{resourceId}}'
+            ),
             HasMany::make('SampleInformations'),
             BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)->fields(new StorageSizeField)
         ];

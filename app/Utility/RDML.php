@@ -40,30 +40,11 @@ class RDML
     public static function make(File $file, $validate = true)
     {
         $rdml = new self($file);
-        if (! $validate) {
+        if (!$validate) {
             return $rdml;
         }
 
         return $rdml->isValid() ? $rdml : null;
-    }
-
-    /**
-     * @param \Illuminate\Http\UploadedFile $file
-     * @param $id
-     * @return string
-     * @throws \Exception
-     */
-    public static function toXml(UploadedFile $file)
-    {
-        $zip = new \ZipArchive();
-        if ($zip->open($file->getRealPath()) !== true) {
-            throw new \Exception('Cannot unpack the rdml file');
-        }
-        $storagePath = 'experiment-data/'.Str::random(40);
-        $zip->extractTo(storage_path('app/'.$storagePath));
-        $zip->close();
-        $file = Storage::files($storagePath)[0];
-        return $file;
     }
 
     public function isValid()
@@ -102,7 +83,7 @@ class RDML
         ];
         $availableKeys = array_keys($this->getData());
         foreach ($requiredKeys as $key) {
-            if (! in_array($key, $availableKeys)) {
+            if (!in_array($key, $availableKeys)) {
                 return false;
             }
         }
@@ -110,36 +91,14 @@ class RDML
         return true;
     }
 
-    public function validateValues()
+    public function getData()
     {
-        return self::atLeastOneSampleExists() && self::allControlsExist();
-    }
-
-    public function atLeastOneSampleExists()
-    {
-        return count(
-                array_filter(
-                    $this->getData()['sample'], function ($sample) {
-                    return ! in_array(strtolower($sample['@id']), self::CONTROL_IDS);
-                })) > 0;
-    }
-
-    public function allControlsExist()
-    {
-        return count(
-                array_filter(
-                    $this->getData()['sample'], function ($sample) {
-                    return in_array(strtolower($sample['@id']), self::CONTROL_IDS);
-                })) === count(self::CONTROL_IDS);
-    }
-
-    public function getData() {
-        if(!$this->data) {
+        if (!$this->data) {
             $zip = new \ZipArchive();
             if ($zip->open($this->file->getRealPath()) !== true) {
                 return [];
             }
-            $zip->extractTo(storage_path('app/'.self::TMP_ZIP_EXTRACT_PATH));
+            $zip->extractTo(storage_path('app/' . self::TMP_ZIP_EXTRACT_PATH));
             $zip->close();
 
             $xmlPath = Storage::files(self::TMP_ZIP_EXTRACT_PATH)[0];
@@ -154,10 +113,61 @@ class RDML
         return $this->data;
     }
 
-    public function getSamples() {
+    public function validateValues()
+    {
+        return self::atLeastOneSampleExists() && self::allControlsExist();
+    }
+
+    public function atLeastOneSampleExists()
+    {
+        return count(
+            array_filter(
+                $this->getData()['sample'],
+                function ($sample) {
+                        return !in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+                }
+            )
+        ) > 0;
+    }
+
+    public function allControlsExist()
+    {
+        return count(
+            array_filter(
+                $this->getData()['sample'],
+                function ($sample) {
+                        return in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+                }
+            )
+        ) === count(self::CONTROL_IDS);
+    }
+
+    /**
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param $id
+     * @return string
+     * @throws \Exception
+     */
+    public static function toXml(UploadedFile $file)
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($file->getRealPath()) !== true) {
+            throw new \Exception('Cannot unpack the rdml file');
+        }
+        $storagePath = 'experiment-data/' . Str::random(40);
+        $zip->extractTo(storage_path('app/' . $storagePath));
+        $zip->close();
+        $file = Storage::files($storagePath)[0];
+        return $file;
+    }
+
+    public function getSamples()
+    {
         return array_filter(
-            $this->getData()['sample'], function ($sample) {
-            return ! in_array(strtolower($sample['@id']), self::CONTROL_IDS);
-        });
+            $this->getData()['sample'],
+            function ($sample) {
+                return !in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+            }
+        );
     }
 }

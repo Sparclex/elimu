@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class SampleDataController extends Controller
 {
-    public function handle(SampleData $dataSample, Request $request) {
+    public function handle(SampleData $dataSample, Request $request)
+    {
         $sampleId = $dataSample->sample->sampleInformation->sample_id;
         $position = $dataSample->secondary_value;
 
-        $parameters = $dataSample->experiment->assay->inputParameters()->first()->parameters->mapWithKeys(function($row) {
+        $parameters = $dataSample->experiment->assay->inputParameters()->first()->parameters->mapWithKeys(function ($row
+        ) {
             return [$row['target'] => $row['threshold']];
         });
 
