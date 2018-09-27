@@ -100,7 +100,9 @@ class SampleData extends Resource
     public function actions(Request $request)
     {
         return [
-            new ChangeValidationStatus()
+            (new ChangeValidationStatus())->canRun(function ($request, $user) {
+                return true;
+            }),
         ];
     }
 }

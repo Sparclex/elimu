@@ -17,13 +17,14 @@
         "laravel/framework": "5.7.*",
         "laravel/nova": "*",
         "laravel/tinker": "^1.0",
-        "lorisleiva/laravel-deployer": "^0.2.5",
         "maatwebsite/laravel-nova-excel": "^1.0",
         "nathanmac/parser": "^4.3",
         "sparclex/select-has-many": "*",
+        "spatie/nova-backup-tool": "^1.0",
         "tightenco/nova-releases": "^0.1.2"
     },
     "require-dev": {
+        "lorisleiva/laravel-deployer": "^0.2.5",
         "barryvdh/laravel-debugbar": "^3.1",
         "beyondcode/laravel-dump-server": "^1.2",
         "filp/whoops": "^2.0",
@@ -50,7 +51,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "barryvdh/laravel-debugbar"
+            ]
         }
     },
     "scripts": {

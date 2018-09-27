@@ -27,7 +27,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function tools()
     {
         return [
-            new SampleBatchImporter,
+            new \Spatie\BackupTool\BackupTool(),
         ];
     }
 

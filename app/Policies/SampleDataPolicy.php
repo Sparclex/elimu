@@ -2,19 +2,16 @@
 
 namespace App\Policies;
 
+use App\Models\SampleData;
+use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SampleDataPolicy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function view(User $user, SampleData $sampleData)
     {
-        //
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <field-wrapper>
+    <field-wrapper v-if="downloadable">
         <div class="w-1/4 py-4">
             <form-label :for="field.name">
                 Report
@@ -36,6 +36,11 @@
             onClick() {
                 this.modalOpened = true;
             },
+        },
+        computed: {
+            downloadable() {
+                return this.field.fields.length > 0;
+            }
         }
     }
 </script>

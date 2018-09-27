@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="downloadable">
         <a @click="onClick"
            class="impersonate cursor-pointer text-70 hover:text-primary no-underline flex items-center"
            style="width:22px"
@@ -36,6 +36,11 @@
             onClick() {
                 this.modalOpened = true;
             },
+        },
+        computed: {
+            downloadable() {
+                return this.field.fields.length > 0;
+            }
         }
     }
 </script>

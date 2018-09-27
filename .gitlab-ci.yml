@@ -3,7 +3,6 @@ image: registry.gitlab.com/sparclex/ihi-lims:latest
 stages:
   - build
   - test
-  - predeploy
   - deploy
 
 .init_ssh: &init_ssh |
@@ -70,20 +69,6 @@ phpunit:
   - composer
   script:
   - phpunit --coverage-text --colors=never
-
-composer-production:
-  stage: predeploy
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}-composer
-    paths:
-    - vendor/
-  script:
-  - echo "{\"http-basic\":{\"nova.laravel.com\":{\"username\":\"$NOVA_USERNAME\",\"password\":\"$NOVA_PASSWORD\"}}}" > ~/.composer/auth.json
-  - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --no-dev
-  artifacts:
-    expire_in: 1 month
-    paths:
-    - vendor/
 
 staging:
   stage: deploy

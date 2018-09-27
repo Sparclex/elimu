@@ -14,7 +14,7 @@ class SampleDataController extends Controller
         $sampleId = $dataSample->sample->sampleInformation->sample_id;
         $position = $dataSample->secondary_value;
 
-        $parameters = $dataSample->experiment->assay->inputParameters()->first()->parameters->mapWithKeys(function ($row
+        $parameters = $dataSample->experiment->inputParameters->mapWithKeys(function ($row
         ) {
             return [$row['target'] => $row['threshold']];
         });

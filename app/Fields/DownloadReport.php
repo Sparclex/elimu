@@ -34,7 +34,11 @@ class DownloadReport extends Field
     {
         $experimentsIds = DB::table('sample_data')
             ->where('sample_id', $this->sampleId)
+            ->where('status', '<>', 'Pending')
             ->pluck('experiment_id', 'experiment_id');
+        if (!$experimentsIds->count()) {
+            return [];
+        }
         return [
             Select::make('Experiment')
                 ->options($experimentsIds->toArray())

@@ -25,6 +25,6 @@ class SampleReportController extends Controller
         return \PDF::loadView('pdfs.sample-report', compact('sample', 'sampleData', 'experiment'))
             ->setPaper('a4', 'landscape')
             ->stream('experiment-report_sample-' . $sample->sampleInformation->sample_id
-                . '_experiment-' . $experiment->assay->name . '-' . $experiment->id . '.pdf');
+                . '_experiment-' . $experiment->reagent->assay->name . '-' . $experiment->id . '.pdf');
     }
 }
