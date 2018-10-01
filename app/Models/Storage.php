@@ -64,7 +64,7 @@ class Storage extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
+        static::addGlobalScope(new OnlyCurrentStudy('storage'));
     }
 
     public function sample()

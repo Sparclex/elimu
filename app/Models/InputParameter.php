@@ -15,7 +15,7 @@ class InputParameter extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
+        static::addGlobalScope(new OnlyCurrentStudy('input_parameters'));
     }
 
     public function assay()

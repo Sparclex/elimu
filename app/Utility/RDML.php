@@ -2,7 +2,7 @@
 
 namespace App\Utility;
 
-use Illuminate\Http\File;
+use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,7 +15,7 @@ class RDML
     public const CONTROL_IDS = ['pos', 'ntc', 'neg'];
 
     /**
-     * @var \Illuminate\Http\File
+     * @var \Symfony\Component\HttpFoundation\File\File
      */
     private $file;
 
@@ -29,7 +29,7 @@ class RDML
     /**
      * Represents a rdml file
      *
-     * @param \Illuminate\Http\File $file
+     * @param \Symfony\Component\HttpFoundation\File\File
      */
     private function __construct(File $file)
     {
@@ -140,25 +140,6 @@ class RDML
                 }
             )
         ) === count(self::CONTROL_IDS);
-    }
-
-    /**
-     * @param \Illuminate\Http\UploadedFile $file
-     * @param $id
-     * @return string
-     * @throws \Exception
-     */
-    public static function toXml(UploadedFile $file)
-    {
-        $zip = new \ZipArchive();
-        if ($zip->open($file->getRealPath()) !== true) {
-            throw new \Exception('Cannot unpack the rdml file');
-        }
-        $storagePath = 'experiment-data/' . Str::random(40);
-        $zip->extractTo(storage_path('app/' . $storagePath));
-        $zip->close();
-        $file = Storage::files($storagePath)[0];
-        return $file;
     }
 
     public function getSamples()

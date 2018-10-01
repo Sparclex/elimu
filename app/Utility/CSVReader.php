@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Utility;
 
 class CSVReader
 {
@@ -27,6 +27,9 @@ class CSVReader
         $data = [];
         if (($handle = fopen($this->filename, 'r')) !== false) {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false) {
+                if ([null] === $row) {
+                    continue;
+                }
                 if (!$header) {
                     $header = $row;
                 } else {

@@ -2,8 +2,7 @@
 
 namespace App\Nova;
 
-use App\Rules\DataFile;
-use App\Utility\RDML;
+use App\Utility\FileSaver;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -14,6 +13,11 @@ use Laravel\Nova\Fields\Trix;
 
 class Experiment extends Resource
 {
+    public function __construct(\Illuminate\Database\Eloquent\Model $resource)
+    {
+        parent::__construct($resource);
+    }
+
     public static $with = ['reagent', 'reagent.assay', 'requester'];
 
     /**
@@ -50,8 +54,6 @@ class Experiment extends Resource
      */
     public function fields(Request $request)
     {
-
-
         return [
             ID::make()->hideFromIndex(),
             BelongsTo::make('Assay', 'reagent', Reagent::class)->hideWhenUpdating(),
@@ -64,12 +66,12 @@ class Experiment extends Resource
             Trix::make('Comment')->hideFromIndex(),
 
             BelongsToMany::make('Samples'),
-            File::make('File')->onlyOnForms()->prunable()->store(
+            File::make('File')->onlyOnForms()->hideWhenCreating()->prunable()->store(
                 function (Request $request) {
-                    $file = RDML::toXml($request->file('file'));
+                    $file = FileSaver::save($request->file('file'), $request->route('resourceId'));
                     return ['file' => $file];
                 }
-            )->creationRules('required', new DataFile($request->experiment))->updateRules('file'),
+            ),
 
         ];
     }

@@ -12,11 +12,13 @@ class OnlyCurrentStudy implements Scope
     /**
      * @var null
      */
-    private $relation;
+    private $related;
+    private $table;
 
-    public function __construct($relation = null)
+    public function __construct($table, $related = false)
     {
-        $this->relation = $relation;
+        $this->related = $related;
+        $this->table = $table;
     }
 
     /**
@@ -28,10 +30,10 @@ class OnlyCurrentStudy implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        if ($this->relation) {
-            $builder->whereHas($this->relation);
+        if ($this->related) {
+            $builder->whereHas($this->table);
         } else {
-            $builder->where('study_id', Auth::user()->study_id);
+            $builder->where($this->table.'.study_id', Auth::user()->study_id);
         }
     }
 }

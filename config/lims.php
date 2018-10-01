@@ -6,5 +6,5 @@ return [
         'CSV' => \App\ResultHandlers\CsvResultHandler::class,
     ],
     'version' => '0.0.1',
-    'name' => 'Swiss TPH Lims'
+    'name' => 'IHI Lims'
 ];

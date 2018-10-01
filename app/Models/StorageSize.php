@@ -34,7 +34,7 @@ class StorageSize extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
+        static::addGlobalScope(new OnlyCurrentStudy('storage_sizes'));
     }
 
     public function study()

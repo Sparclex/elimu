@@ -25,7 +25,7 @@ class SampleInformation extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
+        static::addGlobalScope(new OnlyCurrentStudy('sample_informations'));
     }
 
     public function study()

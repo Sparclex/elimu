@@ -2,12 +2,15 @@
 
 namespace App\Rules;
 
+use App\Utility\CSVReader;
 use App\Utility\RDML;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
-class DataFile implements Rule
+class DataFile
 {
     protected $message = 'The given file is not a valid data file.';
 
@@ -20,19 +23,21 @@ class DataFile implements Rule
     }
 
     /**
-     * Determine if the validation rule passes.
+     * Determine if the given file is a valid data file.
      *
      * @param  string $attribute
      * @param  mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function validate($attribute, $value)
     {
-        if (!$value instanceof File) {
-            return false;
+        if (!$value instanceof UploadedFile) {
+            throw ValidationException::withMessages([
+                $attribute => __('It has to be a file')
+            ]);
         }
         try {
-            switch ($value->getExtension()) {
+            switch ($value->getClientOriginalExtension()) {
                 case 'rdml':
                 case 'zip':
                     $this->validateRdml($value);
@@ -41,22 +46,22 @@ class DataFile implements Rule
                     $this->validateCsv($value);
                     break;
                 default:
-                    return false;
+                    throw ValidationException::withMessages([
+                        $attribute => 'Unsupported file type'
+                    ]);
             }
         } catch (\Exception $e) {
-            $this->message = $e->getMessage();
-
-            return false;
+            throw ValidationException::withMessages([
+                $attribute => $e->getMessage()
+            ]);
         }
-
-        return true;
     }
 
     /**
-     * @param \Illuminate\Http\File $file
+     * @param UploadedFile $file
      * @throws \Exception
      */
-    protected function validateRdml(File $file)
+    protected function validateRdml(UploadedFile $file)
     {
         $rdml = RDML::make($file, false);
         if (!$rdml->containsOnlyOneFile()) {
@@ -107,18 +112,20 @@ class DataFile implements Rule
         }
     }
 
-    protected function validateCsv(File $file)
+    protected function validateCsv(UploadedFile $file)
     {
-        throw new \Error();
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return $this->message;
+        try {
+            $reader = new CSVReader($file->getRealPath());
+            $data = $reader->toArray();
+        } catch (\Exception $e) {
+            throw new \Exception($this->message);
+        }
+        if (!isset($data[0]['sample_id'])) {
+            throw new \Exception('There no sample_id column');
+        }
+        if (!isset($data[0]['target'])) {
+            throw new \Exception('There is not target column');
+        }
+        $this->validateSampleIds(array_column($data, 'sample_id'));
     }
 }

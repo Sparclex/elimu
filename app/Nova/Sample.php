@@ -37,7 +37,7 @@ class Sample extends Resource
 
     public function title()
     {
-        return "Brady Nr. " . $this->sampleInformation->sample_id;
+        return $this->sampleInformation->sample_id;
     }
 
     public function subtitle()

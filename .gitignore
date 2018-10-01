@@ -17,5 +17,3 @@ yarn-error.log
 /public/img
 /public/reports
 /public/mix-manifest.json
-/public/vendor
-/resources/lang/vendor/

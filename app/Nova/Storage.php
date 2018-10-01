@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Filters\Sample;
+use App\Nova\Filters\SampleInformationFilter;
 use App\Nova\Filters\Study;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -90,8 +91,7 @@ class Storage extends Resource
     public function filters(Request $request)
     {
         return [
-            new Study(),
-            new Sample()
+
         ];
     }
 

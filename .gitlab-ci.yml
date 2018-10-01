@@ -32,8 +32,6 @@ composer:
   - echo "{\"http-basic\":{\"nova.laravel.com\":{\"username\":\"$NOVA_USERNAME\",\"password\":\"$NOVA_PASSWORD\"}}}" > ~/.composer/auth.json
   - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
   - cp .env.example .env
-  - php artisan nova:install
-  - php artisan nova:publish
   - php artisan key:generate
   artifacts:
     expire_in: 1 month
@@ -47,6 +45,8 @@ npm:
     key: ${CI_COMMIT_REF_SLUG}-npm
     paths:
     - node_modules/
+    - public/
+
   script:
   - npm install
   - npm run production

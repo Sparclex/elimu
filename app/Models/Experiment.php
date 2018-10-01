@@ -25,7 +25,7 @@ class Experiment extends Model
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
+        static::addGlobalScope(new OnlyCurrentStudy('experiments'));
     }
 
     public function reagent()
