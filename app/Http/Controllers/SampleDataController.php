@@ -2,24 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\FileTypes\RDML;
 use App\Models\SampleData;
-use App\ResultHandlers\Rdml\Processor;
+use Illuminate\Http\File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SampleDataController extends Controller
 {
     public function handle(SampleData $dataSample, Request $request)
     {
+        if ($dataSample->experiment->result_type != 'qPcr Rdml') {
+            return [
+                'display' => false
+            ];
+        }
         $sampleId = $dataSample->sample->sampleInformation->sample_id;
         $position = $dataSample->secondary_value;
 
-        $parameters = $dataSample->experiment->inputParameters->mapWithKeys(function ($row
-        ) {
-            return [$row['target'] => $row['threshold']];
-        });
+        $parameters = $dataSample->experiment->inputParameters;
 
-        $processor = new Processor(Storage::get($dataSample->experiment->file), $parameters->toArray());
-        return $processor->getChartDataFor($sampleId, $position, $dataSample->target);
+        $file = new File(storage_path('app/'.$dataSample->experiment->result_file));
+        $rdml = RDML::make($file)->withInputParameters($parameters);
+        return [
+            'display' => true,
+            'data' => $rdml->getChartDataFor($sampleId, $position, $dataSample->target)
+        ];
     }
 }

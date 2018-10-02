@@ -72,7 +72,6 @@ class SampleInformationFilter extends Filter
      */
     public function options(Request $request)
     {
-        dump($request->all());
         return SampleInformation::pluck($this->attribute, $this->attribute)->unique();
     }
 

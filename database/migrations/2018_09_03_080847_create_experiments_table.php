@@ -21,7 +21,9 @@ class CreateExperimentsTable extends Migration
             $table->timestamp('requested_at')->nullable();
             $table->bigInteger('requester_id')->unsigned()->nullable();
             $table->text('comment')->nullable();
-            $table->string('file')->nullable();
+            $table->string('result_file')->nullable();
+            $table->string('original_filename')->nullable();
+            $table->string('result_type')->nullable();
             $table->timestamps();
 
             $table->foreign('reagent_id')->references('id')->on('reagents')->onDelete('CASCADE');

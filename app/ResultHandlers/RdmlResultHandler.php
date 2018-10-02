@@ -2,26 +2,41 @@
 
 namespace App\ResultHandlers;
 
-use App\Manager;
-use Illuminate\Support\Facades\Storage;
+use App\FileTypes\RDML;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class RdmlResultHandler extends ResultHandler
 {
     public function handle()
     {
-        try {
-            $rdmlManager = new Manager(
-                Storage::disk('public')->get($this->filename),
-                [
-                    'Pspp18S' => 100,
-                    'HsRNaseP' => 100,
-                    'PfvarATS' => 200,
-                ]
-            );
-
-            return $rdmlManager->getChartData();
-        } catch (\Exception $e) {
-            return [];
+        $rdml = RDML::make($this->file, false)->withInputParameters($this->inputParameters);
+        if (empty($rdml->getData())) {
+            $this->error(__('Invalid rdml file'));
         }
+
+        $this->validateSampleIds($rdml->getSampleIds()->toArray());
+
+        $this->removeData();
+
+        try {
+            $this->store($rdml);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    private function store(RDML $rdml)
+    {
+        $sampleData = $rdml->cyclesOfQuantificationWithoutControl()->map(function ($sample) {
+            return [
+                'primary' => $sample['cq'],
+                'secondary' => $sample['well'],
+                'sample' => $sample['sample'],
+                'target' => $sample['target'],
+                'additional' => serialize(array_except($sample, ['well', 'target', 'sample', 'cq']))
+            ];
+        });
+        $this->storeSampleData($sampleData->toArray());
     }
 }

@@ -35,11 +35,9 @@ class GenerateReport extends Action
     public function fields()
     {
         $availableAssays = [];
-        dump($this->sample);
         foreach ($this->sample->experiments as $experiment) {
             $availableAssays[] = $experiment->assay;
         }
-        dump($availableAssays);
         return [
             Select::make('Field')->options([])
         ];

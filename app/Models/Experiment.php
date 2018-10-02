@@ -6,7 +6,6 @@ use App\Observers\ExtractSampleData;
 use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class Experiment extends Model
 {
@@ -55,12 +54,15 @@ class Experiment extends Model
 
     public function getInputParametersAttribute()
     {
-        return InputParameter
-            ::withoutGlobalScopes()
-            ->join('reagents', 'reagents.assay_id', 'input_parameters.assay_id')
-            ->join('experiments', 'experiments.reagent_id', 'reagents.id')
-            ->where('input_parameters.study_id', Auth::user()->study_id)
-            ->where('experiments.id', $this->id)
-            ->select('input_parameters.*')->first()->parameters;
+        return InputParameter::getByExperiment($this->id);
+    }
+
+    public function getFileTypeAttribute()
+    {
+        return $this->result_type;
+    }
+
+    public function setFileTypeAttribute()
+    {
     }
 }

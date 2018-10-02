@@ -1,74 +1,197 @@
 <?php
 
-namespace App\ResultHandlers\Rdml;
+namespace App\FileTypes;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Nathanmac\Utilities\Parser\Facades\Parser;
+use Symfony\Component\HttpFoundation\File\File;
 
-/**
- * Extract relevant data from an rdml
- *
- */
-class Processor implements ProcessorContract
+class RDML
 {
-    /**
-     * The whole data extracted from a rdml
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $rdml;
+    public const TMP_ZIP_EXTRACT_PATH = 'tmp-rdml';
+
+    public const CONTROL_IDS = ['pos', 'ntc', 'neg'];
 
     /**
-     * The defined thresholds with targets as key
+     * @var \Symfony\Component\HttpFoundation\File\File
+     */
+    private $file;
+
+    /**
+     * Parsed xml data
      *
      * @var array
      */
-    protected $thresholds;
+    private $data;
 
     /**
-     * Small case alphabet
+     * @var Collection
+     */
+    private $inputParameters;
+
+    /**
+     * @var Collection
+     */
+    private $cyclesOfQuantification;
+
+    /**
      *
      * @var array
      */
     private $alphabet;
 
     /**
-     * The computed cycles of quantification
+     * Represents a rdml file
      *
-     * @var \Illuminate\Support\Collection
+     * @param File $file
+     * @param null $inputParameters
      */
-    private $cyclesOfQuantification;
-
-    /**
-     * Creates a new Rdml Manager instance
-     *
-     * @param string $rdmlFile
-     * @param array $thresholds
-     */
-    public function __construct($rdmlFile, array $thresholds = [])
+    private function __construct(File $file, $inputParameters = null)
     {
-        $this->rdml = collect(Parser::xml($rdmlFile));
-        $this->thresholds = $thresholds;
+
+        $this->file = $file;
+        $this->inputParameters = $inputParameters;
         $this->alphabet = range('a', 'z');
         $this->cyclesOfQuantification = collect();
     }
 
-    /**
-     * Creates a new Rdml Manger instance
-     *
-     * @param string $rdmlFile
-     * @return \App\Manager
-     */
-    public static function make($rdmlFile, array $thresholds)
+    public function withInputParameters($inputParameters)
     {
-        return (new self($rdmlFile, $thresholds))->parse();
-    }
-
-    public function withTresholds(array $thresholds)
-    {
-        $this->thresholds = $thresholds;
-
+        $this->inputParameters = $inputParameters;
         return $this;
     }
+
+    public static function make(File $file, $validate = true)
+    {
+        $rdml = new self($file);
+        if (!$validate) {
+            return $rdml;
+        }
+
+        return $rdml->isValid() ? $rdml : null;
+    }
+
+    public function isValid()
+    {
+        return $this->containsOnlyOneFile() && $this->hasValidContent();
+    }
+
+    public function containsOnlyOneFile()
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($this->file->getRealPath()) !== true) {
+            return false;
+        }
+        $numberOfFiles = $zip->numFiles;
+
+        $zip->close();
+
+        return $numberOfFiles === 1;
+    }
+
+    public function hasValidContent()
+    {
+        return $this->validateKeys() && $this->validateValues();
+    }
+
+    public function validateKeys()
+    {
+        $requiredKeys = [
+            'dateMade',
+            'dateUpdated',
+            'experimenter',
+            'dye',
+            'sample',
+            'target',
+            'experiment',
+        ];
+        $availableKeys = array_keys($this->getData());
+        foreach ($requiredKeys as $key) {
+            if (!in_array($key, $availableKeys)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function getData()
+    {
+        if (!$this->data) {
+            $zip = new \ZipArchive();
+            if ($zip->open($this->file->getRealPath()) !== true) {
+                return [];
+            }
+            if ($zip->numFiles !== 1) {
+                $zip->close();
+                return [];
+            }
+            $zip->extractTo(storage_path('app/' . self::TMP_ZIP_EXTRACT_PATH));
+            $zip->close();
+
+            $xmlPath = Storage::files(self::TMP_ZIP_EXTRACT_PATH)[0];
+            try {
+                $this->data = Parser::xml(Storage::get($xmlPath));
+            } catch (\Exception $e) {
+                return [];
+            } finally {
+                Storage::deleteDirectory(self::TMP_ZIP_EXTRACT_PATH);
+            }
+        }
+        return $this->data;
+    }
+
+    public function validateValues()
+    {
+        return self::atLeastOneSampleExists() && self::allControlsExist();
+    }
+
+    public function atLeastOneSampleExists()
+    {
+        return count(
+            array_filter(
+                $this->getData()['sample'],
+                function ($sample) {
+                        return !in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+                }
+            )
+        ) > 0;
+    }
+
+    public function allControlsExist()
+    {
+        return count(
+            array_filter(
+                $this->getData()['sample'],
+                function ($sample) {
+                        return in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+                }
+            )
+        ) === count(self::CONTROL_IDS);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSamplesWithoutControl()
+    {
+        return collect(array_filter(
+            $this->getData()['sample'],
+            function ($sample) {
+                return !in_array(strtolower($sample['@id']), self::CONTROL_IDS);
+            }
+        ));
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSampleIds()
+    {
+        return $this->getSamplesWithoutControl()->pluck('@id');
+    }
+
 
     /**
      * Returns the Cq values for all runs
@@ -82,6 +205,20 @@ class Processor implements ProcessorContract
         }
 
         return $this->cyclesOfQuantification;
+    }
+
+    /**
+     * Returns the Cq values for all runs
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function cyclesOfQuantificationWithoutControl()
+    {
+        return $this->cyclesOfQuantification()->reject(
+            function ($sample) {
+                return in_array(strtolower($sample['sample']), RDML::CONTROL_IDS);
+            }
+        );
     }
 
     /**
@@ -112,7 +249,7 @@ class Processor implements ProcessorContract
                         'target' => $target['@id'],
                         'content' => $sample['type'],
                         'sample' => $sample['@id'],
-                        'cq' => $this->computeCq($react['data']['adp'], $this->thresholds[$target['@id']]),
+                        'cq' => $this->computeCq($react['data']['adp'], $this->getThresholds()[$target['@id']]),
                     ]
                 );
             }
@@ -121,24 +258,27 @@ class Processor implements ProcessorContract
         return $this->cyclesOfQuantification = $this->cyclesOfQuantification->sortBy('well')->sortByDesc('target');
     }
 
+    /**
+     * @return Collection
+     */
     public function getSamples()
     {
-        return collect($this->rdml['sample'])->keyBy('@id');
+        return collect($this->getData()['sample'])->keyBy('@id');
     }
 
     public function getDyes()
     {
-        return collect($this->rdml['dye'])->keyBy('@id');
+        return collect($this->getData()['dye'])->keyBy('@id');
     }
 
     public function getTargets()
     {
-        return collect($this->rdml['target'])->keyBy('@id');
+        return collect($this->getData()['target'])->keyBy('@id');
     }
 
     public function getExperimentRuns()
     {
-        return collect($this->rdml['experiment']['run']);
+        return collect($this->getData()['experiment']['run']);
     }
 
     private function determineWell($numberOfColumns, $rowLabel, $columnLabel, $id)
@@ -186,7 +326,7 @@ class Processor implements ProcessorContract
         return ($y - $b) / $slope;
     }
 
-    public function getData()
+    public function getExperimentData()
     {
         $data = [];
         foreach ($this->getExperimentRuns() as $run) {
@@ -257,7 +397,7 @@ class Processor implements ProcessorContract
                         ],
                         [
                             'label' => 'Threshold',
-                            'data' => array_fill(0, count($react['data']['adp']), $this->thresholds[$target]),
+                            'data' => array_fill(0, count($react['data']['adp']), $this->getThresholds()[$target]),
                             'borderColor' => '#b3b9bf',
                             'backgroundColor' => '#b3b9bf',
                             'fill' => false,
@@ -271,6 +411,10 @@ class Processor implements ProcessorContract
         return [];
     }
 
+    public function getThresholds()
+    {
+        return $this->inputParameters->pluck('threshold', 'target');
+    }
     public function determinePosition($numberOfColumns, $rowLabel, $columnLabel, $well)
     {
         $offset = 1;

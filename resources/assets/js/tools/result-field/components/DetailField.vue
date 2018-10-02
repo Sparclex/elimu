@@ -14,7 +14,9 @@ export default {
     },
     mounted() {
         api.fetchData(this.resourceId).then(({data}) => {
-            this.displayData = data;
+            if(data.display) {
+                this.displayData = data;
+            }
             this.loading = false;
         });
     }

@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Utility;
+namespace App\FileTypes;
 
-class CSVReader
+class CSV
 {
     private $filename;
+
+    private $data;
 
     public function __construct($filename)
     {
@@ -40,5 +42,30 @@ class CSVReader
         }
 
         return $data;
+    }
+
+    public function getData()
+    {
+        if (!$this->data) {
+            $this->data = collect($this->toArray());
+        }
+        return $this->data;
+    }
+
+    public function isValid()
+    {
+        try {
+            $data = $this->getData();
+        } catch (\Exception $e) {
+            return false;
+        }
+        if (!isset($data[0]['sample']) || !isset($data[0]['target']) || count(array_keys($data[0])) < 3) {
+            return false;
+        }
+        return true;
+    }
+    public function getSamplesIds()
+    {
+        return $this->getData()->pluck('sample');
     }
 }
