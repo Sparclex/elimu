@@ -53,7 +53,8 @@ class Study extends Resource
                 'unique:studies,name,{{resourceId}}'
             ),
             HasMany::make('SampleInformations'),
-            BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)->fields(new StorageSizeField)
+            BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)->fields(new StorageSizeField),
+            BelongsToMany::make('Users'),
         ];
     }
 

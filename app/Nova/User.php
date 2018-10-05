@@ -2,11 +2,16 @@
 
 namespace App\Nova;
 
+use App\Policies\Authorization;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Timezone;
 
 class User extends Resource
 {
@@ -62,7 +67,34 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:6')
                 ->updateRules('nullable', 'string', 'min:6'),
+
+            Select::make('Role')
+                ->options($this->getRoles())
+                ->sortable()
+                ->rules('required', 'in:' . implode(',', $this->getRoles()))
+                ->canSee(function () {
+                    return Authorization::isLabManager();
+                }),
+
+            Timezone::make('Timezone')->rules('required')->sortable(),
+
+            DateTime::make('Created at')->onlyOnDetail(),
+
+            BelongsToMany::make('Studies')
         ];
+    }
+
+    public function getRoles()
+    {
+        $roles = [
+            Authorization::MONITOR => Authorization::MONITOR,
+            Authorization::SCIENTIST => Authorization::SCIENTIST,
+            Authorization::LABMANAGER => Authorization::LABMANAGER,
+        ];
+        if (Authorization::isAdministrator()) {
+            $roles[Authorization::ADMINISTRATOR] = Authorization::ADMINISTRATOR;
+        }
+        return $roles;
     }
 
     /**

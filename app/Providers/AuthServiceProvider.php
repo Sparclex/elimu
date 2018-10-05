@@ -12,6 +12,7 @@ use App\Models\SampleType;
 use App\Models\Storage;
 use App\Models\Study;
 use App\Policies\AssayPolicy;
+use App\Policies\Authorization;
 use App\Policies\ExperimentPolicy;
 use App\Policies\InputParameterPolicy;
 use App\Policies\SampleDataPolicy;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
+
     /**
      * The policy mappings for the application.
      *
@@ -55,11 +57,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::before(function ($user, $ability) {
-            if (in_array($user->email, [
-                'silvan.wehner@gmail.com'
-            ])) {
-                return;
-            }
+            return;
+        });
+        Gate::define('change-role', function ($auth, $user) {
+            return $auth->id !== $user->id
+                && Authorization::isLabManager($auth);
+        });
+        Gate::define('select-study', function ($auth, $study) {
+            return $auth->studies->contains($study);
         });
     }
 }

@@ -5,9 +5,11 @@ namespace App\Nova;
 use App\Fields\HtmlReadonly;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 
 class SampleInformation extends Resource
@@ -60,10 +62,12 @@ class SampleInformation extends Resource
             BelongsTo::make('Study')->searchable()->rules('required')->onlyOnDetail(),
             Text::make('Sample ID')
                 ->creationRules('required', 'unique:sample_informations,sample_id')
-                ->updateRules('required', 'unique:sample_informations,sample_id,{{resourceId}}'),
-            Text::make('Subject ID')->rules('required'),
-            Text::make('Visit', 'visit_id')->rules('required'),
-            DateTime::make('Collected at')->rules('required'),
+                ->updateRules('required', 'unique:sample_informations,sample_id,{{resourceId}}')->sortable(),
+            Text::make('Subject ID')->rules('required')->sortable(),
+            Text::make('Visit', 'visit_id')->rules('required')->sortable(),
+            DateTime::make('Collected at')->rules('required')->sortable(),
+            Date::make('Birthdate')->rules('date')->hideFromIndex(),
+            Select::make('Gender')->options([0 => 'Male', 1 => 'Female'])->hideFromIndex(),
             HasMany::make('Samples')
 
         ];

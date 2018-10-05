@@ -14,10 +14,13 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Sample extends Resource
 {
+    use RelationSortable;
+
     public static $globallySearchable = false;
 
     public static $with = ['sampleInformation'];
@@ -60,17 +63,17 @@ class Sample extends Resource
             BelongsTo::make('Type', 'sampleType', SampleType::class)->rules(
                 'required',
                 'unique:samples,sample_type_id,NULL,id,sample_information_id,' . $sampleInformationId
-            ),
+            )->sortable(),
             BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)->rules(
                 'required'
-            ),
+            )->sortable(),
             Number::make('Quantity', 'quantity')->rules(
                 'nullable',
                 'numeric',
                 'existing_storage:study,sampleType'
             )->help(
                 'Enter 0 if this sample should not be stored.'
-            ),
+            )->sortable(),
             DownloadReport::make($this->id),
             HasMany::make('Data', 'data', SampleData::class),
             BelongsToMany::make('Experiments')
@@ -124,5 +127,20 @@ class Sample extends Resource
             new RequestExperiment(),
             (new DownloadExcel())->withHeadings()
         ];
+    }
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return self::sortByMultiple($request, $query, [
+            ['sampleInformation', 'sample_id'],
+            ['sampleType']
+        ]);
     }
 }

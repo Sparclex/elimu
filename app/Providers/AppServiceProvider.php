@@ -18,10 +18,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Experiment::observe(InsertSelectedStudy::class);
-        InputParameter::observe(InsertSelectedStudy::class);
-        SampleInformation::observe(InsertSelectedStudy::class);
-        StorageSize::observe(InsertSelectedStudy::class);
     }
 
     /**

@@ -2,6 +2,17 @@
 
 namespace App\Providers;
 
+use App\Nova\Assay;
+use App\Nova\Experiment;
+use App\Nova\InputParameter;
+use App\Nova\Reagent;
+use App\Nova\Sample;
+use App\Nova\SampleData;
+use App\Nova\SampleInformation;
+use App\Nova\SampleType;
+use App\Nova\Storage;
+use App\Nova\Study;
+use App\Nova\User;
 use App\Tools\SampleBatchImporter;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
@@ -78,5 +89,22 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return [
             new \Tightenco\NovaReleases\LatestRelease,
         ];
+    }
+
+    protected function resources()
+    {
+        Nova::resources([
+            User::class,
+            Study::class,
+            SampleInformation::class,
+            Sample::class,
+            InputParameter::class,
+            Experiment::class,
+            SampleData::class,
+            Reagent::class,
+            Assay::class,
+            SampleType::class,
+            Storage::class,
+        ]);
     }
 }

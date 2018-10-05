@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class SampleData extends Resource
 {
+    use RelationSortable;
+
     public static $globallySearchable = false;
     /**
      * The model the resource corresponds to.
@@ -35,6 +38,16 @@ class SampleData extends Resource
      */
     public static $search = [];
 
+    public static function singularLabel()
+    {
+        return 'Sample Data';
+    }
+
+    public static function label()
+    {
+        return 'Sample Data';
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -46,7 +59,7 @@ class SampleData extends Resource
         return [
             ID::make()->sortable()->onlyOnForms(),
             Text::make('Target')->sortable(),
-            BelongsTo::make('Experiment', 'experiment', Experiment::class),
+            BelongsTo::make('Experiment', 'experiment', Experiment::class)->sortable(),
             Text::make('Data', 'primary_value')->sortable(),
             Text::make('Additional Data', 'secondary_value')->sortable(),
             AdditionalData::make('additional'),
@@ -104,5 +117,18 @@ class SampleData extends Resource
                 return true;
             }),
         ];
+    }
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  NovaRequest $request
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return self::sortByMultiple($request, $query, [
+            ['experiment', 'id'],
+        ]);
     }
 }

@@ -20,6 +20,8 @@ class CreateSampleInformationsTable extends Migration
             $table->timestamp('collected_at')->nullable();
             $table->string('visit_id');
             $table->bigInteger('study_id')->unsigned();
+            $table->date('birthdate')->nullable();
+            $table->tinyInteger('gender')->nullable();
             $table->timestamps();
 
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');

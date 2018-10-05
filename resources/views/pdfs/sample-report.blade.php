@@ -122,7 +122,7 @@
 <body class="font-sans">
 <header>
     <img src="{{public_path('img/logo.jpg')}}" height="50" class="logo">
-    <h1 class="title">BSPZV3a - Malaria qPCR Report</h1>
+    <h1 class="title">Experiment {{$experiment->id}} Report</h1>
     <p class="date">
         {{\Carbon\Carbon::now()->format('d M Y')}}<br>
         {{\Carbon\Carbon::now()->format('H:i:s')}}

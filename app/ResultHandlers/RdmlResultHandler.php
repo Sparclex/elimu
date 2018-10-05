@@ -3,16 +3,26 @@
 namespace App\ResultHandlers;
 
 use App\FileTypes\RDML;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class RdmlResultHandler extends ResultHandler
 {
     public function handle()
     {
+        if (!$this->inputParameters) {
+            $this->error(__('Input parameters not set'));
+        }
         $rdml = RDML::make($this->file, false)->withInputParameters($this->inputParameters);
         if (empty($rdml->getData())) {
             $this->error(__('Invalid rdml file'));
+        }
+        if (!$rdml->hasValidTargets()) {
+            $this->error(__($rdml->getLastError()));
+        }
+        if (!$rdml->hasEnoughRepetitions()) {
+            $this->error(__($rdml->getLastError()));
+        }
+        if (!$rdml->hasCorrectDeviation()) {
+            $this->error(__($rdml->getLastError()));
         }
 
         $this->validateSampleIds($rdml->getSampleIds()->toArray());

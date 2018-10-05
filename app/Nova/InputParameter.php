@@ -9,9 +9,11 @@ use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class InputParameter extends Resource
 {
+    use RelationSortable;
     /**
      * The model the resource corresponds to.
      *
@@ -56,13 +58,20 @@ class InputParameter extends Resource
         return [
             ID::make()->sortable()->onlyOnForms(),
             BelongsTo::make('Study')->rules('required', 'exists:studies,id')->onlyOnDetail(),
-            BelongsTo::make('Assay')->rules('required', 'exists:assays,id'),
-            Text::make('Name')->rules('nullable'),
-            Code::make('Parameters')->json()->hideWhenCreating()->rules('required', 'json'),
-            File::make('Parameters')->onlyOnForms()->hideWhenUpdating()->rules(
+            BelongsTo::make('Assay')->rules('required', 'exists:assays,id')->sortable(),
+            Text::make('Name')->rules('nullable')->sortable(),
+            Code::make('Parameters')->json()->onlyOnDetail(),
+            File::make('Parameter File')->rules(
                 'required',
                 'file'
-            )->store(new CsvToParameter)
+            )
+                ->disk('local')
+                ->store(new CsvToParameter)
+                ->prunable()
+                ->download(function ($request, $model) {
+                    return \Illuminate\Support\Facades\Storage::disk('local')
+                        ->download($model->parameter_file, $model->name . " Parameters");
+                })
         ];
     }
 
@@ -108,5 +117,20 @@ class InputParameter extends Resource
     public function actions(Request $request)
     {
         return [];
+    }
+
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  NovaRequest $request
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return self::sortByMultiple($request, $query, [
+            ['assay'],
+        ]);
     }
 }

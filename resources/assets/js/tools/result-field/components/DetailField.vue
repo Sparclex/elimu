@@ -15,7 +15,7 @@ export default {
     mounted() {
         api.fetchData(this.resourceId).then(({data}) => {
             if(data.display) {
-                this.displayData = data;
+                this.displayData = data.data;
             }
             this.loading = false;
         });

@@ -48,7 +48,7 @@ class Assay extends Resource
                 'required',
                 'unique:assays,name,{{resourceId}}'
             ),
-            Text::make('SOP')->rules('required'),
+            Text::make('SOP')->rules('required')->sortable(),
             HasOne::make('Input Parameters', 'inputParameters', InputParameter::class)
         ];
     }

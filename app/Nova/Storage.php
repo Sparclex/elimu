@@ -38,6 +38,11 @@ class Storage extends Resource
         'id',
     ];
 
+    public static function label()
+    {
+        return 'Storage';
+    }
+
     /**
      * Build an "index" query for the given resource.
      *
@@ -66,6 +71,7 @@ class Storage extends Resource
             ID::make()->sortable()->onlyOnForms(),
             BelongsTo::make('Study')->onlyOnDetail(),
             BelongsTo::make('Sample'),
+            BelongsTo::make('SampleType'),
             Number::make('Box'),
             Number::make('Position'),
         ];

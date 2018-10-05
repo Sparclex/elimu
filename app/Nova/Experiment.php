@@ -12,9 +12,12 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Experiment extends Resource
 {
+    use RelationSortable;
+
     public function __construct(\Illuminate\Database\Eloquent\Model $resource)
     {
         parent::__construct($resource);
@@ -61,7 +64,7 @@ class Experiment extends Resource
             ID::make()
                 ->hideFromIndex(),
             BelongsTo::make('Assay', 'reagent', Reagent::class)
-                ->hideWhenUpdating(),
+                ->hideWhenUpdating()->sortable(),
             BelongsTo::make('Study')
                 ->onlyOnDetail(),
             BelongsTo::make('Requester', 'requester', User::class)
@@ -70,10 +73,12 @@ class Experiment extends Resource
                     'exists:people,id'
                 )
                 ->searchable()
-                ->hideWhenUpdating(),
+                ->hideWhenUpdating()
+                ->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
-                ->hideWhenUpdating(),
+                ->hideWhenUpdating()
+                ->sortable(),
             Trix::make('Comment')
                 ->hideFromIndex(),
 
@@ -153,5 +158,20 @@ class Experiment extends Resource
     public function actions(Request $request)
     {
         return [];
+    }
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  NovaRequest $request
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return self::sortByMultiple($request, $query, [
+            ['reagent', 'lot'],
+            ['requester', 'name']
+        ]);
     }
 }

@@ -10,7 +10,8 @@ class SampleInformation extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'collected_at'
+        'collected_at',
+        'birthdate'
     ];
 
     protected $fillable = [

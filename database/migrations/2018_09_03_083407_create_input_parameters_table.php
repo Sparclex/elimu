@@ -18,6 +18,7 @@ class CreateInputParametersTable extends Migration
             $table->bigInteger('study_id')->unsigned();
             $table->bigInteger('assay_id')->unsigned();
             $table->string('name')->nullable()->index();
+            $table->string('parameter_file')->nullable();
             $table->json('parameters');
             $table->timestamps();
 

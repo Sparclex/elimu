@@ -15,7 +15,6 @@
             }
         },
         mounted() {
-            console.log(this.displayData);
             this.chart = new Chart(document.getElementById("rdml-result"), {
                 type: 'line',
                 data: {

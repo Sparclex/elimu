@@ -15,7 +15,7 @@ class SampleReportController extends Controller
             'experiment' => 'exists:sample_data,experiment_id,sample_id,' . $sample->id . ',status,Accepted'
         ]);
         $experiment = Experiment::findOrFail($request->experiment);
-        return Action::download(route('report-download', compact('experiment', 'sample')), 'report.pdf');
+        return Action::download(route('report-download', compact('experiment', 'sample')), 'experiment-report.pdf');
     }
 
     public function download(Sample $sample, Experiment $experiment)
@@ -24,7 +24,6 @@ class SampleReportController extends Controller
         abort_if(!$sampleData, 404);
         return \PDF::loadView('pdfs.sample-report', compact('sample', 'sampleData', 'experiment'))
             ->setPaper('a4', 'landscape')
-            ->stream('experiment-report_sample-' . $sample->sampleInformation->sample_id
-                . '_experiment-' . $experiment->reagent->assay->name . '-' . $experiment->id . '.pdf');
+            ->stream('experiment-report.pdf');
     }
 }
