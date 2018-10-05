@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->bigInteger('study_id')->unsigned()->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('role')->default('Scientist');
+            $table->string('timezone');
             $table->rememberToken();
             $table->timestamps();
 

@@ -6,37 +6,27 @@ use App\Models\SampleType;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class SampleTypePolicy
+class SampleTypePolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, SampleType $sampleType)
+    public function delete(User $user, $model)
+    {
+        return Authorization::isAdministrator($user);
+    }
+
+    public function view(User $user, $model)
     {
         return true;
     }
 
     public function create(User $user)
     {
-        return true;
+        return Authorization::isScientist($user);
     }
 
-    public function update(User $user, SampleType $sampleType)
+    public function update(User $user, $model)
     {
-        return true;
-    }
-
-    public function delete(User $user, SampleType $sampleType)
-    {
-        return false;
-    }
-
-    public function restore(User $user, SampleType $sampleType)
-    {
-        return false;
-    }
-
-    public function forceDelete(User $user, SampleType $sampleType)
-    {
-        return false;
+        return Authorization::isScientist($user);
     }
 }

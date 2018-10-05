@@ -14,12 +14,16 @@ class UserSeeder extends Seeder
         \App\User::create([
             'email' => 'schindler.tobi@gmail.com',
             'name' => 'Tobias Schindler',
-            'password' => \Illuminate\Support\Facades\Hash::make('ihibagamoyo')
+            'password' => \Illuminate\Support\Facades\Hash::make('ihibagamoyo'),
+            'timezone' => 'Europe/Zurich',
+            'role' => 'Administrator'
         ]);
         \App\User::create([
             'email' => 'silvan.wehner@gmail.com',
             'name' => 'Silvan Wehner',
-            'password' => \Illuminate\Support\Facades\Hash::make('12345')
+            'password' => \Illuminate\Support\Facades\Hash::make('12345'),
+            'timezone' => 'Africa/Dar_es_Salaam',
+            'role' => 'Administrator'
         ]);
     }
 }

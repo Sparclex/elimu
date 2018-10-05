@@ -2,41 +2,30 @@
 
 namespace App\Policies;
 
-use App\Models\Assay;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AssayPolicy
+class AssayPolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, Assay $assay)
+    public function delete(User $user, $model)
+    {
+        return Authorization::isAdministrator($user);
+    }
+
+    public function view(User $user, $model)
     {
         return true;
     }
 
     public function create(User $user)
     {
-        return true;
+        return Authorization::isScientist($user);
     }
 
-    public function update(User $user, Assay $assay)
+    public function update(User $user, $model)
     {
-        return false;
-    }
-
-    public function delete(User $user, Assay $assay)
-    {
-        return false;
-    }
-
-    public function restore(User $user, Assay $assay)
-    {
-        return true;
-    }
-
-    public function forceDelete(User $user, Assay $assay)
-    {
-        return false;
+        return Authorization::isScientist($user);
     }
 }

@@ -6,37 +6,32 @@ use App\Models\Study;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class StudyPolicy
+class StudyPolicy extends Policy
 {
     use HandlesAuthorization;
 
+    public function viewAny(User $user)
+    {
+        return Authorization::isLabManager($user);
+    }
+
     public function view(User $user, Study $study)
     {
-        return true;
+        return $user->studies->contains($study);
     }
 
     public function create(User $user)
     {
-        return true;
+        return Authorization::isAdministrator($user);
     }
 
     public function update(User $user, Study $study)
     {
-        return true;
+        return $user->studies->contains($study) && Authorization::isLabManager($user);
     }
 
     public function delete(User $user, Study $study)
     {
-        return true;
-    }
-
-    public function restore(User $user, Study $study)
-    {
-        return true;
-    }
-
-    public function forceDelete(User $user, Study $study)
-    {
-        return true;
+        return Authorization::isAdministrator($user);
     }
 }

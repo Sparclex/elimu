@@ -6,12 +6,27 @@ use App\Models\SampleData;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class SampleDataPolicy
+class SampleDataPolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, SampleData $sampleData)
+    public function view(User $user, $model)
     {
-        return true;
+        return $user->study_id == $model->experiment->study_id;
+    }
+
+    public function create(User $user)
+    {
+        return false;
+    }
+
+    public function update(User $user, $model)
+    {
+        return false;
+    }
+
+    public function delete(User $user, $model)
+    {
+        return false;
     }
 }

@@ -2,41 +2,32 @@
 
 namespace App\Policies;
 
-use App\Models\Sample;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class SamplePolicy
+class SamplePolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, Sample $sample)
+    public function view(User $user, $model)
     {
-        return $user->study_id == optional($sample->sampleInformation)->study_id;
+        return $user->study_id == $model->sampleInformation->study_id;
     }
 
     public function create(User $user)
     {
-        return true;
+        return Authorization::isScientist($user);
     }
 
-    public function update(User $user, Sample $sample)
+    public function update(User $user, $model)
     {
-        return $user->study_id == optional($sample->sampleInformation)->study_id;
+        return $user->study_id == $model->sampleInformation->study_id
+            && Authorization::isScientist();
     }
 
-    public function delete(User $user, Sample $sample)
+    public function delete(User $user, $model)
     {
-        return $user->study_id == optional($sample->sampleInformation)->study_id;
-    }
-
-    public function restore(User $user, Sample $sample)
-    {
-        return $user->study_id == optional($sample->sampleInformation)->study_id;
-    }
-
-    public function forceDelete(User $user, Sample $sample)
-    {
-        return $user->study_id == optional($sample->sampleInformation)->study_id;
+        return $user->study_id == $model->sampleInformation->study_id
+            && $this->createdFiveMinutesAgo($user, $model);
     }
 }

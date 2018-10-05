@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Study::class);
     }
+
+    public function studies()
+    {
+        return $this->belongsToMany(Study::class);
+    }
 }

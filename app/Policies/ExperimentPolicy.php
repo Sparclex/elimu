@@ -6,7 +6,7 @@ use App\Models\Experiment;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ExperimentPolicy
+class ExperimentPolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
@@ -18,25 +18,5 @@ class ExperimentPolicy
     public function create(User $user)
     {
         return false;
-    }
-
-    public function update(User $user, Experiment $experiment)
-    {
-        return true;
-    }
-
-    public function delete(User $user, Experiment $experiment)
-    {
-        return true;
-    }
-
-    public function restore(User $user, Experiment $experiment)
-    {
-        return true;
-    }
-
-    public function forceDelete(User $user, Experiment $experiment)
-    {
-        return true;
     }
 }

@@ -29,25 +29,6 @@ class Realseeder extends Seeder
         Auth::user()->save();
         $sampleType = factory(\App\Models\SampleType::class)->create();
         $study->sampleTypes()->attach($sampleType->id, ['size' => 3]);
-        \App\Models\InputParameter::create(
-            [
-                'study_id' => $study->id,
-                'assay_id' => $assay->id,
-                'parameters' => [
-                    [
-                        'target' => 'PfvarATS',
-                        'threshold' => 100,
-                    ],
-                    [
-                        'target' => 'HsRNaseP',
-                        'threshold' => 200,
-                    ],
-                    [
-                        'target' => 'Pspp18S',
-                        'threshold' => 200
-                    ]
-                ]
-            ]);
         $sampleInformation4 = factory(SampleInformation::class)->create([
             'study_id' => $study->id,
             'sample_id' => '5181967'
