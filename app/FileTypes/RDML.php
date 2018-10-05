@@ -41,6 +41,8 @@ class RDML
      */
     private $alphabet;
 
+    private $lastError;
+
     /**
      * Represents a rdml file
      *
@@ -415,6 +417,7 @@ class RDML
     {
         return $this->inputParameters->pluck('threshold', 'target');
     }
+
     public function determinePosition($numberOfColumns, $rowLabel, $columnLabel, $well)
     {
         $offset = 1;
@@ -451,5 +454,63 @@ class RDML
         }
 
         return collect($data);
+    }
+
+    public function hasValidTargets()
+    {
+        if (!$this->inputParameters) {
+            return false;
+        }
+        $inputTargets = $this->inputParameters->pluck('target');
+        $overfulTargets = collect();
+        foreach ($this->getTargets()->keys() as $target) {
+            $index = $inputTargets->search($target);
+            if ($index === false) {
+                $overfulTargets->push($target);
+            } else {
+                $inputTargets->splice($index, 1);
+            }
+        }
+        if ($overfulTargets->isNotEmpty() && $inputTargets->isNotEmpty()) {
+            $this->lastError = sprintf(
+                'Targets "%s" are present in rdml file but not in the input parameters.
+            Targets "%s" are present in the input parameters but not in the rdml file',
+                $overfulTargets->implode(', '),
+                $inputTargets->implode(', ')
+            );
+        } else {
+            if ($overfulTargets->isNotEmpty()) {
+                $this->lastError = sprintf(
+                    'Targets "%s" are present in rdml file but not in the input parameters.',
+                    $overfulTargets->implode(', ')
+                );
+            } else {
+                if ($inputTargets->isNotEmpty()) {
+                    $this->lastError = sprintf(
+                        'Targets "%s" are present in the input parameters but not in the rdml file',
+                        $inputTargets->implode(', ')
+                    );
+                }
+            }
+        }
+        if ($this->lastError) {
+            return false;
+        }
+        return true;
+    }
+
+    public function hasEnoughRepetitions()
+    {
+        return true;
+    }
+
+    public function hasCorrectDeviation()
+    {
+        return true;
+    }
+
+    public function getLastError()
+    {
+        return $this->lastError;
     }
 }
