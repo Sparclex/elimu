@@ -11,7 +11,7 @@ class SamplePolicy extends Policy
 
     public function view(User $user, $model)
     {
-        return $user->study_id == $model->sampleInformation->study_id;
+        return $user->study_id == ($model->study_id ?? $model->sampleInformation->study_id);
     }
 
     public function create(User $user)
@@ -21,13 +21,13 @@ class SamplePolicy extends Policy
 
     public function update(User $user, $model)
     {
-        return $user->study_id == $model->sampleInformation->study_id
+        return $user->study_id == ($model->study_id ?? $model->sampleInformation->study_id)
             && Authorization::isScientist();
     }
 
     public function delete(User $user, $model)
     {
-        return $user->study_id == $model->sampleInformation->study_id
+        return $user->study_id == ($model->study_id ?? $model->sampleInformation->study_id)
             && $this->createdFiveMinutesAgo($user, $model);
     }
 }

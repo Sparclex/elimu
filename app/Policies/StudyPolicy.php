@@ -17,7 +17,8 @@ class StudyPolicy extends Policy
 
     public function view(User $user, Study $study)
     {
-        return $user->studies->contains($study);
+        return $user->studies->contains($study)
+        || Authorization::isAdministrator($user);
     }
 
     public function create(User $user)
@@ -27,7 +28,8 @@ class StudyPolicy extends Policy
 
     public function update(User $user, Study $study)
     {
-        return $user->studies->contains($study) && Authorization::isLabManager($user);
+        return ($user->studies->contains($study) && Authorization::isLabManager($user))
+        || Authorization::isAdministrator($user);
     }
 
     public function delete(User $user, Study $study)

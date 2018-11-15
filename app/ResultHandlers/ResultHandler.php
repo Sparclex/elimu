@@ -19,16 +19,21 @@ abstract class ResultHandler
 
     protected $attributeName;
 
+    public static $dataLabel = 'Data';
+
+    public static $additionalDataLabel = 'Additional Data';
+
     public function __construct($experimentId, $attributeName, File $file = null)
     {
 
         $this->experimentId = $experimentId;
         $this->file = $file ?? Experiment::find($experimentId)->result_file;
         if (!$this->file) {
-            throw new \Exception('No file given for the result handler');
+            throw new \Exception('No file given');
         }
         $this->attributeName = $attributeName;
         $this->inputParameters = InputParameter::getByExperiment($this->experimentId);
+
         $this->handle();
     }
 
@@ -36,10 +41,10 @@ abstract class ResultHandler
 
     public function validateSampleIds(array $sampleIds)
     {
-        $existingSampleIds = DB::table('experiment_requests')
-            ->join('samples', 'experiment_requests.sample_id', '=', 'samples.id')
+        $existingSampleIds = DB::table('requested_experiments')
+            ->join('samples', 'requested_experiments.sample_id', '=', 'samples.id')
             ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id')
-            ->where('experiment_requests.experiment_id', $this->experimentId)
+            ->where('requested_experiments.experiment_id', $this->experimentId)
             ->select('sample_informations.sample_id')->pluck('sample_id')->unique();
         $missingInDb = [];
         foreach ($sampleIds as $sampleId) {
@@ -95,7 +100,7 @@ abstract class ResultHandler
 
     public static function removeSampleData($experimentId)
     {
-        DB::table('sample_data')->where('experiment_id', $experimentId)->delete();
+        DB::table('results')->where('experiment_id', $experimentId)->delete();
     }
 
     public function storeSampleData(array $sampleData)
@@ -117,7 +122,7 @@ abstract class ResultHandler
             ]);
         }
         foreach ($data->chunk(100) as $chunk) {
-            DB::table('sample_data')->insert($chunk->toArray());
+            DB::table('results')->insert($chunk->toArray());
         }
     }
 }

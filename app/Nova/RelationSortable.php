@@ -20,14 +20,14 @@ trait RelationSortable
         $query->getQuery()->orders = null;
         $model = self::newModel();
         $relation = $model->{$relation}();
-        $query->select($model->getTable().'.*', 'tmp.'.$orderColumn);
+        $query->select($model->getTable().'.*', 'tmp.'.$orderColumn. ' as ordercolumn');
 
-        $query->join(
+        $query->leftJoin(
             $relation->getRelated()->getTable(). ' as tmp',
             $model->getTable(). "." .$relation->getForeignKey(),
             "tmp.id"
         );
-        $query->orderBy('tmp.'.$orderColumn, $request->get('orderByDirection'));
+        $query->orderBy('ordercolumn', $request->get('orderByDirection'));
         return $query;
     }
 

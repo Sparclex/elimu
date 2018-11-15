@@ -61,12 +61,12 @@ codestyle:
   script:
   - phpcs --standard=PSR2 --extensions=php --ignore=app/Support/helpers.php app
 
-phpunit:
-  stage: test
-  dependencies:
-  - composer
-  script:
-  - phpunit --coverage-text --colors=never
+#phpunit:
+#  stage: test
+#  dependencies:
+#  - composer
+#  script:
+#  - phpunit --coverage-text --colors=never
 
 staging:
   stage: deploy

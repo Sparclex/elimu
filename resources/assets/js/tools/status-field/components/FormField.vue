@@ -12,8 +12,8 @@
                 </option>
 
                 <option
-                    v-for="option in field.options"
-                    :value="option"
+                    v-for="(option, key) in field.options"
+                    :value="key"
                     :selected="option == value"
                 >
                     {{ option }}

@@ -63,9 +63,6 @@ class RequestExperiment extends Action
     public function fields()
     {
         return [
-            /*            Select::make('Assay')
-                            ->options(Assay::pluck('name', 'id'))
-                            ->rules('required', 'exists:assays,id'),*/
             ReagentsFields::make(Assay::all()),
         ];
     }

@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SampleData extends Model
+class ResultData extends Model
 {
-    protected $table = 'sample_data';
+    protected $table = 'result_data';
 
-    public function data()
+    public function result()
     {
-        return $this->belongsTo(Data::class);
+        return $this->belongsTo(Result::class);
     }
 
     public function getDataAttribute($value)
@@ -20,12 +20,6 @@ class SampleData extends Model
         }
         return 'Non Ampl.';
     }
-
-    public function sample()
-    {
-        return $this->belongsTo(Sample::class);
-    }
-
     public function getAdditionalAttribute($value)
     {
         return unserialize($value);
@@ -34,10 +28,5 @@ class SampleData extends Model
     public function setAdditionalAttribute($value)
     {
         return serialize($value);
-    }
-
-    public function experiment()
-    {
-        return $this->belongsTo(Experiment::class);
     }
 }

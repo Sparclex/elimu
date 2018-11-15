@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Assay;
 use App\Models\Experiment;
 use App\Models\InputParameter;
+use App\Models\Result;
+use App\Models\ResultData;
 use App\Models\Sample;
 use App\Models\SampleData;
 use App\Models\SampleInformation;
@@ -15,6 +17,8 @@ use App\Policies\AssayPolicy;
 use App\Policies\Authorization;
 use App\Policies\ExperimentPolicy;
 use App\Policies\InputParameterPolicy;
+use App\Policies\ResultDataPolicy;
+use App\Policies\ResultPolicy;
 use App\Policies\SampleDataPolicy;
 use App\Policies\SampleInformationPolicy;
 use App\Policies\SamplePolicy;
@@ -38,13 +42,14 @@ class AuthServiceProvider extends ServiceProvider
         Assay::class => AssayPolicy::class,
         Experiment::class => ExperimentPolicy::class,
         InputParameter::class => InputParameterPolicy::class,
-        SampleData::class => SampleDataPolicy::class,
         SampleInformation::class => SampleInformationPolicy::class,
         Sample::class => SamplePolicy::class,
         SampleType::class => SampleTypePolicy::class,
         Study::class => StudyPolicy::class,
         User::class => UserPolicy::class,
-        Storage::class => StoragePolicy::class
+        Storage::class => StoragePolicy::class,
+        Result::class => ResultPolicy::class,
+        ResultData::class => ResultDataPolicy::class
     ];
 
     /**

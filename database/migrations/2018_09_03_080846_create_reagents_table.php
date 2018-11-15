@@ -21,7 +21,7 @@ class CreateReagentsTable extends Migration
             $table->bigInteger('assay_id')->unsigned();
             $table->timestamps();
 
-            $table->foreign('assay_id')->references('id')->on('assays');
+            $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
         });
     }
 

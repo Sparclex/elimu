@@ -17,8 +17,8 @@ class CreateUserStudyTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('study_id')->unsigned();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('study_id')->references('id')->on('studies');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE');
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
             $table->primary(['user_id', 'study_id']);
         });
     }

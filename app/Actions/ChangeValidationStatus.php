@@ -39,9 +39,9 @@ class ChangeValidationStatus extends Action
 
         return [
             Status::make('Status')
-                ->loadingWhen('Pending')
-                ->failedWhen('Declined')
-                ->successWhen('Accepted'),
+                ->loadingWhenNull('Pending')
+                ->failedWhen('Declined', 0)
+                ->successWhen('Accepted', 1),
         ];
     }
 }

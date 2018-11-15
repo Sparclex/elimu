@@ -3,12 +3,14 @@
 namespace App\Nova;
 
 use App\Nova\Invokables\DeleteExperimentFile;
+use App\Nova\Invokables\ResultFields;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage as StorageFacade;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\File;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Trix;
@@ -18,45 +20,28 @@ class Experiment extends Resource
 {
     use RelationSortable;
 
-    public function __construct(\Illuminate\Database\Eloquent\Model $resource)
-    {
-        parent::__construct($resource);
-    }
-
     public static $with = ['reagent', 'reagent.assay', 'requester'];
 
-    /**
-     * The model the resource corresponds to.
-     *
-     * @var string
-     */
     public static $model = 'App\Models\Experiment';
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
+
     public static $search = [
         'name',
     ];
     public static $globallySearchable = false;
 
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @return string
-     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return self::sortByMultiple($request, $query, [
+            ['reagent', 'lot'],
+            ['requester', 'name']
+        ]);
+    }
+
     public function title()
     {
         return "Experiment: " . $this->id . " (" . $this->reagent->assay->name . ")";
     }
 
-    /**
-     * Get the fields displayed by the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
     public function fields(Request $request)
     {
         $resultTypes = array_keys(config('lims.result_types'));
@@ -64,14 +49,12 @@ class Experiment extends Resource
             ID::make()
                 ->hideFromIndex(),
             BelongsTo::make('Assay', 'reagent', Reagent::class)
-                ->hideWhenUpdating()->sortable(),
+                ->hideWhenUpdating()
+                ->sortable(),
             BelongsTo::make('Study')
                 ->onlyOnDetail(),
             BelongsTo::make('Requester', 'requester', User::class)
-                ->rules(
-                    'required',
-                    'exists:people,id'
-                )
+                ->rules('required', 'exists:people,id')
                 ->searchable()
                 ->hideWhenUpdating()
                 ->sortable(),
@@ -83,6 +66,9 @@ class Experiment extends Resource
                 ->hideFromIndex(),
 
             BelongsToMany::make('Samples'),
+
+            HasMany::make('Results'),
+
             File::make('Result File')
                 ->hideWhenCreating()
                 ->prunable()
@@ -114,64 +100,5 @@ class Experiment extends Resource
                 ->rules('required_with:result_file', 'in:' . implode(',', $resultTypes))
 
         ];
-    }
-
-    /**
-     * Get the cards available for the request.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function cards(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the lenses available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function lenses(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the actions available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function actions(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  NovaRequest $request
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        return self::sortByMultiple($request, $query, [
-            ['reagent', 'lot'],
-            ['requester', 'name']
-        ]);
     }
 }

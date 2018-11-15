@@ -23,6 +23,9 @@ class SampleRegistry extends Lens
         return $request->withOrdering($request->withFilters(
             $query->select([
                 'samples.id',
+                'samples.created_at',
+                'samples.updated_at',
+                'sample_informations.study_id',
                 'sample_informations.sample_id',
                 'sample_informations.subject_id',
                 'sample_informations.visit_id',
@@ -32,7 +35,7 @@ class SampleRegistry extends Lens
                 'position',
                 'box'
             ])
-                ->join('storage', 'samples.id', '=', 'storage.sample_id')
+                ->leftJoin('storage', 'samples.id', '=', 'storage.sample_id')
                 ->join('sample_informations', 'samples.sample_information_id', 'sample_informations.id')
                 ->join('studies', 'studies.id', 'sample_informations.study_id')
                 ->join('sample_types', 'sample_types.id', 'samples.sample_type_id')

@@ -38,11 +38,13 @@ class Sample extends Model
 
     public function experiments()
     {
-        return $this->belongsToMany(Experiment::class, 'experiment_requests')->withTimestamps();
+        return $this
+            ->belongsToMany(Experiment::class, 'requested_experiments')
+            ->withTimestamps();
     }
 
-    public function data()
+    public function results()
     {
-        return $this->hasMany(SampleData::class);
+        return $this->hasMany(Result::class);
     }
 }

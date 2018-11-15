@@ -12,6 +12,10 @@ class InputParameter extends Model
         'parameters' => 'collection'
     ];
 
+    protected $fillable = [
+        'assay_id', 'study_id', 'parameters'
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -34,12 +38,12 @@ class InputParameter extends Model
         if ($experiment instanceof Experiment) {
             $experiment = $experiment->id;
         }
-        return self
+        return optional(self
             ::withoutGlobalScopes()
             ->join('reagents', 'reagents.assay_id', 'input_parameters.assay_id')
             ->join('experiments', 'experiments.reagent_id', 'reagents.id')
             ->where('input_parameters.study_id', Auth::user()->study_id)
             ->where('experiments.id', $experiment)
-            ->select('input_parameters.*')->first()->parameters;
+            ->select('input_parameters.*')->first())->parameters;
     }
 }

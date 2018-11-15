@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Experiment;
-use App\Models\InputParameter;
-use App\Models\SampleInformation;
-use App\Models\StorageSize;
-use App\Observers\InsertSelectedStudy;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Collection;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +14,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Collection::macro('standardDeviation', function ($key = null) {
+            $data = $key ? $this->pluck($key)->values() : $this->values();
+            $variance = 0.0;
+            $average = $data->avg();
+
+            foreach ($data as $element) {
+                // sum of squares of differences between
+                // all numbers and means.
+                $variance += pow(($element - $average), 2);
+            }
+            return (float) sqrt($variance/$data->count());
+        });
     }
 
     /**

@@ -13,21 +13,43 @@ class Status extends Field
      */
     public $component = 'status';
 
-    public $loadingWord;
+    private $loadingWord;
 
-    public $successWord;
+    private $loadingKey;
 
-    public $failedWord;
+    private $successWord;
+
+    private $successKey;
+
+    private $failedWord;
+
+    private $failedKey;
 
     /**
      * Specify the values that should be considered "loading".
      *
      * @param  string $loadingWord
+     * @param mixed $loadingKey
      * @return \App\Fields\Status
      */
-    public function loadingWhen($loadingWord)
+    public function loadingWhen($loadingWord, $loadingKey = null)
     {
         $this->loadingWord = $loadingWord;
+        $this->loadingKey = $loadingKey ?? $loadingWord;
+
+        return $this;
+    }
+
+    /**
+     * Specify that null should be considered "loading".
+     *
+     * @param  string $loadingWord
+     * @return \App\Fields\Status
+     */
+    public function loadingWhenNull($loadingWord)
+    {
+        $this->loadingWord = $loadingWord;
+        $this->loadingKey = null;
 
         return $this;
     }
@@ -36,11 +58,13 @@ class Status extends Field
      * Specify the values that should be considered "success".
      *
      * @param  string $successWord
+     * @param mixed $successKey
      * @return \App\Fields\Status
      */
-    public function successWhen($successWord)
+    public function successWhen($successWord, $successKey = null)
     {
         $this->successWord = $successWord;
+        $this->successKey = $successKey ?? $successWord;
 
         return $this;
     }
@@ -49,11 +73,13 @@ class Status extends Field
      * Specify the values that should be considered "failed".
      *
      * @param  string $failedWord
+     * @param mixed $failedKey
      * @return \App\Fields\Status
      */
-    public function failedWhen($failedWord)
+    public function failedWhen($failedWord, $failedKey = null)
     {
         $this->failedWord = $failedWord;
+        $this->failedKey = $failedKey ?? $failedWord;
 
         return $this;
     }
@@ -61,13 +87,13 @@ class Status extends Field
     public function meta()
     {
         return [
-            'loadingWord' => $this->loadingWord,
-            'successWord' => $this->successWord,
-            'failedWord' => $this->failedWord,
+            'loadingWord' => $this->loadingKey,
+            'successWord' => $this->successKey,
+            'failedWord' => $this->failedKey,
             'options' => [
-                $this->loadingWord,
-                $this->successWord,
-                $this->failedWord,
+                $this->loadingKey => $this->loadingWord,
+                $this->successKey => $this->successWord,
+                $this->failedKey => $this->failedWord,
             ],
         ];
     }

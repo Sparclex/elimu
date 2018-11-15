@@ -64,17 +64,6 @@ class SampleInformationFilter extends Filter
             ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id');
     }
 
-    /**
-     * Get the filter's available options.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function options(Request $request)
-    {
-        return SampleInformation::pluck($this->attribute, $this->attribute)->unique();
-    }
-
     public function jsonSerialize()
     {
         $container = Container::getInstance();
@@ -87,5 +76,16 @@ class SampleInformationFilter extends Filter
             })->values()->all(),
             'currentValue' => '',
         ];
+    }
+
+    /**
+     * Get the filter's available options.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function options(Request $request)
+    {
+        return SampleInformation::pluck($this->attribute, $this->attribute)->unique();
     }
 }

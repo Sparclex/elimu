@@ -6,6 +6,8 @@ use App\Nova\Assay;
 use App\Nova\Experiment;
 use App\Nova\InputParameter;
 use App\Nova\Reagent;
+use App\Nova\Result;
+use App\Nova\ResultData;
 use App\Nova\Sample;
 use App\Nova\SampleData;
 use App\Nova\SampleInformation;
@@ -100,7 +102,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             Sample::class,
             InputParameter::class,
             Experiment::class,
-            SampleData::class,
+            ResultData::class,
+            Result::class,
             Reagent::class,
             Assay::class,
             SampleType::class,

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Nova\Invokables;
 
 use App\ResultHandlers\ResultHandler;

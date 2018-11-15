@@ -32,10 +32,13 @@ class DownloadReport extends Field
 
     public function fields()
     {
-        $experimentsIds = DB::table('sample_data')
+        $experimentsIds = DB::table('results')
+            ->leftJoin('result_data', 'results.id', 'result_data.result_id')
             ->where('sample_id', $this->sampleId)
-            ->where('status', '<>', 'Pending')
+            ->groupBy('results.id')
+            ->havingRaw('count(result_data.id) = count(result_data.status)')
             ->pluck('experiment_id', 'experiment_id');
+
         if (!$experimentsIds->count()) {
             return [];
         }
