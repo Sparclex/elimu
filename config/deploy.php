@@ -61,6 +61,7 @@ return [
             'artisan:cache:clear',
             'artisan:config:cache',
             'artisan:migrate:fresh',
+            'artisan:db:seed',
         ],
 
         // Deployment is done and live

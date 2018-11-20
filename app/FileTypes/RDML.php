@@ -239,10 +239,15 @@ class RDML
             });
 
         $invalidControls = [];
+        $parameters = $this->inputParameters->keyBy('target');
         foreach ($controls as $control) {
             switch (strtolower($control['sampleId'])) {
                 case RdmlCollection::POSITIVE_CONTROL:
-                    if (!$control['cq']) {
+                    if (!$this->isValidControl(
+                        $control['cq'],
+                        $parameters[$control['target']]['posctrl'],
+                        $parameters[$control['target']]['cutoff']
+                    )) {
                         $invalidControls[] = sprintf(
                             '%s (%s, %s)',
                             "Pos",
@@ -252,7 +257,11 @@ class RDML
                     }
                     break;
                 case RdmlCollection::NEGATIVE_CONTROL:
-                    if ($control['cq']) {
+                    if (!$this->isValidControl(
+                        $control['cq'],
+                        $parameters[$control['target']]['negctrl'],
+                        $parameters[$control['target']]['cutoff']
+                    )) {
                         $invalidControls[] = sprintf(
                             '%s (%s, %s)',
                             "Pos",
@@ -262,7 +271,11 @@ class RDML
                     }
                     break;
                 case RdmlCollection::NTC_CONTROL:
-                    if ($control['cq']) {
+                    if (!$this->isValidControl(
+                        $control['cq'],
+                        $parameters[$control['target']]['ntc'],
+                        $parameters[$control['target']]['cutoff']
+                    )) {
                         $invalidControls[] = sprintf(
                             '%s (%s, %s)',
                             "Pos",
@@ -273,13 +286,26 @@ class RDML
                     break;
             }
         }
-
         if (count($invalidControls)) {
             $this->lastError =
                 'The following controls are invalid: ' . implode(',', $invalidControls);
         }
 
-        return (bool)$this->lastError;
+        return count($invalidControls) == 0;
+    }
+
+    private function isValidControl($controlCq, $parameter, $cutoff)
+    {
+        if (!$parameter) {
+            return true;
+        }
+        if (strtolower($parameter) == 'null') {
+            return $controlCq == null;
+        }
+        if (strtolower($parameter) == 'cutoff') {
+            return $controlCq && $controlCq <= $cutoff;
+        }
+        return $controlCq <= $parameter;
     }
 
     public function getSampleIds()
