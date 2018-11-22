@@ -21,11 +21,10 @@ class Result extends Model
         return $this->hasMany(ResultData::class);
     }
 
+
     public function getStatusAttribute()
     {
-        $allStatusAreSet = $this->relationLoaded('resultData') ?
-            $this->resultData->count() == $this->resultData->count('status') :
-            $this->resultData()->count() == $this->resultData()->count('status');
+        $allStatusAreSet = $this->resultData->count() == $this->resultData->count('status');
         return $allStatusAreSet ? 'Verified' : 'Pending';
     }
 }

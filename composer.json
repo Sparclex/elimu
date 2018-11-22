@@ -22,7 +22,6 @@
         "predis/predis": "^1.1",
         "sparclex/select-has-many": "*",
         "spatie/nova-backup-tool": "^1.0",
-        "tightenco/nova-releases": "^0.1.2",
         "laravel/telescope": "1.*"
     },
     "require-dev": {

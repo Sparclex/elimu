@@ -104,6 +104,7 @@ return [
                 '--exclude=tests',
             ],
         ],
+        'composer_options' => 'install --no-suggest --no-interaction -o'
     ],
 
     /*
