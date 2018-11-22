@@ -192,16 +192,16 @@ class RDML
 
         $invalidSampleIds = [];
         foreach ($targets as $target => $samples) {
-            $requiredRepetitions = $this->inputParameters->firstWhere('target', $targets)['minvalues'];
+            $requiredRepetitions = $this->inputParameters->firstWhere('target', $target)['minvalues'];
             foreach ($samples as $sampleId => $sample) {
                 if (count($sample) < $requiredRepetitions) {
-                    $invalidSampleIds[] = $sampleId;
+                    $invalidSampleIds[] = sprintf('%s (%s)', $sampleId, $target);
                 }
             }
         }
 
         if (count($invalidSampleIds)) {
-            $this->lastError = 'Not enough values for samples: ' . implode(',', $invalidSampleIds);
+            $this->lastError = 'Not enough values for samples: ' . implode(', ', $invalidSampleIds);
         }
 
         return !((bool) $this->lastError);
@@ -224,7 +224,7 @@ class RDML
 
         if (count($invalidSamples)) {
             $this->lastError =
-                'The following samples might have an invalid cq value: ' . implode(',', $invalidSamples);
+                'The following samples might have an invalid cq value: ' . implode(', ', $invalidSamples);
         }
 
         return !((bool)
@@ -288,7 +288,7 @@ class RDML
         }
         if (count($invalidControls)) {
             $this->lastError =
-                'The following controls are invalid: ' . implode(',', $invalidControls);
+                'The following controls are invalid: ' . implode(', ', $invalidControls);
         }
 
         return count($invalidControls) == 0;

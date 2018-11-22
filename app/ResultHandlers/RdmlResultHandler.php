@@ -60,7 +60,11 @@ class RdmlResultHandler extends ResultHandler
                 $result->sample_id = $sampleIds[$sampleId];
                 $result->experiment_id = $this->experimentId;
                 $result->target = $sample[0]['target'];
-                $result->value = collect($sample)->avg('cq') ? 'Positive' : 'Negative';
+                $result->value = $this->determineValue(
+                    collect($sample)->pluck('cq'),
+                    $targetInputParameter['cutoff'],
+                    $targetInputParameter['lod']
+                );
                 if ($result->value == 'Positive' &&
                     strtolower(
                         $targetInputParameter['quant']
@@ -88,5 +92,20 @@ class RdmlResultHandler extends ResultHandler
         foreach (array_chunk($resultData, 100) as $chunk) {
             DB::table('result_data')->insert($chunk);
         }
+    }
+
+    private function determineValue($cqs, $cutoff, $lod)
+    {
+        $isPositive = null;
+        $needsRepetition = false;
+        foreach ($cqs as $cq) {
+            $status = $cq && $cq <= $cutoff ? true : false;
+            if ($isPositive === null) {
+                $isPositive = $status;
+            } elseif ($isPositive !== $status) {
+                $needsRepetition = true;
+            }
+        }
+        return $needsRepetition ? 'Invalid data' : ($isPositive ? 'Positive' : 'Negative');
     }
 }
