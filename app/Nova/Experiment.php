@@ -46,8 +46,7 @@ class Experiment extends Resource
     {
         $resultTypes = array_keys(config('lims.result_types'));
         return [
-            ID::make()
-                ->hideFromIndex(),
+            ID::make(),
             BelongsTo::make('Assay', 'reagent', Reagent::class)
                 ->hideWhenUpdating()
                 ->sortable(),
