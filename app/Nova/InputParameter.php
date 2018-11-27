@@ -19,8 +19,15 @@ class InputParameter extends Resource
 
     public static $title = 'id';
 
-    public static $search = [
-        'id',
+    public static $search = ['id'];
+
+    /**
+     * The relationship columns that should be searched.
+     *
+     * @var array
+     */
+    public static $searchRelations = [
+        'assay' => ['name'],
     ];
 
     public static function label()
@@ -44,8 +51,7 @@ class InputParameter extends Resource
     {
         return [
             ID::make()
-                ->sortable()
-                ->onlyOnForms(),
+                ->sortable(),
             BelongsTo::make('Study')
                 ->rules('required', 'exists:studies,id')
                 ->onlyOnDetail(),

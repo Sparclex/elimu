@@ -13,6 +13,7 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -20,21 +21,25 @@ class Experiment extends Resource
 {
     use RelationSortable;
 
-    public static $with = ['reagent', 'reagent.assay', 'requester'];
-
     public static $model = 'App\Models\Experiment';
 
     public static $search = [
-        'name',
+        'id', 'assay_name'
     ];
     public static $globallySearchable = false;
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return self::sortByMultiple($request, $query, [
-            ['reagent', 'lot'],
-            ['requester', 'name']
-        ]);
+        return $query->withRequesterName()->withAssayName();
+    }
+
+    public static function scoutQuery(NovaRequest $request, $query)
+    {
+        return $query->withRequesterName()->withAssayName();
+    }
+    public static function detailQuery(NovaRequest $request, $query)
+    {
+        return parent::detailQuery($request, $query)->withRequesterName()->withAssayName();
     }
 
     public function title()
@@ -46,17 +51,11 @@ class Experiment extends Resource
     {
         $resultTypes = array_keys(config('lims.result_types'));
         return [
-            ID::make(),
-            BelongsTo::make('Assay', 'reagent', Reagent::class)
-                ->hideWhenUpdating()
-                ->sortable(),
+            ID::make()->sortable(),
+            Text::make('Assay', 'assay_name')->sortable(),
             BelongsTo::make('Study')
                 ->onlyOnDetail(),
-            BelongsTo::make('Requester', 'requester', User::class)
-                ->rules('required', 'exists:people,id')
-                ->searchable()
-                ->hideWhenUpdating()
-                ->sortable(),
+            Text::make('Requester', 'requester_name')->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
                 ->hideWhenUpdating()

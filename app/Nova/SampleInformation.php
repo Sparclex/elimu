@@ -3,6 +3,8 @@
 namespace App\Nova;
 
 use App\Fields\HtmlReadonly;
+use App\Nova\Filters\CollectedAfter;
+use App\Nova\Filters\CollectedBefore;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Date;
@@ -16,8 +18,7 @@ class SampleInformation extends Resource
 {
     public static $model = 'App\Models\SampleInformation';
 
-    public static $search = [
-    ];
+    public static $search = ['sample_id', 'subject_id', 'visit_id'];
 
     public static function label()
     {
@@ -69,6 +70,14 @@ class SampleInformation extends Resource
                 ->hideFromIndex(),
             HasMany::make('Samples')
 
+        ];
+    }
+
+    public function filters(Request $request)
+    {
+        return [
+            new CollectedAfter(),
+            new CollectedBefore()
         ];
     }
 }

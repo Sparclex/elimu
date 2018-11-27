@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b250a5baee1e47177c7dc6907646c58",
+    "content-hash": "e2cb0526d36d3e3dbbb6a3aa183f0a55",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -935,16 +935,16 @@
         },
         {
             "name": "laravel/telescope",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/telescope.git",
-                "reference": "8a1a5288ac3fa7bddcc98c1bb13e43b79f4b04f9"
+                "reference": "fef70999adce39d5bc977f742a8a6a7a2953f487"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/telescope/zipball/8a1a5288ac3fa7bddcc98c1bb13e43b79f4b04f9",
-                "reference": "8a1a5288ac3fa7bddcc98c1bb13e43b79f4b04f9",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/fef70999adce39d5bc977f742a8a6a7a2953f487",
+                "reference": "fef70999adce39d5bc977f742a8a6a7a2953f487",
                 "shasum": ""
             },
             "require": {
@@ -994,7 +994,7 @@
                 "laravel",
                 "monitoring"
             ],
-            "time": "2018-11-20T15:01:41+00:00"
+            "time": "2018-11-22T12:22:36+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2274,6 +2274,54 @@
             "time": "2018-07-19T23:38:55+00:00"
         },
         {
+            "name": "reinink/advanced-eloquent",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reinink/advanced-eloquent.git",
+                "reference": "2d92b29ba085fd537c198868e8e5c15a0bf205b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reinink/advanced-eloquent/zipball/2d92b29ba085fd537c198868e8e5c15a0bf205b8",
+                "reference": "2d92b29ba085fd537c198868e8e5c15a0bf205b8",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AdvancedEloquent\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AdvancedEloquent\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Reinink",
+                    "email": "jonathan@reinink.ca",
+                    "homepage": "https://reinink.ca"
+                }
+            ],
+            "description": "A set of advanced Eloquent macros for Laravel",
+            "homepage": "https://github.com/reinink/advanced-eloquent",
+            "keywords": [
+                "advanced",
+                "eloquent",
+                "laravel",
+                "macro"
+            ],
+            "time": "2018-11-23T20:30:53+00:00"
+        },
+        {
             "name": "sabberworm/php-css-parser",
             "version": "8.1.0",
             "source": {
@@ -2316,40 +2364,6 @@
                 "stylesheet"
             ],
             "time": "2016-07-19T19:14:21+00:00"
-        },
-        {
-            "name": "sparclex/select-has-many",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "./nova-components/SelectHasMany",
-                "reference": "2270cd5db23c749713f4caf29d8f78a2bf79b2fd",
-                "shasum": null
-            },
-            "require": {
-                "php": ">=7.1.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Sparclex\\SelectHasMany\\FieldServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Sparclex\\SelectHasMany\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "A Laravel Nova field.",
-            "keywords": [
-                "laravel",
-                "nova"
-            ]
         },
         {
             "name": "spatie/db-dumper",
@@ -3662,6 +3676,42 @@
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
             "time": "2017-11-27T11:13:29+00:00"
+        },
+        {
+            "name": "titasgailius/search-relations",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TitasGailius/nova-search-relations.git",
+                "reference": "add69b7d7bf8b849fafb5f3599daf1a2a033a046"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TitasGailius/nova-search-relations/zipball/add69b7d7bf8b849fafb5f3599daf1a2a033a046",
+                "reference": "add69b7d7bf8b849fafb5f3599daf1a2a033a046",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Titasgailius\\SearchRelations\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova tool.",
+            "keywords": [
+                "laravel",
+                "nova",
+                "relations",
+                "search"
+            ],
+            "time": "2018-09-02T07:55:27+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

@@ -24,7 +24,13 @@ class Result extends Model
 
     public function getStatusAttribute()
     {
-        $allStatusAreSet = $this->resultData->count() == $this->resultData->pluck('status')->filter()->count();
+        $allStatusAreSet = $this->resultData->count() ==
+            $this->resultData
+                ->pluck('status')
+                ->filter(function ($value) {
+                    return $value !== null;
+                })
+                ->count();
         return $allStatusAreSet ? 'Verified' : 'Pending';
     }
 }

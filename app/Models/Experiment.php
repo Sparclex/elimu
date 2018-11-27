@@ -62,7 +62,7 @@ class Experiment extends Model
 
     public function getResultHandlerAttribute()
     {
-        return $this->result_type ? config('lims.result_types.'.$this->result_type) : ResultHandler::class;
+        return $this->result_type ? config('lims.result_types.' . $this->result_type) : ResultHandler::class;
     }
 
     public function getFileTypeAttribute()
@@ -72,5 +72,19 @@ class Experiment extends Model
 
     public function setFileTypeAttribute()
     {
+    }
+
+    public function scopeWithAssayName($query)
+    {
+        return $query->addSubSelect('assay_id', Reagent::select('assay_id')
+            ->whereColumn('id', 'reagent_id'))
+            ->addSubSelect('assay_name', Assay::select('name')
+                ->whereColumn('id', 'assay_id'));
+    }
+
+    public function scopeWithRequesterName($query)
+    {
+        return $query->addSubSelect('requester_name', User::select('name')
+            ->whereColumn('id', 'requester_id'));
     }
 }

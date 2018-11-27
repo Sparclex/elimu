@@ -5,6 +5,9 @@ namespace App\Nova;
 use App\Actions\RequestExperiment;
 use App\Fields\DataPanel;
 use App\Fields\DownloadReport;
+use App\Nova\Filters\CollectedAfter;
+use App\Nova\Filters\CollectedBefore;
+use App\Nova\Filters\SampleTypeFilter;
 use App\Nova\Invokables\ResultFields;
 use App\Nova\Lenses\SampleRegistry;
 use Illuminate\Http\Request;
@@ -14,6 +17,7 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
@@ -21,13 +25,21 @@ class Sample extends Resource
 {
     use RelationSortable;
 
-    public static $globallySearchable = false;
-
-    public static $with = ['sampleInformation'];
-
     public static $model = 'App\Models\Sample';
 
+    public static $globallySearchable = false;
+
     public static $search = [];
+
+    /**
+     * The relationship columns that should be searched.
+     *
+     * @var array
+     */
+    public static $searchRelations = [
+        'sampleType' => ['name'],
+        'sampleInformation' => ['sample_id']
+    ];
 
     public function title()
     {
@@ -47,6 +59,9 @@ class Sample extends Resource
                 ->sortable()
                 ->hideFromIndex()
                 ->hideFromDetail(),
+            Text::make('Type', 'sample_type_name')
+                ->exceptOnForms()
+                ->sortable(),
             BelongsTo::make('Type', 'sampleType', SampleType::class)
                 ->rules(
                     'required',
@@ -54,10 +69,13 @@ class Sample extends Resource
                     ->where('sample_information_id', $sampleInformationId)
                     ->ignore($request->resourceId)
                 )
+                ->onlyOnForms(),
+            Text::make('Sample ID', 'sample_id')
+                ->exceptOnForms()
                 ->sortable(),
-            BelongsTo::make('Sample Information', 'sampleInformation', SampleInformation::class)
+            BelongsTo::make('Sample ID', 'sampleInformation', SampleInformation::class)
                 ->rules('required')
-                ->sortable(),
+                ->onlyOnForms(),
             Number::make('Quantity', 'quantity')
                 ->rules('nullable', 'numeric', 'existing_storage:study,sampleType')
                 ->help('Enter 0 if this sample should not be stored.')
@@ -71,10 +89,23 @@ class Sample extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return self::sortByMultiple($request, $query, [
-            ['sampleInformation', 'sample_id'],
-            ['sampleType']
-        ]);
+        return $query
+            ->withType()
+            ->withSampleId();
+    }
+
+    public static function detailQuery(NovaRequest $request, $query)
+    {
+        return parent::detailQuery($request, $query)
+            ->withType()
+            ->withSampleId();
+    }
+
+    public static function scoutQuery(NovaRequest $request, $query)
+    {
+        return parent::scoutQuery($request, $query)
+            ->withType()
+            ->withSampleId();
     }
 
     public function lenses(Request $request)
@@ -89,6 +120,15 @@ class Sample extends Resource
         return [
             new RequestExperiment(),
             (new DownloadExcel())->withHeadings()
+        ];
+    }
+
+    public function filters(Request $request)
+    {
+        return [
+            new CollectedAfter('sampleInformation'),
+            new CollectedBefore('sampleInformation'),
+            new SampleTypeFilter()
         ];
     }
 }

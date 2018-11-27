@@ -27,6 +27,7 @@ class RdmlResultHandler extends ResultHandler
         if (!$rdml->hasValidControls()) {
               $this->error(__($rdml->getLastError()));
         }
+        // the following
         if (!$rdml->hasEnoughRepetitions()) {
             $this->error(__($rdml->getLastError()));
         }
