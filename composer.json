@@ -23,6 +23,7 @@
         "nathanmac/parser": "^4.3",
         "predis/predis": "^1.1",
         "reinink/advanced-eloquent": "^0.2.0",
+        "sparclex/nova-import-card": "^0.1.1",
         "spatie/nova-backup-tool": "^1.0",
         "titasgailius/search-relations": "^1.0",
         "treestoneit/belongs-to-field": "^0.1.0"

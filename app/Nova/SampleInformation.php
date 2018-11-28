@@ -2,23 +2,29 @@
 
 namespace App\Nova;
 
+use Laravel\Nova\Fields\ID;
 use App\Fields\HtmlReadonly;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\DateTime;
 use App\Nova\Filters\CollectedAfter;
 use App\Nova\Filters\CollectedBefore;
-use Illuminate\Http\Request;
+use App\Importer\SampleInformationImporter;
+use Sparclex\NovaImportCard\NovaImportCard;
 use Treestoneit\BelongsToField\BelongsToField;
-use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Select;
-use Laravel\Nova\Fields\Text;
 
 class SampleInformation extends Resource
 {
     public static $model = 'App\Models\SampleInformation';
 
     public static $search = ['sample_id', 'subject_id', 'visit_id'];
+
+    public static $title = 'sample_id';
+
+    public static $importer = SampleInformationImporter::class;
 
     public static function label()
     {
@@ -28,11 +34,6 @@ class SampleInformation extends Resource
     public static function singularLabel()
     {
         return 'Sample Information';
-    }
-
-    public function title()
-    {
-        return "Sample ID " . $this->sample_id;
     }
 
     public function subtitle()
@@ -54,22 +55,26 @@ class SampleInformation extends Resource
                 ->updateRules('required', 'unique:sample_informations,sample_id,{{resourceId}}')
                 ->sortable(),
             Text::make('Subject ID')
-                ->rules('required')
                 ->sortable(),
             Text::make('Visit', 'visit_id')
-                ->rules('required')
                 ->sortable(),
             DateTime::make('Collected at')
-                ->rules('required')
                 ->sortable(),
             Date::make('Birthdate')
-                ->rules('date')
+                ->rules('nullable', 'date')
                 ->hideFromIndex(),
             Select::make('Gender')
                 ->options([0 => 'Male', 1 => 'Female'])
                 ->hideFromIndex(),
             HasMany::make('Samples')
 
+        ];
+    }
+
+    public function cards(Request $request)
+    {
+        return [
+            new NovaImportCard(static::class)
         ];
     }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2d9ceaeca834f8608b91c52620d37fe",
+    "content-hash": "598d6bb7c719da2b01956a9d4772d36d",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -2425,6 +2425,57 @@
                 "stylesheet"
             ],
             "time": "2016-07-19T19:14:21+00:00"
+        },
+        {
+            "name": "sparclex/nova-import-card",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sparclex/nova-import-card.git",
+                "reference": "f7abc2bd5434594c7a655b466be4dd8d488561cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sparclex/nova-import-card/zipball/f7abc2bd5434594c7a655b466be4dd8d488561cc",
+                "reference": "f7abc2bd5434594c7a655b466be4dd8d488561cc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^5.6",
+                "laravel/nova": "~1.0",
+                "maatwebsite/excel": "^3.1",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~1.0",
+                "orchestra/database": "^3.7",
+                "orchestra/testbench": "^3.7",
+                "phpunit/phpunit": "7.1",
+                "predis/predis": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sparclex\\NovaImportCard\\CardServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Sparclex\\NovaImportCard\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A card which lets you batch import resources",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "time": "2018-11-23T13:49:46+00:00"
         },
         {
             "name": "spatie/db-dumper",

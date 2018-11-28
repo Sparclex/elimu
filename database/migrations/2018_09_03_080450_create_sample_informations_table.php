@@ -16,9 +16,9 @@ class CreateSampleInformationsTable extends Migration
         Schema::create('sample_informations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('sample_id');
-            $table->string('subject_id');
+            $table->string('subject_id')->nullable();
             $table->timestamp('collected_at')->nullable();
-            $table->string('visit_id');
+            $table->string('visit_id')->nullable();
             $table->bigInteger('study_id')->unsigned();
             $table->date('birthdate')->nullable();
             $table->tinyInteger('gender')->nullable();

@@ -2,23 +2,24 @@
 
 namespace App\Nova;
 
-use App\Actions\RequestExperiment;
 use App\Fields\DataPanel;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\Text;
 use App\Fields\DownloadReport;
+use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\HasMany;
+use App\Actions\RequestExperiment;
+use App\Nova\Lenses\SampleRegistry;
 use App\Nova\Filters\CollectedAfter;
 use App\Nova\Filters\CollectedBefore;
-use App\Nova\Filters\SampleTypeFilter;
 use App\Nova\Invokables\ResultFields;
-use App\Nova\Lenses\SampleRegistry;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Treestoneit\BelongsToField\BelongsToField;
+use App\Nova\Filters\SampleTypeFilter;
 use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Treestoneit\BelongsToField\BelongsToField;
 use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Sample extends Resource
@@ -80,6 +81,8 @@ class Sample extends Resource
                 ->rules('nullable', 'numeric', 'existing_storage:study,sampleType')
                 ->help('Enter 0 if this sample should not be stored.')
                 ->sortable(),
+
+            Code::make('Extra')->json(),
            // DownloadReport::make($this->id),
 
             BelongsToMany::make('Experiments'),

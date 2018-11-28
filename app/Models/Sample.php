@@ -9,7 +9,16 @@ class Sample extends DependsOnStudy
 {
     protected $with = ['sampleInformation'];
 
-    protected $fillable = ['sample_type_id', 'sample_information_id', 'study_id', 'quantity'];
+    protected $fillable = [
+        'sample_type_id',
+        'sample_information_id',
+        'study_id',
+        'quantity'
+    ];
+
+    protected $casts = [
+        'extra' => 'array'
+    ];
 
     public static function boot()
     {
