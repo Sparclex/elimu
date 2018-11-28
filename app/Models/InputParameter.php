@@ -6,7 +6,7 @@ use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class InputParameter extends Model
+class InputParameter extends DependsOnStudy
 {
     protected $casts = [
         'parameters' => 'collection'

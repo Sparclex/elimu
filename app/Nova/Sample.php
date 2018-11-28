@@ -12,7 +12,7 @@ use App\Nova\Invokables\ResultFields;
 use App\Nova\Lenses\SampleRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Laravel\Nova\Fields\BelongsTo;
+use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -48,7 +48,7 @@ class Sample extends Resource
 
     public function subtitle()
     {
-        return 'Study: (' . $this->sampleInformation->study->study_id . ') ' . $this->sampleInformation->study->name;
+        return 'Study: (' . $this->study->study_id . ') ' . $this->sampleInformation->study->name;
     }
 
     public function fields(Request $request)
@@ -62,7 +62,7 @@ class Sample extends Resource
             Text::make('Type', 'sample_type_name')
                 ->exceptOnForms()
                 ->sortable(),
-            BelongsTo::make('Type', 'sampleType', SampleType::class)
+            BelongsToField::make('Type', 'sampleType', SampleType::class)
                 ->rules(
                     'required',
                     Rule::unique('samples', 'sample_type_id')
@@ -73,14 +73,14 @@ class Sample extends Resource
             Text::make('Sample ID', 'sample_id')
                 ->exceptOnForms()
                 ->sortable(),
-            BelongsTo::make('Sample ID', 'sampleInformation', SampleInformation::class)
+            BelongsToField::make('Sample ID', 'sampleInformation', SampleInformation::class)
                 ->rules('required')
                 ->onlyOnForms(),
             Number::make('Quantity', 'quantity')
                 ->rules('nullable', 'numeric', 'existing_storage:study,sampleType')
                 ->help('Enter 0 if this sample should not be stored.')
                 ->sortable(),
-            DownloadReport::make($this->id),
+           // DownloadReport::make($this->id),
 
             BelongsToMany::make('Experiments'),
             HasMany::make('Results')
@@ -90,6 +90,7 @@ class Sample extends Resource
     public static function indexQuery(NovaRequest $request, $query)
     {
         return $query
+            ->with('sampleInformation', 'sampleType')
             ->withType()
             ->withSampleId();
     }
@@ -97,6 +98,7 @@ class Sample extends Resource
     public static function detailQuery(NovaRequest $request, $query)
     {
         return parent::detailQuery($request, $query)
+            ->with('sampleInformation', 'sampleType')
             ->withType()
             ->withSampleId();
     }
@@ -104,6 +106,7 @@ class Sample extends Resource
     public static function scoutQuery(NovaRequest $request, $query)
     {
         return parent::scoutQuery($request, $query)
+            ->with('sampleInformation', 'sampleType')
             ->withType()
             ->withSampleId();
     }
@@ -126,9 +129,9 @@ class Sample extends Resource
     public function filters(Request $request)
     {
         return [
-            new CollectedAfter('sampleInformation'),
-            new CollectedBefore('sampleInformation'),
-            new SampleTypeFilter()
+            //new CollectedAfter('sampleInformation'),
+            //new CollectedBefore('sampleInformation'),
+            //new SampleTypeFilter()
         ];
     }
 }

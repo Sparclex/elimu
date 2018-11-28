@@ -5,6 +5,7 @@ use App\Models\Assay;
 use App\Models\Reagent;
 use App\Models\SampleType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 
 class DevelopmentSeeder extends Seeder
 {
@@ -31,6 +32,7 @@ class DevelopmentSeeder extends Seeder
             'timezone' => 'Europe/Zurich',
             'role' => 'Administrator'
         ]);
+        Auth::loginUsingId(1);
         $user->studies()->attach($study_id);
         /*
                 factory(\App\Models\Result::class, 10)->create([

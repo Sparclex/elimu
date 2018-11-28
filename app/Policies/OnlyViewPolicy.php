@@ -11,7 +11,7 @@ trait OnlyViewPolicy
 
     public function view(User $user, $model)
     {
-        return $user->study_id == $model->experiment->study_id;
+        return $user->study_id == $model->study_id;
     }
 
     public function create(User $user)

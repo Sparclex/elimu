@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
 
-class SampleInformation extends Model
+class SampleInformation extends DependsOnStudy
 {
     protected $dates = [
         'created_at',

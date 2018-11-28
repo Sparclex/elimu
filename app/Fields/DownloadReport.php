@@ -37,15 +37,15 @@ class DownloadReport extends Field
             ->where('sample_id', $this->sampleId)
             ->groupBy('results.id')
             ->havingRaw('count(result_data.id) = count(result_data.status)')
-            ->pluck('experiment_id', 'experiment_id');
+            ->pluck('assay_id', 'assay_id');
 
         if (!$experimentsIds->count()) {
             return [];
         }
         return [
-            Select::make('Experiment')
+            Select::make('Assay')
                 ->options($experimentsIds->toArray())
-                ->rules('required', 'exists:experiments,id')
+                ->rules('required', 'exists:assays,id')
                 ->help('Only accepted sample data can be used to generate a report')
         ];
     }

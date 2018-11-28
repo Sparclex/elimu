@@ -23,16 +23,16 @@ abstract class ResultHandler
 
     public static $additionalDataLabel = 'Additional Data';
 
-    public function __construct($experimentId, $attributeName, File $file = null)
+    public function __construct(Experiment $experiment, $attributeName, File $file = null)
     {
 
-        $this->experimentId = $experimentId;
-        $this->file = $file ?? Experiment::find($experimentId)->result_file;
+        $this->experiment = $experiment;
+        $this->file = $file ?? $experiment->result_file;
         if (!$this->file) {
             throw new \Exception('No file given');
         }
         $this->attributeName = $attributeName;
-        $this->inputParameters = InputParameter::getByExperiment($this->experimentId);
+        $this->inputParameters = InputParameter::getByExperiment($this->experiment->id);
 
         $this->handle();
     }
@@ -44,7 +44,7 @@ abstract class ResultHandler
         $existingSampleIds = DB::table('requested_experiments')
             ->join('samples', 'requested_experiments.sample_id', '=', 'samples.id')
             ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id')
-            ->where('requested_experiments.experiment_id', $this->experimentId)
+            ->where('requested_experiments.experiment_id', $this->experiment->id)
             ->select('sample_informations.sample_id')->pluck('sample_id')->unique();
         $missingInDb = [];
         foreach ($sampleIds as $sampleId) {
@@ -95,34 +95,11 @@ abstract class ResultHandler
 
     public function removeData()
     {
-        self::removeSampleData($this->experimentId);
+        self::removeSampleData($this->experiment->id);
     }
 
     public static function removeSampleData($experimentId)
     {
-        DB::table('results')->where('experiment_id', $experimentId)->delete();
-    }
-
-    public function storeSampleData(array $sampleData)
-    {
-        $sampleData = collect($sampleData);
-        $sampleIds = $this->getDatabaseIdBySampleIds($sampleData->pluck('sample'));
-        $data = collect();
-        $createdAt = Carbon::now();
-        foreach ($sampleData as $sample) {
-            $data->push([
-                'primary_value' => $sample['primary'],
-                'secondary_value' => $sample['secondary'],
-                'sample_id' => $sampleIds[$sample['sample']],
-                'target' => $sample['target'],
-                'additional' => $sample['additional'],
-                'experiment_id' => $this->experimentId,
-                'created_at' => $createdAt,
-                'updated_at' => $createdAt,
-            ]);
-        }
-        foreach ($data->chunk(100) as $chunk) {
-            DB::table('results')->insert($chunk->toArray());
-        }
+        DB::table('result_data')->where('experiment_id', $experimentId)->delete();
     }
 }

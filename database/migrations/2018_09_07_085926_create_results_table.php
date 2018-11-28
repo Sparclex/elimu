@@ -18,14 +18,16 @@ class CreateResultsTable extends Migration
         Schema::create('results', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('sample_id')->unsigned();
-            $table->bigInteger('experiment_id')->unsigned();
+            $table->bigInteger('assay_id')->unsigned();
             $table->string('target');
-            $table->string('value');
             $table->timestamps();
 
-            $table->unique(['sample_id', 'experiment_id', 'target']);
+            $table->unique(['sample_id', 'assay_id', 'target']);
             $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
-            $table->foreign('experiment_id')->references('id')->on('experiments')->onDelete('CASCADE');
+            $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
+
+            $table->bigInteger('study_id')->unsigned();
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
         });
     }
 

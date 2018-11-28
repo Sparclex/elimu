@@ -6,7 +6,7 @@ use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class Storage extends Model
+class Storage extends DependsOnStudy
 {
     protected $table = 'storage';
 

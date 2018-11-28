@@ -2,20 +2,21 @@
 
 namespace App\Nova;
 
-use App\Nova\Invokables\DeleteExperimentFile;
-use App\Nova\Invokables\ResultFields;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage as StorageFacade;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\File;
-use Laravel\Nova\Fields\HasMany;
+use App\Nova\ResultData;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Select;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\DateTime;
+use Treestoneit\BelongsToField\BelongsToField;
+use App\Nova\Invokables\ResultFields;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Invokables\DeleteExperimentFile;
+use Illuminate\Support\Facades\Storage as StorageFacade;
 
 class Experiment extends Resource
 {
@@ -42,20 +43,19 @@ class Experiment extends Resource
         return parent::detailQuery($request, $query)->withRequesterName()->withAssayName();
     }
 
-    public function title()
-    {
-        return "Experiment: " . $this->id . " (" . $this->reagent->assay->name . ")";
-    }
-
     public function fields(Request $request)
     {
         $resultTypes = array_keys(config('lims.result_types'));
         return [
             ID::make()->sortable(),
-            Text::make('Assay', 'assay_name')->sortable(),
-            BelongsTo::make('Study')
+            Text::make('Assay', 'assay_name')
+                ->exceptOnForms()
+                ->sortable(),
+            BelongsToField::make('Study')
                 ->onlyOnDetail(),
-            Text::make('Requester', 'requester_name')->sortable(),
+            Text::make('Requester', 'requester_name')
+                ->exceptOnForms()
+                ->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
                 ->hideWhenUpdating()
@@ -65,7 +65,7 @@ class Experiment extends Resource
 
             BelongsToMany::make('Samples'),
 
-            HasMany::make('Results'),
+            HasMany::make('Result Data', 'resultData', ResultData::class),
 
             File::make('Result File')
                 ->hideWhenCreating()
@@ -77,7 +77,7 @@ class Experiment extends Resource
                 ->store(
                     function (Request $request) {
                         $handler = (config('lims.result_types')[$request->file_type]);
-                        new $handler($this->id, 'result_file', $request->result_file);
+                        new $handler($this->resource, 'result_file', $request->result_file);
                         if ($this->result_file) {
                             StorageFacade::disk('local')->delete($this->result_file);
                         }

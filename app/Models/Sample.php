@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
 
-class Sample extends Model
+class Sample extends DependsOnStudy
 {
     protected $with = ['sampleInformation'];
 

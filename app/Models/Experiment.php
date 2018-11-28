@@ -8,7 +8,7 @@ use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
-class Experiment extends Model
+class Experiment extends DependsOnStudy
 {
     protected $dates = [
         'created_at',
@@ -40,9 +40,9 @@ class Experiment extends Model
             ->withTimestamps();
     }
 
-    public function results()
+    public function resultData()
     {
-        return $this->hasMany(Result::class);
+        return $this->hasMany(ResultData::class);
     }
 
     public function requester()

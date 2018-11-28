@@ -23,6 +23,9 @@ class CreateSamplesTable extends Migration
             $table->unique(['sample_type_id', 'sample_information_id']);
             $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
             $table->foreign('sample_information_id')->references('id')->on('sample_informations')->onDelete('CASCADE');
+
+            $table->bigInteger('study_id')->unsigned();
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
         });
     }
 

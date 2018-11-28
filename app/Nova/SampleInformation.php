@@ -6,7 +6,7 @@ use App\Fields\HtmlReadonly;
 use App\Nova\Filters\CollectedAfter;
 use App\Nova\Filters\CollectedBefore;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
+use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
@@ -45,7 +45,7 @@ class SampleInformation extends Resource
         return [
             ID::make()
                 ->onlyOnForms(),
-            BelongsTo::make('Study')
+            BelongsToField::make('Study')
                 ->searchable()
                 ->rules('required')
                 ->onlyOnDetail(),
@@ -76,8 +76,8 @@ class SampleInformation extends Resource
     public function filters(Request $request)
     {
         return [
-            new CollectedAfter(),
-            new CollectedBefore()
+            //new CollectedAfter(),
+            //new CollectedBefore()
         ];
     }
 }

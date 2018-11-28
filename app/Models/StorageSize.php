@@ -6,7 +6,7 @@ use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class StorageSize extends Model
+class StorageSize extends DependsOnStudy
 {
     protected $fillable = ['sample_type_id', 'study_id', 'size'];
 

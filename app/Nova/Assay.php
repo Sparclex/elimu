@@ -2,10 +2,11 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\HasMany;
 
 class Assay extends Resource
 {
@@ -31,7 +32,8 @@ class Assay extends Resource
             Text::make('SOP')
                 ->rules('required')
                 ->sortable(),
-            HasOne::make('Input Parameters', 'inputParameters', InputParameter::class)
+            HasOne::make('Input Parameters', 'inputParameter', InputParameter::class),
+            HasMany::make('Results')
         ];
     }
 }

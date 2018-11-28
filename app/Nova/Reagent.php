@@ -3,7 +3,7 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
+use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -29,7 +29,7 @@ class Reagent extends Resource
         return [
             ID::make()
                 ->sortable(),
-            BelongsTo::make('Assay'),
+            BelongsToField::make('Assay'),
             HasMany::make('Experiments'),
             Text::make('Lot'),
             Text::make('Name'),

@@ -2,11 +2,11 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Storage extends Resource
 {
@@ -30,10 +30,10 @@ class Storage extends Resource
         return [
             ID::make()
                 ->onlyOnForms(),
-            BelongsTo::make('Study')
+            BelongsToField::make('Study')
                 ->onlyOnDetail(),
-            BelongsTo::make('Sample'),
-            BelongsTo::make('SampleType'),
+            BelongsToField::make('Sample'),
+            BelongsToField::make('SampleType'),
             Number::make('Box'),
             Number::make('Position'),
         ];

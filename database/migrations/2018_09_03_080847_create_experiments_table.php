@@ -13,8 +13,7 @@ class CreateExperimentsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'experiments', function (Blueprint $table) {
+        Schema::create('experiments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('study_id')->unsigned();
             $table->bigInteger('reagent_id')->unsigned();

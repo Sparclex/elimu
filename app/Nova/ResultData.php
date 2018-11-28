@@ -2,15 +2,16 @@
 
 namespace App\Nova;
 
-use App\Actions\ChangeValidationStatus;
-use App\Fields\AdditionalData;
 use App\Fields\Status;
-use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Nova;
+use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use App\Fields\AdditionalData;
+use App\Actions\ChangeValidationStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Nova;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class ResultData extends Resource
 {
@@ -20,11 +21,11 @@ class ResultData extends Resource
 
     public static $model = 'App\Models\ResultData';
 
-    public static $with = ['result.experiment'];
-
     public static $title = 'id';
 
     public static $search = [];
+
+    public static $with = ['result', 'experiment'];
 
     public static function singularLabel()
     {
@@ -38,23 +39,30 @@ class ResultData extends Resource
 
     public function fields(Request $request)
     {
-        if ($this->result) {
-            $dataLabel = $this->result->experiment->result_handler::$dataLabel;
-            $additionalDataLabel = $this->result->experiment->result_handler::$additionalDataLabel;
-        }
         return [
             ID::make()
                 ->sortable(),
-            BelongsTo::make('Result'),
+            BelongsToField::make('Result'),
+            BelongsToField::make('Experiment'),
+            Status::make('Status')
+                ->failedWhen('Declined', 0)
+                ->successWhen('Accepted', 1),
+            new Panel('Data', $this->data()),
+        ];
+    }
+
+    private function data()
+    {
+        if ($this->experiment) {
+            $dataLabel = $this->experiment->result_handler::$dataLabel;
+            $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
+        }
+        return [
             Text::make($dataLabel ?? 'Data', 'primary_value')
                 ->sortable(),
             Text::make($additionalDataLabel ?? 'Additional Data', 'secondary_value')
                 ->sortable(),
-            AdditionalData::make('additional'),
-            Status::make('Status')
-                ->loadingWhenNull('Pending')
-                ->failedWhen('Declined', 0)
-                ->successWhen('Accepted', 1),
+            AdditionalData::make('additional')
         ];
     }
 
@@ -65,5 +73,10 @@ class ResultData extends Resource
                 return true;
             }),
         ];
+    }
+
+    public static function uriKey()
+    {
+        return 'result-data';
     }
 }

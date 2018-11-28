@@ -4,7 +4,7 @@ namespace App\Nova;
 
 use App\CsvToParameter;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
+use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
@@ -52,10 +52,10 @@ class InputParameter extends Resource
         return [
             ID::make()
                 ->sortable(),
-            BelongsTo::make('Study')
+            BelongsToField::make('Study')
                 ->rules('required', 'exists:studies,id')
                 ->onlyOnDetail(),
-            BelongsTo::make('Assay')
+            BelongsToField::make('Assay')
                 ->rules('required', 'exists:assays,id')
                 ->sortable(),
             Text::make('Name')

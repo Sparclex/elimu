@@ -12,6 +12,7 @@
         "ext-zip": "*",
         "alexbowers/nova-prepopulate-searchable": "^1.0",
         "barryvdh/laravel-dompdf": "^0.8.3",
+        "beyondcode/laravel-dump-server": "^1.2",
         "epartment/nova-dependency-container": "^1.1",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
@@ -23,10 +24,10 @@
         "predis/predis": "^1.1",
         "reinink/advanced-eloquent": "^0.2.0",
         "spatie/nova-backup-tool": "^1.0",
-        "titasgailius/search-relations": "^1.0"
+        "titasgailius/search-relations": "^1.0",
+        "treestoneit/belongs-to-field": "^0.1.0"
     },
     "require-dev": {
-        "beyondcode/laravel-dump-server": "^1.2",
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",
         "laracasts/generators": "^1.1",

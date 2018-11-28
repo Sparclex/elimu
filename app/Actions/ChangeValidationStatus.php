@@ -4,11 +4,12 @@ namespace App\Actions;
 
 use App\Fields\Status;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Actions\Action;
+use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\ActionFields;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 
 class ChangeValidationStatus extends Action
 {
@@ -38,10 +39,11 @@ class ChangeValidationStatus extends Action
     {
 
         return [
-            Status::make('Status')
-                ->loadingWhenNull('Pending')
-                ->failedWhen('Declined', 0)
-                ->successWhen('Accepted', 1),
+            Select::make('Status')
+                ->options([
+                    0 => 'Declined',
+                    1 => 'Accepted'
+                ])
         ];
     }
 }
