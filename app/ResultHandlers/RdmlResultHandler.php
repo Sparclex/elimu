@@ -29,12 +29,9 @@ class RdmlResultHandler extends ResultHandler
               $this->error(__($rdml->getLastError()));
         }
         // the following
-        if (!$rdml->hasEnoughRepetitions()) {
+/*        if (!$rdml->hasCorrectDeviation()) {
             $this->error(__($rdml->getLastError()));
-        }
-        if (!$rdml->hasCorrectDeviation()) {
-            $this->error(__($rdml->getLastError()));
-        }
+        }*/
         $this->validateSampleIds($rdml->getSampleIds()->toArray());
 
         DB::transaction(function () use ($rdml) {
