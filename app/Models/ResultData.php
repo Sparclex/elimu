@@ -18,7 +18,7 @@ class ResultData extends DependsOnStudy
         return $this->belongsTo(Experiment::class);
     }
 
-    public function getDataAttribute($value)
+    public function getPrimaryValueAttribute($value)
     {
         if ($value) {
             return number_format((float)$value, 2, '.', '\'');

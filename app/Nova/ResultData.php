@@ -9,6 +9,7 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use App\Fields\AdditionalData;
+use Laravel\Nova\Fields\Number;
 use App\Actions\ChangeValidationStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
@@ -58,7 +59,7 @@ class ResultData extends Resource
             $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
         }
         return [
-            Text::make($dataLabel ?? 'Data', 'primary_value')
+            Number::make($dataLabel ?? 'Data', 'primary_value')
                 ->sortable(),
             Text::make($additionalDataLabel ?? 'Additional Data', 'secondary_value')
                 ->sortable(),

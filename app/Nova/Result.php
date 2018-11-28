@@ -38,9 +38,12 @@ class Result extends Resource
                 $value = $this->determineValue(
                     $this->resultData
                         ->where('status', 1)
-                        ->pluck('primary_value'),
+                        ->map(function ($data) {
+                            return $data->getOriginal('primary_value');
+                        }),
                     $inputParameter['cutoff'],
-                    $inputParameter['lod']
+                    $inputParameter['lod'],
+                    $inputParameter['cuttoffstdev']
                 );
                 if ($value == 'Positive' &&
                     strtolower(
@@ -67,12 +70,15 @@ class Result extends Resource
         ];
     }
 
-    private function determineValue($cqs, $cutoff, $lod)
+    private function determineValue($cqs, $cutoff, $lod, $cuttoffstdev)
     {
         $isPositive = null;
         $needsRepetition = false;
         if (!count($cqs)) {
-            $needsRepetition = true;
+            return 'Insufficient data';
+        }
+        if ($cqs->standardDeviation() > $cuttoffstdev) {
+            return 'Exceeds cutoff for standard deviation';
         }
         foreach ($cqs as $cq) {
             $status = $cq && $cq <= $cutoff ? true : false;
