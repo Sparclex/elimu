@@ -5,6 +5,7 @@ use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\SampleInformation;
 use Maatwebsite\Excel\Concerns\ToModel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
 use Sparclex\NovaImportCard\BasicImporter;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -43,7 +44,7 @@ class SampleInformationImporter extends BasicImporter
         return [
             'id' => 'required',
             'type' => 'required',
-            'collected_at'=> 'nullable|date',
+            'collected_at'=> 'nullable',
             'birthdate' => 'nullable|date',
             'gender' => 'nullable|size:1',
         ];
@@ -65,6 +66,10 @@ class SampleInformationImporter extends BasicImporter
             foreach (array_only($row, $this->sampleInformationColumns()) as $key => $value) {
                 if ($key == 'gender') {
                     $value = $value == 'M' ? 0 : 1;
+                }
+
+                if ($key == 'collected_at') {
+                    $value = Date::excelToDateTimeObject($value);
                 }
 
                 $sampleInformation->{$key} = $value;
