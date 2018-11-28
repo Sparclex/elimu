@@ -24,16 +24,16 @@ class DevelopmentSeeder extends Seeder
             'name' => 'Silvan Wehner',
             'study_id' => $study_id,
             'role' => 'Administrator'
-        ]);
+        ])->studies()->attach($study_id);
         factory(App\User::class)->create([
             'email' => 'schindler.tobi@gmail.com',
             'name' => 'Tobias Schindler',
             'password' => \Illuminate\Support\Facades\Hash::make('ihibagamoyo'),
             'timezone' => 'Europe/Zurich',
+            'study_id' => $study_id,
             'role' => 'Administrator'
-        ]);
+        ])->studies()->attach($study_id);
         Auth::loginUsingId(1);
-        $user->studies()->attach($study_id);
         /*
                 factory(\App\Models\Result::class, 10)->create([
                     'experiment_id' => factory(\App\Models\Experiment::class)
@@ -181,7 +181,7 @@ class DevelopmentSeeder extends Seeder
                         ->create([
                             'name' => 'Experiment ' . ($experimentNumber + 1),
                             'assay_id' => factory(Assay::class)->create([
-                                'name' => 'Experiment ' . ($experimentNumber + 1)
+                                'name' => 'Assay ' . ($experimentNumber + 1)
                             ])->id
                         ])->id
                 ]);
