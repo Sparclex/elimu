@@ -100,7 +100,7 @@
                         </div>
                     </li>
                      <li>
-                        <router-link :to="{name: 'index', params: {resourceName: 'samples'}}" href="resources" class="no-underline dim flex p-6 border-b border-50">
+                        <router-link :to="{name: 'index', params: {resourceName: 'samples'}}" class="no-underline dim flex p-6 border-b border-50">
                             <div class="flex justify-center w-11 flex-no-shrink mr-6">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                             </div>
