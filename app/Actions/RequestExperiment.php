@@ -2,19 +2,21 @@
 
 namespace App\Actions;
 
-use App\Fields\ReagentsFields;
 use App\Models\Assay;
-use App\Models\Experiment;
+use App\Models\Sample;
+use Laravel\Nova\Nova;
 use App\Models\Reagent;
+use App\Models\Experiment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Fields\ReagentsFields;
 use Illuminate\Support\Carbon;
+use Laravel\Nova\Actions\Action;
+use Laravel\Nova\Fields\Textarea;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Nova;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 
 class RequestExperiment extends Action
 {
@@ -33,6 +35,13 @@ class RequestExperiment extends Action
             return Action::danger('Only select samples from the same study');
         }
         $data = $fields->form;
+        $sampleIds =$fields->samples;
+        if ($sampleIds) {
+            $sampleIds = array_map('trim', explode(',', $sampleIds));
+            $models = Sample::whereHas('sampleInformation', function ($query) use ($sampleIds) {
+                $query->whereIn('sample_id', $sampleIds);
+            })->get();
+        }
         if (!isset($data['reagent'])) {
             $reagent = new Reagent();
             $reagent->lot = $data['lot'];
@@ -63,6 +72,8 @@ class RequestExperiment extends Action
     public function fields()
     {
         return [
+            Textarea::make('Sample Ids', 'samples')
+                ->help('Comma seperated sample ids (overwrites the selection)'),
             ReagentsFields::make(Assay::all()),
         ];
     }
