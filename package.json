@@ -9,7 +9,9 @@
         "prod": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "build-nova-belongsto-depend-or-create": "cd nova-components/NovaBelongstoDependOrCreate && npm run dev",
-        "build-nova-belongsto-depend-or-create-prod": "cd nova-components/NovaBelongstoDependOrCreate && npm run prod"
+        "build-nova-belongsto-depend-or-create-prod": "cd nova-components/NovaBelongstoDependOrCreate && npm run prod",
+        "build-LimsIntroductionCard": "cd nova-components/LimsIntroductionCard && npm run dev",
+        "build-LimsIntroductionCard-prod": "cd nova-components/LimsIntroductionCard && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.18",

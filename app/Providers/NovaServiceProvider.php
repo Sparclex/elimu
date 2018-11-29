@@ -15,6 +15,7 @@ use App\Nova\ResultData;
 use App\Nova\SampleData;
 use App\Nova\SampleType;
 use App\Nova\InputParameter;
+use App\Cards\IntroductionCard;
 use App\Nova\SampleInformation;
 use App\Tools\SampleBatchImporter;
 use Illuminate\Support\Facades\Gate;
@@ -89,6 +90,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
+            new IntroductionCard()
         ];
     }
 
