@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sample extends DependsOnStudy
 {
-    protected $with = ['sampleInformation'];
-
     protected $fillable = [
         'sample_type_id',
         'sample_information_id',
@@ -24,7 +22,7 @@ class Sample extends DependsOnStudy
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy('sampleInformation', true));
+        static::addGlobalScope(new OnlyCurrentStudy);
     }
 
     public function study()

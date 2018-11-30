@@ -26,7 +26,7 @@ class SampleInformation extends DependsOnStudy
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy('sample_informations'));
+        static::addGlobalScope(new OnlyCurrentStudy);
     }
 
     public function study()

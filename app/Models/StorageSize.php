@@ -10,6 +10,13 @@ class StorageSize extends DependsOnStudy
 {
     protected $fillable = ['sample_type_id', 'study_id', 'size'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
     public static function sizeFor($study_id, $sample_type_id)
     {
         $size = self::where('study_id', $study_id)
@@ -28,13 +35,6 @@ class StorageSize extends DependsOnStudy
             return $names->names;
         }
         return new Collection();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy('storage_sizes'));
     }
 
     public function study()

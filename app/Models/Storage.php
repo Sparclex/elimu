@@ -12,6 +12,13 @@ class Storage extends DependsOnStudy
 
     protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
     public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
         $size = StorageSize::sizeFor($studyId, $sampleTypeId);
@@ -58,13 +65,6 @@ class Storage extends DependsOnStudy
             $storage->position = $this->position + 1;
         }
         return $storage;
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy('storage'));
     }
 
     public function sample()

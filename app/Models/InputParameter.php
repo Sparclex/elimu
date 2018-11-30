@@ -20,7 +20,7 @@ class InputParameter extends DependsOnStudy
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy('input_parameters'));
+        static::addGlobalScope(new OnlyCurrentStudy);
     }
 
     public function assay()

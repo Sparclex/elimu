@@ -32,6 +32,13 @@ class Sample extends Resource
 
     public static $search = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
+    }
+
     /**
      * The relationship columns that should be searched.
      *
