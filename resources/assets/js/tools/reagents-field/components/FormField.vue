@@ -30,7 +30,7 @@
                         Reagent
                     </form-label>
                     <template slot="field">
-                        <multiselect :options="reagents" v-model="reagent" keyed-by="id" label="name"
+                        <multiselect :options="reagents" v-model="reagent" keyed-by="id" :custom-label="reagentLabel"
                                      id="reagents"></multiselect>
                     </template>
                 </default-field>
@@ -91,6 +91,10 @@
                         this.reagents = data;
                         this.loading = false;
                     });
+            },
+
+            reagentLabel({lot, name}) {
+                return `${name} (${lot})`;
             }
         }
     }

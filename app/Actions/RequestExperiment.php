@@ -37,7 +37,7 @@ class RequestExperiment extends Action
         $data = $fields->form;
         $sampleIds =$fields->samples;
         if ($sampleIds) {
-            $sampleIds = array_map('trim', explode(',', $sampleIds));
+            $sampleIds = array_filter(array_map('trim', explode(' ', $sampleIds)));
             $models = Sample::whereHas('sampleInformation', function ($query) use ($sampleIds) {
                 $query->whereIn('sample_id', $sampleIds);
             })->get();
