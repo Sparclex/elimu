@@ -2,12 +2,13 @@
 
 namespace App\Nova;
 
-use App\Fields\StorageSizeField;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Trix;
+use App\Fields\StorageSizeField;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\BelongsToMany;
 
 class Study extends Resource
 {
@@ -38,6 +39,8 @@ class Study extends Resource
                 ->sortable()
                 ->creationRules('required', 'unique:studies,name')
                 ->updateRules('required', 'unique:studies,name,{{resourceId}}'),
+            Trix::make('Description'),
+
             HasMany::make('SampleInformations'),
             BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)
                 ->fields(new StorageSizeField),

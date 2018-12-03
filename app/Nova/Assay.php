@@ -5,6 +5,7 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\HasMany;
 
@@ -32,6 +33,7 @@ class Assay extends Resource
             Text::make('SOP')
                 ->rules('required')
                 ->sortable(),
+            Trix::make('Description'),
             HasOne::make('Input Parameters', 'inputParameter', InputParameter::class),
             HasMany::make('Results')
         ];
