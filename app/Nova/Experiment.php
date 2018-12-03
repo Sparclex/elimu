@@ -10,12 +10,13 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\HasMany;
+use App\Cards\InvalidResultsCard;
 use Laravel\Nova\Fields\DateTime;
-use Treestoneit\BelongsToField\BelongsToField;
 use App\Nova\Invokables\ResultFields;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Invokables\DeleteExperimentFile;
+use Treestoneit\BelongsToField\BelongsToField;
 use Illuminate\Support\Facades\Storage as StorageFacade;
 
 class Experiment extends Resource
@@ -98,5 +99,10 @@ class Experiment extends Resource
                 ->rules('required_with:result_file', 'in:' . implode(',', $resultTypes))
 
         ];
+    }
+
+    public function cards(Request $request)
+    {
+        return [];
     }
 }

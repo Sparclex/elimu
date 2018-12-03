@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Collections\ResultDataCollection;
 use Illuminate\Database\Eloquent\Model;
 
 class ResultData extends DependsOnStudy
@@ -33,5 +34,11 @@ class ResultData extends DependsOnStudy
     public function setAdditionalAttribute($value)
     {
         return serialize($value);
+    }
+
+
+    public function newCollection(array $models = [])
+    {
+        return new ResultDataCollection($models);
     }
 }

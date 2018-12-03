@@ -9,6 +9,7 @@ use App\Nova\Result;
 use App\Nova\Sample;
 use App\Nova\Reagent;
 use App\Nova\Storage;
+use App\Tools\ResultManager;
 use Laravel\Nova\Nova;
 use App\Nova\Experiment;
 use App\Nova\ResultData;
@@ -41,7 +42,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function tools()
     {
         return [
-            new \Spatie\BackupTool\BackupTool(),
+            new ResultManager,
+            new \Spatie\BackupTool\BackupTool,
         ];
     }
 
