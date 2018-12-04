@@ -24,7 +24,7 @@ class InvalidResults extends Lens
      */
     public static function query(LensRequest $request, $query)
     {
-        $ids = Result::with('assay', 'assay.inputParameter', 'sample', 'sample.sampleInformation')
+        $ids = Result::with('assay.inputParameter', 'sample.sampleInformation', 'resultData')
             ->get()
             ->filter(function ($result) {
                 return $result->status == 'Pending';
@@ -33,7 +33,8 @@ class InvalidResults extends Lens
 
         return $request->withOrdering($request->withFilters(
             $query
-        ))->whereIn('id', $ids);
+        ))->whereIn('id', $ids)
+        ->with('assay.inputParameter', 'sample.sampleInformation', 'resultData');
     }
 
     /**

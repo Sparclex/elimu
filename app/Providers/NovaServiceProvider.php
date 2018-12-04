@@ -43,7 +43,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         return [
             new ResultManager,
-            new \Spatie\BackupTool\BackupTool,
+            //new \Spatie\BackupTool\BackupTool,
         ];
     }
 
@@ -101,6 +101,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         Nova::resources([
             User::class,
             Study::class,
+            SampleType::class,
             SampleInformation::class,
             Sample::class,
             InputParameter::class,
@@ -109,7 +110,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             Result::class,
             Reagent::class,
             Assay::class,
-            SampleType::class,
             Storage::class,
         ]);
     }

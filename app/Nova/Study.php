@@ -12,6 +12,8 @@ use Laravel\Nova\Fields\BelongsToMany;
 
 class Study extends Resource
 {
+    public static $displayInNavigation = true;
+
     public static $model = 'App\Models\Study';
 
     public static $search = [

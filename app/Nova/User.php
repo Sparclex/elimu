@@ -15,6 +15,8 @@ use Laravel\Nova\Fields\Timezone;
 
 class User extends Resource
 {
+    public static $displayInNavigation = true;
+
     public static $model = 'App\\User';
 
     public static $title = 'name';

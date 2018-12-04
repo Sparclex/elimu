@@ -9,6 +9,8 @@ use Titasgailius\SearchRelations\SearchesRelations;
 abstract class Resource extends NovaResource
 {
     use SearchesRelations;
+
+    public static $displayInNavigation = false;
     /**
      * Build an "index" query for the given resource.
      *

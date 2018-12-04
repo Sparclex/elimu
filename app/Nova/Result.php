@@ -3,12 +3,12 @@
 namespace App\Nova;
 
 use App\Fields\Status;
-use App\Nova\Lenses\InvalidResults;
-use Illuminate\Http\Request;
-use Treestoneit\BelongsToField\BelongsToField;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\HasMany;
+use App\Nova\Lenses\InvalidResults;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Result extends Resource
 {
@@ -46,7 +46,7 @@ class Result extends Resource
     public function lenses(Request $request)
     {
         return [
-            new InvalidResults
+            new InvalidResults,
         ];
     }
 }

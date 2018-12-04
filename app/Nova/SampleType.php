@@ -10,6 +10,8 @@ use Laravel\Nova\Fields\Text;
 
 class SampleType extends Resource
 {
+    public static $displayInNavigation = true;
+
     public static $model = 'App\Models\SampleType';
 
     public static $title = 'name';

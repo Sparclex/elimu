@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\HasMany;
 use App\Cards\InvalidResultsCard;
@@ -32,7 +33,7 @@ class Experiment extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->withRequesterName()->withAssayName();
+        return $query->withRequesterName()->withAssayName()->withCount('samples');
     }
 
     public static function scoutQuery(NovaRequest $request, $query)
@@ -56,6 +57,9 @@ class Experiment extends Resource
                 ->onlyOnDetail(),
             Text::make('Requester', 'requester_name')
                 ->exceptOnForms()
+                ->sortable(),
+            Number::make('Number of Samples', 'samples_count')
+                ->onlyOnIndex()
                 ->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
