@@ -19,13 +19,6 @@ class ResultData extends DependsOnStudy
         return $this->belongsTo(Experiment::class);
     }
 
-    public function getPrimaryValueAttribute($value)
-    {
-        if ($value) {
-            return number_format((float)$value, 2, '.', '\'');
-        }
-        return 'Non Ampl.';
-    }
     public function getAdditionalAttribute($value)
     {
         return unserialize($value);

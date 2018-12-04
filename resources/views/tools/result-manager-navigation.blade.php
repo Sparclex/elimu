@@ -24,7 +24,7 @@
  <span class="sidebar-label">Analysis</span></h3>
 <ul class="list-reset mb-8">
     <li class="leading-tight mb-4 ml-8 text-sm">
-        <router-link :to="{name: 'index', params: {resourceName: 'sample-informations'}}" class="text-white text-justify no-underline dim">
+        <router-link :to="{name: 'index', params: {resourceName: 'experiments'}}" class="text-white text-justify no-underline dim">
             Experiments
         </router-link>
     </li>
@@ -44,6 +44,11 @@
 <h3 class="flex items-center font-normal text-white mb-6 text-base no-underline">
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sidebar-icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> <span class="sidebar-label">Results</span></h3>
 <ul class="list-reset mb-8">
+    <li class="leading-tight mb-4 ml-8 text-sm">
+        <router-link :to="{name: 'result-overview'}" class="text-white text-justify no-underline dim">
+            Overview
+        </router-link>
+    </li>
     <li class="leading-tight mb-4 ml-8 text-sm">
         <router-link :to="{name: 'lens', params: {resourceName: 'results', lens: 'invalid'}}" class="text-white text-justify no-underline dim">
             Invalid

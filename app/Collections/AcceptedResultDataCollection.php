@@ -7,8 +7,14 @@ class AcceptedResultDataCollection extends Collection
 {
     public function standardDeviationIsInRange($cutoff)
     {
+        $standardDeviation = $this->cqStandardDeviation();
+        return $standardDeviation === false ? true : $standardDeviation > $cutoff;
+    }
+
+    public function cqStandardDeviation()
+    {
         $filledCqValues = $this->cqValues()->filter();
-        return $filledCqValues->count() > 1 ? $filledCqValues->standardDeviation() > $cutoff : true;
+        return $filledCqValues->count() > 1 ? $filledCqValues->standardDeviation() : false;
     }
 
     public function hasEnoughValues($minValues)
@@ -19,7 +25,7 @@ class AcceptedResultDataCollection extends Collection
     public function cqValues()
     {
         return $this->map(function ($data) {
-            return $data->getOriginal('primary_value');
+            return $data['primary_value'];
         });
     }
 
@@ -43,5 +49,11 @@ class AcceptedResultDataCollection extends Collection
     public function averageCq()
     {
         return $this->cqValues()->avg();
+    }
+
+    public function quantitativeOutput($slope, $intercept)
+    {
+        return $slope * $this->averageCq()
+                + $intercept;
     }
 }

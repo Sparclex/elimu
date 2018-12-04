@@ -59,7 +59,13 @@ class ResultData extends Resource
             $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
         }
         return [
-            Number::make($dataLabel ?? 'Data', 'primary_value')
+            Text::make($dataLabel ?? 'Data', 'primary_value')
+                ->displayUsing(function ($value) {
+                    if ($value) {
+                        return number_format((float)$value, 2, '.', '\'');
+                    }
+                    return 'Non Ampl.';
+                })
                 ->sortable(),
             Text::make($additionalDataLabel ?? 'Additional Data', 'secondary_value')
                 ->sortable(),

@@ -73,7 +73,7 @@ class RequestExperiment extends Action
     {
         return [
             Textarea::make('Sample Ids', 'samples')
-                ->help('Comma seperated sample ids (overwrites the selection)'),
+                ->help('Whitespace seperated sample ids (overwrites the selection)'),
             ReagentsFields::make(Assay::all()),
         ];
     }

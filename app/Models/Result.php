@@ -70,8 +70,10 @@ class Result extends DependsOnStudy
             strtolower(
                 $this->inputParameter['quant']
             ) == 'yes') {
-            return $this->inputParameter['slope'] * $this->resultData->onlyAccepted()->averageCq()
-                + $this->inputParameter['intercept'] . " (Positive)";
+            return $this->resultData
+                    ->onlyAccepted()
+                    ->quantitativeOutput($this->inputParameter['slope'], $this->inputParameter['intercept'])
+                     ." (Positive)";
         }
         return $this->getOutput() === 1 ? 'Positive' : 'Negative';
     }
