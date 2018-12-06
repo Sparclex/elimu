@@ -4,10 +4,12 @@ namespace App\Importer;
 use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\SampleInformation;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
 use Sparclex\NovaImportCard\BasicImporter;
+use Sparclex\NovaImportCard\ImportException;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
@@ -20,12 +22,15 @@ class SampleInformationImporter extends BasicImporter
 
     protected $modelClass;
 
+    protected $sampleTypeIdsWithStorage;
+
     public function __construct($resource, $attributes, $rules, $modelClass)
     {
         $this->resource = $resource;
         $this->attributes = $attributes;
         $this->rules = $rules;
         $this->modelClass = $modelClass;
+        $this->sampleTypeIdsWithStorage = Auth::user()->study->sampleTypes->pluck('id');
     }
 
     public function model(array $row)
@@ -89,6 +94,12 @@ class SampleInformationImporter extends BasicImporter
         ]);
 
         if ($sample->isDirty()) {
+            if ($row['quantity']
+                && !$this->storageSizeExists($sampleType->id)) {
+                throw new ImportException(
+                    sprintf('Not storage size defined for sample type \'%s\'', $sampleType->name)
+                );
+            }
             $sample->quantity = $row['quantity'] ?? 0;
 
             $extra = [];
@@ -104,5 +115,10 @@ class SampleInformationImporter extends BasicImporter
         }
 
         return $sample;
+    }
+
+    private function storageSizeExists($sampleTypeId)
+    {
+        return $this->sampleTypeIdsWithStorage->search($sampleTypeId) !== false;
     }
 }
