@@ -53,7 +53,7 @@ class AcceptedResultDataCollection extends Collection
 
     public function quantitativeOutput($slope, $intercept)
     {
-        return $slope * $this->averageCq()
-                + $intercept;
+        return pow(10, $slope * $this->averageCq()
+                + $intercept);
     }
 }
