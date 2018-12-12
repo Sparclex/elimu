@@ -4,17 +4,18 @@ namespace App\Importer;
 use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\SampleInformation;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
-use Sparclex\NovaImportCard\BasicImporter;
 use Sparclex\NovaImportCard\ImportException;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class SampleInformationImporter extends BasicImporter
+class SampleInformationImporter implements ToCollection, WithHeadingRow, WithValidation
 {
+    use Importable;
 
     protected $attributes;
 
@@ -33,15 +34,21 @@ class SampleInformationImporter extends BasicImporter
         $this->sampleTypeIdsWithStorage = Auth::user()->study->sampleTypes->pluck('id');
     }
 
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        $sampleInformation = $this->saveSampleInformation($row);
+        $sampleTypes[] = [];
 
-        $sampleType = SampleType::firstOrCreate(['name' => $row['type']]);
+        $rows = $rows->first()->has('position') ? $rows->sortBy('position') : $rows;
+        foreach ($rows->pluck('type')->unique() as $name) {
+            $sampleTypes[$name] = SampleType::firstOrCreate(compact('name'));
+            ;
+        }
 
-        $this->saveSample($row, $sampleInformation, $sampleType);
+        foreach ($rows as $row) {
+            $sampleInformation = $this->saveSampleInformation($row);
 
-        return $sampleInformation;
+            $this->saveSample($row, $sampleInformation, $sampleTypes[$row['type']]);
+        }
     }
 
     public function rules(): array
@@ -52,6 +59,7 @@ class SampleInformationImporter extends BasicImporter
             'collected_at'=> 'nullable',
             'birthdate' => 'nullable|date',
             'gender' => 'nullable|size:1',
+            'position' => 'numeric',
         ];
     }
 
@@ -60,15 +68,16 @@ class SampleInformationImporter extends BasicImporter
         return ['subject_id', 'visit_id', 'collected_at', 'birthdate', 'gender'];
     }
 
-    private function saveSampleInformation($row)
+    private function saveSampleInformation(Collection $row)
     {
+
         $sampleInformation = SampleInformation::where('sample_id', $row['id'])->first();
 
         if (!$sampleInformation) {
             $sampleInformation = new SampleInformation;
             $sampleInformation->sample_id = $row['id'];
 
-            foreach (array_only($row, $this->sampleInformationColumns()) as $key => $value) {
+            foreach ($row->only($this->sampleInformationColumns()) as $key => $value) {
                 if ($key == 'gender') {
                     $value = $value == 'M' ? 0 : 1;
                 }
@@ -86,7 +95,7 @@ class SampleInformationImporter extends BasicImporter
         return $sampleInformation;
     }
 
-    private function saveSample($row, $sampleInformation, $sampleType)
+    private function saveSample(Collection $row, $sampleInformation, $sampleType)
     {
         $sample = Sample::firstOrNew([
             'sample_information_id' => $sampleInformation->id,
@@ -94,13 +103,13 @@ class SampleInformationImporter extends BasicImporter
         ]);
 
         if ($sample->isDirty()) {
-            if ($row['quantity']
+            if ($row->has('quantity')
                 && !$this->storageSizeExists($sampleType->id)) {
                 throw new ImportException(
                     sprintf('Not storage size defined for sample type \'%s\'', $sampleType->name)
                 );
             }
-            $sample->quantity = $row['quantity'] ?? 0;
+            $sample->quantity = $row->get('quantity', null) ?: 0;
 
             $extra = [];
 
