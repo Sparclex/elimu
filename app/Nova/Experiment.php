@@ -2,23 +2,25 @@
 
 namespace App\Nova;
 
+use App\Fields\ReagentsFields;
+use App\Fields\SampleIds;
+use App\Fields\SampleTypeField;
 use App\Nova\Invokables\UpdateExperimentResult;
-use App\Nova\ResultData;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\File;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\HasMany;
-use App\Cards\InvalidResultsCard;
 use Laravel\Nova\Fields\DateTime;
-use App\Nova\Invokables\ResultFields;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Invokables\DeleteExperimentFile;
 use Treestoneit\BelongsToField\BelongsToField;
+use App\Models\Assay as AssayModel;
 use Illuminate\Support\Facades\Storage as StorageFacade;
 
 class Experiment extends Resource
@@ -50,6 +52,14 @@ class Experiment extends Resource
     {
         return [
             ID::make()->sortable(),
+            SampleTypeField::make('Sample Type', 'sampleType', SampleType::class)
+                ->rules('required'),
+            SampleIds::make('Samples')
+                ->help('A new line for each sample id')
+                ->rules('required'),
+            ReagentsFields::make(AssayModel::all())
+                ->onlyOnForms()
+                ->hideWhenUpdating(),
             Text::make('Assay', 'assay_name')
                 ->exceptOnForms()
                 ->sortable(),
@@ -73,7 +83,6 @@ class Experiment extends Resource
             HasMany::make('Result Data', 'resultData', ResultData::class),
 
             File::make('Result File')
-                ->hideWhenCreating()
                 ->prunable()
                 ->delete(new DeleteExperimentFile)
                 ->resolveUsing(function () {
