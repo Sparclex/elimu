@@ -71,16 +71,19 @@
              * are truthy or falsey
              */
             fill(formData) {
+                if(!this.assay || !this.useExisting) {
+                    return;
+                }
                 formData.append('form[assay]', this.assay.id);
                 formData.append('form[useExisting]', this.reagents.length && this.useExisting ? '1' : '0');
-                if(this.reagents.length && this.useExisting) {
+                if(this.useExisting && this.reagent) {
                     formData.append('form[reagent]', this.reagent.id);
-                } else {
+                }
+                if(!this.useExisting) {
                     for(let field of this.$refs.fields) {
                         field.fill(formData);
                     }
                 }
-
             },
 
             changeAssay(assay) {
