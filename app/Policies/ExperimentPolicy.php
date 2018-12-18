@@ -14,9 +14,4 @@ class ExperimentPolicy extends Policy
     {
         return $user->study_id == $experiment->study_id;
     }
-
-    public function create(User $user)
-    {
-        return false;
-    }
 }
