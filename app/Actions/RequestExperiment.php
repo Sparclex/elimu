@@ -35,13 +35,6 @@ class RequestExperiment extends Action
             return Action::danger('Only select samples from the same study');
         }
         $data = $fields->form;
-        $sampleIds =$fields->samples;
-        if ($sampleIds) {
-            $sampleIds = array_filter(array_map('trim', explode(' ', $sampleIds)));
-            $models = Sample::whereHas('sampleInformation', function ($query) use ($sampleIds) {
-                $query->whereIn('sample_id', $sampleIds);
-            })->get();
-        }
         if (!isset($data['reagent'])) {
             $reagent = new Reagent();
             $reagent->lot = $data['lot'];
@@ -72,8 +65,6 @@ class RequestExperiment extends Action
     public function fields()
     {
         return [
-            Textarea::make('Sample Ids', 'samples')
-                ->help('Whitespace seperated sample ids (overwrites the selection)'),
             ReagentsFields::make(Assay::all()),
         ];
     }
