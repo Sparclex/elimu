@@ -2,6 +2,7 @@
 
 namespace App\Fields;
 
+use App\Models\Reagent;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Text;
@@ -42,5 +43,26 @@ class ReagentsFields extends Field
             'form.name' => 'required_if:useExisting,0',
             'form.expires_at' => 'required_if:useExisting,0|date',
         ];
+    }
+
+    protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
+    {
+        $form = $request[$requestAttribute];
+
+        $reagentId = null;
+
+        if (!$form['useExisting']) {
+            $reagent = new Reagent();
+            $reagent->lot = $form['lot'];
+            $reagent->name = $form['name'];
+            $reagent->expires_at = $form['expires_at'];
+            $reagent->assay_id = $form['assay'];
+            $reagent->save();
+            $reagentId = $reagent->id;
+        } else {
+            $reagentId = $form['reagent'];
+        }
+
+        $model->reagent_id = $reagentId;
     }
 }
