@@ -58,18 +58,21 @@ class ResultData extends Resource
             $dataLabel = $this->experiment->result_handler::$dataLabel;
             $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
         }
+
+        $primaryValueField = Text::make($dataLabel ?? 'Data', 'primary_value');
+        if (is_numeric($this->primary_value) || !strlen($this->primary_value)) {
+            $primaryValueField = Number::make($dataLabel ?? 'Data', 'primary_value')
+                ->resolveUsing(function ($value) {
+                    return number_format((float)$value, 2, '.', '\'');
+                });
+        }
+
         return [
-            Text::make($dataLabel ?? 'Data', 'primary_value')
-                ->displayUsing(function ($value) {
-                    if ($value) {
-                        return number_format((float)$value, 2, '.', '\'');
-                    }
-                    return 'Non Ampl.';
-                })
+            $primaryValueField
                 ->sortable(),
             Text::make($additionalDataLabel ?? 'Additional Data', 'secondary_value')
                 ->sortable(),
-            AdditionalData::make('additional')
+            AdditionalData::make('extra')
         ];
     }
 

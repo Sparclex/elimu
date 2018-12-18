@@ -22,4 +22,9 @@ class Assay extends Model
     {
         return $this->hasMany(Result::class);
     }
+
+    public function getResultHandlerAttribute()
+    {
+        return config('lims.result_types.' . $this->result_type);
+    }
 }

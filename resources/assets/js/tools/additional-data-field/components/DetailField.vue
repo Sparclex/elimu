@@ -7,7 +7,7 @@
                 </form-label>
             </div>
             <div class="w-3/4 py-4">
-                {{value}}
+                <p class="text-90">{{value}}</p>
             </div>
         </field-wrapper>
 

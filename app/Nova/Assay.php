@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Fields\HasOne;
@@ -23,6 +24,7 @@ class Assay extends Resource
 
     public function fields(Request $request)
     {
+        $resultTypes = array_keys(config('lims.result_types'));
         return [
             ID::make()
                 ->hideFromIndex(),
@@ -33,6 +35,10 @@ class Assay extends Resource
             Text::make('SOP')
                 ->rules('required')
                 ->sortable(),
+            Select::make('Result Type')
+                ->hideFromIndex()
+                ->options(array_combine($resultTypes, $resultTypes))
+                ->rules('required', 'in:' . implode(',', $resultTypes)),
             Trix::make('Description'),
             HasOne::make('Input Parameters', 'inputParameter', InputParameter::class),
             HasMany::make('Results')

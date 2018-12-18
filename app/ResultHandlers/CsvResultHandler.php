@@ -2,36 +2,85 @@
 
 namespace App\ResultHandlers;
 
-use App\FileTypes\CSV;
+use App\Importer\ResultImporter;
+use App\Models\Result;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CsvResultHandler extends ResultHandler
 {
     public function handle()
     {
-        $csv = CSV::make($this->file->getRealPath());
-        if (!$csv->isValid()) {
-            $this->error(__('CSV is not valid. Columns \'sample\', \'target\' and \'data\' have to be present.'));
+        $data = Excel::toCollection(new ResultImporter, $this->file)->first();
+
+        if (!$this->hasRequiredColumns($data->first())) {
+            $this->error(__('Columns \'sample\', \'target\' and \'data\' have to be present.'));
         }
-        $this->validateSampleIds($csv->getSamplesIds()->toArray());
-        try {
-            $this->removeData();
-            $this->store($csv);
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
+
+        $this->validateWithRequestedSamples($data->pluck('sample'));
+
+        $resultHandler = $this;
+
+
+        DB::transaction(function () use ($data, $resultHandler) {
+            $resultHandler->removeData();
+
+            $resultHandler->store($data);
+        });
+    }
+
+    private function hasRequiredColumns(Collection $row)
+    {
+        return $row->has(['sample', 'target', 'data']);
+    }
+
+    public function store(Collection $data)
+    {
+        $sampleIds = $this->getDatabaseIdBySampleIds($data->pluck('sample'));
+
+        $resultData = [];
+
+        foreach ($data->groupBy(['target', 'sample']) as $target => $samples) {
+            foreach ($samples as $sampleId => $sample) {
+                $result = Result::firstOrCreate([
+                    'assay_id' => $this->experiment->reagent->assay->id,
+                    'sample_id' => $sampleIds[$sampleId],
+                    'target' => $sample[0]['target']
+                ]);
+
+                foreach ($sample as $sampleData) {
+                    $resultData[] = [
+                        'result_id' => $result->id,
+                        'primary_value' => $sampleData['data'],
+                        'secondary_value' => $sampleData['secondary'] ?? null,
+                        'experiment_id' => $this->experiment->id,
+                        'study_id' => Auth::user()->study_id,
+                        'extra' => collect($sampleData)
+                            ->except(['sample', 'target', 'data', 'secondary'])
+                            ->merge(['sample ID' => $sampleId])
+                            ->sortKeys()
+                            ->toJson()
+                    ];
+                }
+            }
+        }
+
+        foreach (array_chunk($resultData, 100) as $chunk) {
+            DB::table('result_data')->insert($chunk);
         }
     }
 
-    public function store(CSV $csv)
+
+    public static function determineResultValue(Result $result)
     {
-        $sampleData = $csv->getData()->map(function ($sample) {
-            return [
-                'primary' => $sample['data'],
-                'secondary' => $sample['secondary'] ?? null,
-                'sample' => $sample['sample'],
-                'target' => $sample['target'],
-                'additional' => serialize(array_except($sample, ['data', 'secondary', 'sample', 'target']))
-            ];
-        });
-        $this->storeSampleData($sampleData->toArray());
+        return $result->resultData->pluck('data')->unique()->implode(', ');
+    }
+
+    public static function getStatus(Result $result)
+    {
+        return 'Accepted';
     }
 }

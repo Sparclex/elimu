@@ -62,16 +62,7 @@ class Experiment extends DependsOnStudy
 
     public function getResultHandlerAttribute()
     {
-        return $this->result_type ? config('lims.result_types.' . $this->result_type) : ResultHandler::class;
-    }
-
-    public function getFileTypeAttribute()
-    {
-        return $this->result_type;
-    }
-
-    public function setFileTypeAttribute()
-    {
+        return $this->reagent->assay->result_handler;
     }
 
     public function scopeWithAssayName($query)

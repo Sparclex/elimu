@@ -3,17 +3,16 @@
 namespace App\ResultHandlers;
 
 use App\Models\Experiment;
-use App\Models\InputParameter;
-use Illuminate\Support\Carbon;
+use App\Models\Result;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\File\File;
 
 abstract class ResultHandler
 {
     protected $experimentId;
     /**
-     * @var File
+     * @var UploadedFile
      */
     protected $file;
 
@@ -23,53 +22,54 @@ abstract class ResultHandler
 
     public static $additionalDataLabel = 'Additional Data';
 
-    public function __construct(Experiment $experiment, $attributeName, File $file = null)
+    public function __construct(Experiment $experiment, UploadedFile $file)
     {
-
         $this->experiment = $experiment;
-        $this->file = $file ?? $experiment->result_file;
-        if (!$this->file) {
-            throw new \Exception('No file given');
-        }
-        $this->attributeName = $attributeName;
-        $this->inputParameters = InputParameter::getByExperiment($this->experiment->id);
 
-        $this->handle();
+        $this->file = $file;
+
+        $this->inputParameters = $experiment->inputParameters;
     }
 
     abstract public function handle();
 
-    public function validateSampleIds(array $sampleIds)
+    public function validateWithRequestedSamples($samplesIds)
     {
-        $existingSampleIds = DB::table('requested_experiments')
-            ->join('samples', 'requested_experiments.sample_id', '=', 'samples.id')
-            ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id')
-            ->where('requested_experiments.experiment_id', $this->experiment->id)
-            ->select('sample_informations.sample_id')->pluck('sample_id')->unique();
-        $missingInDb = [];
-        foreach ($sampleIds as $sampleId) {
-            if (!in_array($sampleId, $existingSampleIds->toArray())) {
-                $missingInDb[] = $sampleId;
-            }
-        }
-        $missingInFile = [];
-        foreach ($existingSampleIds as $sampleId) {
-            if (!in_array($sampleId, $sampleIds)) {
-                $missingInFile[] = $sampleId;
-            }
-        }
+        $missingIds = $this->diffExperimentSamples($samplesIds);
+
         $error = '';
-        if (count($missingInFile)) {
+
+        if (count($missingIds['missingInDb'])) {
+            $error = "The following sample ids were present in the file but not requested for this experiment: " .
+                implode(', ', $missingIds['missingInDb']);
+        }
+
+        if (count($missingIds['missingInFile'])) {
             $error .= "The following sample ids were requested for the experiment but missing in the file: " .
-                implode(', ', $missingInFile) . ". ";
+                implode(', ', $missingIds['missingInFile']) . ". ";
         }
-        if (count($missingInDb)) {
-            $error .= "The following sample ids were present in the file but not requested for this experiment: " .
-                implode(', ', $missingInDb);
-        }
+
         if (strlen($error)) {
             $this->error($error);
         }
+    }
+
+    public function diffExperimentSamples($sampleIds)
+    {
+        $existingSampleIds = $this->experimentSamples();
+
+        $sampleIds = is_array($sampleIds) ? collect($sampleIds) : $sampleIds;
+
+
+        $missingInDb = $existingSampleIds->reject(function ($sampleId) use ($sampleIds) {
+            return $sampleIds->contains($sampleId);
+        });
+
+        $missingInFile = $sampleIds->reject(function ($sampleId) use ($existingSampleIds) {
+            return $existingSampleIds->contains($sampleId);
+        });
+
+        return compact('missingInDb', 'missingInFile');
     }
 
     public function getDatabaseIdBySampleIds($sampleIds)
@@ -89,7 +89,7 @@ abstract class ResultHandler
     public function error($message)
     {
         throw ValidationException::withMessages([
-            $this->attributeName => $message
+            'result_file' => $message
         ]);
     }
 
@@ -102,4 +102,19 @@ abstract class ResultHandler
     {
         DB::table('result_data')->where('experiment_id', $experimentId)->delete();
     }
+
+    public function experimentSamples()
+    {
+        return DB::table('requested_experiments')
+            ->join('samples', 'requested_experiments.sample_id', '=', 'samples.id')
+            ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id')
+            ->where('requested_experiments.experiment_id', $this->experiment->id)
+            ->select('sample_informations.sample_id')
+            ->distinct()
+            ->pluck('sample_id');
+    }
+
+    abstract public static function determineResultValue(Result $result);
+
+    abstract public static function getStatus(Result $result);
 }

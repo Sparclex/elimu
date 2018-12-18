@@ -9,6 +9,10 @@ class ResultData extends DependsOnStudy
 {
     protected $table = 'result_data';
 
+    protected $casts = [
+        'extra' => 'array'
+    ];
+
     public function result()
     {
         return $this->belongsTo(Result::class);
@@ -17,16 +21,6 @@ class ResultData extends DependsOnStudy
     public function experiment()
     {
         return $this->belongsTo(Experiment::class);
-    }
-
-    public function getAdditionalAttribute($value)
-    {
-        return unserialize($value);
-    }
-
-    public function setAdditionalAttribute($value)
-    {
-        return serialize($value);
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Invokables\UpdateExperimentResult;
 use App\Nova\ResultData;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
@@ -47,7 +48,6 @@ class Experiment extends Resource
 
     public function fields(Request $request)
     {
-        $resultTypes = array_keys(config('lims.result_types'));
         return [
             ID::make()->sortable(),
             Text::make('Assay', 'assay_name')
@@ -79,29 +79,10 @@ class Experiment extends Resource
                 ->resolveUsing(function () {
                     return $this->original_filename;
                 })
-                ->store(
-                    function (Request $request) {
-                        $handler = (config('lims.result_types')[$request->file_type]);
-                        new $handler($this->resource, 'result_file', $request->result_file);
-                        if ($this->result_file) {
-                            StorageFacade::disk('local')->delete($this->result_file);
-                        }
-                        return [
-                            'result_file' => $request->result_file->store('experiments'),
-                            'original_filename' => $request->result_file->getClientOriginalName(),
-                            'result_type' => $request->file_type
-                        ];
-                    }
-                )
+                ->store(new UpdateExperimentResult)
                 ->download(function ($request, $model) {
                     return StorageFacade::download($model->result_file, $model->original_filename);
                 }),
-            Select::make('File Type')
-                ->onlyOnForms()
-                ->hideWhenCreating()
-                ->options(array_combine($resultTypes, $resultTypes))
-                ->rules('required_with:result_file', 'in:' . implode(',', $resultTypes))
-
         ];
     }
 

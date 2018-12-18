@@ -16,8 +16,7 @@ class DeleteExperimentFile
         Storage::disk('local')->delete($model->result_file);
         return [
             'result_file' => null,
-            'original_filename' => null,
-            'result_type' => null
+            'original_filename' => null
         ];
     }
 }

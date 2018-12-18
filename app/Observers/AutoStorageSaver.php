@@ -44,7 +44,7 @@ class AutoStorageSaver
     {
         Storage::generateStoragePosition(
             $sample->id,
-            $sample->sampleInformation->study_id,
+            $sample->study_id,
             $sample->sample_type_id,
             $sample->quantity
         );
