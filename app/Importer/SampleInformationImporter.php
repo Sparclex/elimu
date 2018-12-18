@@ -79,7 +79,16 @@ class SampleInformationImporter implements ToCollection, WithHeadingRow, WithVal
 
             foreach ($row->only($this->sampleInformationColumns()) as $key => $value) {
                 if ($key == 'gender') {
-                    $value = $value == 'M' ? 0 : 1;
+                    switch (strtolower($value)) {
+                        case 'm':
+                            $value = 0;
+                            break;
+                        case 'f':
+                            $value = 1;
+                            break;
+                        default:
+                            $value = null;
+                    }
                 }
 
                 if ($key == 'collected_at') {
