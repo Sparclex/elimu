@@ -8,7 +8,7 @@ class AcceptedResultDataCollection extends Collection
     public function standardDeviationIsInRange($cutoff)
     {
         $standardDeviation = $this->cqStandardDeviation();
-        return $standardDeviation === false ? true : $standardDeviation > $cutoff;
+        return $standardDeviation === false ? true : $standardDeviation < $cutoff;
     }
 
     public function cqStandardDeviation()
