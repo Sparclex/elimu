@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class SampleType extends Model
+class SampleType extends Model implements AuditableContract
 {
+    use DependsOnStudy, Auditable;
+
     protected $fillable = ['name'];
 
     public static function boot()

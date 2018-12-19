@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class SampleInformation extends DependsOnStudy
+class SampleInformation extends Model implements AuditableContract
 {
+    use DependsOnStudy, Auditable;
+
     protected $dates = [
         'created_at',
         'updated_at',

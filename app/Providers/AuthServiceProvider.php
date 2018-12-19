@@ -14,6 +14,7 @@ use App\Models\SampleType;
 use App\Models\Storage;
 use App\Models\Study;
 use App\Policies\AssayPolicy;
+use App\Policies\AuditPolicy;
 use App\Policies\Authorization;
 use App\Policies\ExperimentPolicy;
 use App\Policies\InputParameterPolicy;
@@ -29,6 +30,7 @@ use App\Policies\UserPolicy;
 use App\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use OwenIt\Auditing\Models\Audit;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -49,7 +51,8 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Storage::class => StoragePolicy::class,
         Result::class => ResultPolicy::class,
-        ResultData::class => ResultDataPolicy::class
+        ResultData::class => ResultDataPolicy::class,
+        Audit::class => AuditPolicy::class,
     ];
 
     /**

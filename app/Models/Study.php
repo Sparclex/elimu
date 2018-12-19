@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Study extends Model
+class Study extends Model implements AuditableContract
 {
+    use Auditable;
 
     public function sampleInformations()
     {

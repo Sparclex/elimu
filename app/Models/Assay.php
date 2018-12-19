@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Assay extends Model
+class Assay extends Model implements AuditableContract
 {
+    use Auditable;
+
     public function inputParameter()
     {
         return $this->hasOne(InputParameter::class)

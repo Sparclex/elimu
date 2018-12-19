@@ -3,7 +3,7 @@ namespace App\Tools;
 
 use Laravel\Nova\Tool;
 
-class ResultManager extends Tool
+class Lims extends Tool
 {
     /**
      * Build the view that renders the navigation links for the tool.
@@ -12,6 +12,6 @@ class ResultManager extends Tool
      */
     public function renderNavigation()
     {
-        return view('tools.result-manager-navigation');
+        return view('sidebar');
     }
 }

@@ -7,9 +7,13 @@ use App\ResultHandlers\ResultHandler;
 use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Experiment extends DependsOnStudy
+class Experiment extends Model implements AuditableContract
 {
+    use DependsOnStudy, Auditable;
+
     protected $dates = [
         'created_at',
         'updated_at',

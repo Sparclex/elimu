@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Sample extends DependsOnStudy
+class Sample extends Model implements AuditableContract
 {
+    use DependsOnStudy, Auditable;
+
     protected $fillable = [
         'sample_type_id',
         'sample_information_id',

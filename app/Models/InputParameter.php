@@ -5,9 +5,13 @@ namespace App\Models;
 use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class InputParameter extends DependsOnStudy
+class InputParameter extends Model implements AuditableContract
 {
+    use DependsOnStudy, Auditable;
+
     protected $casts = [
         'parameters' => 'collection'
     ];

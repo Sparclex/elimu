@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Result extends DependsOnStudy
+class Result extends Model
 {
     protected $fillable = ['sample_id', 'target', 'assay_id'];
 

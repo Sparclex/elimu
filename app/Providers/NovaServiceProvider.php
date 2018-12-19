@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Nova\Audit;
 use App\Nova\User;
 use App\Nova\Assay;
 use App\Nova\Study;
@@ -9,16 +10,14 @@ use App\Nova\Result;
 use App\Nova\Sample;
 use App\Nova\Reagent;
 use App\Nova\Storage;
-use App\Tools\ResultManager;
+use App\Tools\Lims;
 use Laravel\Nova\Nova;
 use App\Nova\Experiment;
 use App\Nova\ResultData;
-use App\Nova\SampleData;
 use App\Nova\SampleType;
 use App\Nova\InputParameter;
 use App\Cards\IntroductionCard;
 use App\Nova\SampleInformation;
-use App\Tools\SampleBatchImporter;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
@@ -42,7 +41,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function tools()
     {
         return [
-            new ResultManager,
+            new Lims,
             //new \Spatie\BackupTool\BackupTool,
         ];
     }
@@ -111,6 +110,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             Reagent::class,
             Assay::class,
             Storage::class,
+            Audit::class,
         ]);
     }
 }

@@ -6,8 +6,10 @@ use App\Scopes\OnlyCurrentStudy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class Storage extends DependsOnStudy
+class Storage extends Model
 {
+    use DependsOnStudy;
+
     protected $table = 'storage';
 
     protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];

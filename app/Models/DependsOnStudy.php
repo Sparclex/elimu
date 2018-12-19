@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 
-abstract class DependsOnStudy extends Model
+trait DependsOnStudy
 {
     protected function preSave()
     {

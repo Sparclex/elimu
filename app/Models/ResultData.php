@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Collections\ResultDataCollection;
 use Illuminate\Database\Eloquent\Model;
 
-class ResultData extends DependsOnStudy
+class ResultData extends Model
 {
+    use DependsOnStudy;
+
     protected $table = 'result_data';
 
     protected $casts = [
