@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class SampleType extends Model implements AuditableContract
 {
-    use DependsOnStudy, Auditable;
+    use Auditable;
 
     protected $fillable = ['name'];
 

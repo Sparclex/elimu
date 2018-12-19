@@ -6,9 +6,10 @@ use App\Models\SampleType;
 use App\Models\SampleInformation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\ToCollection;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Sparclex\NovaImportCard\ImportException;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -38,10 +39,11 @@ class SampleInformationImporter implements ToCollection, WithHeadingRow, WithVal
     {
         $sampleTypes[] = [];
 
+        Validator::make($rows->toArray(), $this->rules())->validate();
+
         $rows = $rows->first()->has('position') ? $rows->sortBy('position') : $rows;
         foreach ($rows->pluck('type')->unique() as $name) {
             $sampleTypes[$name] = SampleType::firstOrCreate(compact('name'));
-            ;
         }
 
         foreach ($rows as $row) {
@@ -54,12 +56,12 @@ class SampleInformationImporter implements ToCollection, WithHeadingRow, WithVal
     public function rules(): array
     {
         return [
-            'id' => 'required',
-            'type' => 'required',
-            'collected_at'=> 'nullable',
-            'birthdate' => 'nullable|date',
-            'gender' => 'nullable|size:1',
-            'position' => 'numeric',
+            '*.id' => 'required',
+            '*.type' => 'required',
+            '*.collected_at'=> 'nullable',
+            '*.birthdate' => 'nullable|date',
+            '*.gender' => 'nullable|size:1',
+            '*.position' => 'numeric',
         ];
     }
 
