@@ -161,7 +161,7 @@ class DevelopmentSeeder extends Seeder
             "4179608",
         ]
         ];
-        /*foreach($sampleIdsInRdml as $experimentNumber => $experimentSamples) {
+        foreach($sampleIdsInRdml as $experimentNumber => $experimentSamples) {
             factory(SampleType::class)->create();
              $samples = factory(\App\Models\Sample::class, count($experimentSamples))
             ->make([
@@ -255,6 +255,6 @@ class DevelopmentSeeder extends Seeder
                     ]
                 ]
             ]);
-        }*/
+        }
     }
 }
