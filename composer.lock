@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c15e361631f9a5ad1e052c92b367ba27",
+    "content-hash": "1e12b639f3e070fd633de9c6f136c785",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -970,16 +970,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.18",
+            "version": "v5.7.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "d329797ae0e2ece220d85a5b59ffe659ce2050ae"
+                "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/d329797ae0e2ece220d85a5b59ffe659ce2050ae",
-                "reference": "d329797ae0e2ece220d85a5b59ffe659ce2050ae",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
+                "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
                 "shasum": ""
             },
             "require": {
@@ -1112,7 +1112,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-12-17T16:47:43+00:00"
+            "time": "2018-12-18T14:00:38+00:00"
         },
         {
             "name": "laravel/nexmo-notification-channel",
@@ -2022,16 +2022,16 @@
         },
         {
             "name": "nexmo/client",
-            "version": "1.5.2",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nexmo/nexmo-php.git",
-                "reference": "f192c84ec3cc3e2657fc754e0da1a17e39ac5542"
+                "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/f192c84ec3cc3e2657fc754e0da1a17e39ac5542",
-                "reference": "f192c84ec3cc3e2657fc754e0da1a17e39ac5542",
+                "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/01809cc1e17a5af275913c49bb5d444eb6cc06d4",
+                "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4",
                 "shasum": ""
             },
             "require": {
@@ -2066,7 +2066,7 @@
                 }
             ],
             "description": "PHP Client for using Nexmo's API.",
-            "time": "2018-11-14T14:12:22+00:00"
+            "time": "2018-12-17T10:47:50+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3176,16 +3176,16 @@
         },
         {
             "name": "sparclex/nova-import-card",
-            "version": "v0.1.1",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sparclex/nova-import-card.git",
-                "reference": "f7abc2bd5434594c7a655b466be4dd8d488561cc"
+                "reference": "b1e59c45704f53e9531f3b950983877957acc599"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sparclex/nova-import-card/zipball/f7abc2bd5434594c7a655b466be4dd8d488561cc",
-                "reference": "f7abc2bd5434594c7a655b466be4dd8d488561cc",
+                "url": "https://api.github.com/repos/Sparclex/nova-import-card/zipball/b1e59c45704f53e9531f3b950983877957acc599",
+                "reference": "b1e59c45704f53e9531f3b950983877957acc599",
                 "shasum": ""
             },
             "require": {
@@ -3223,7 +3223,7 @@
                 "laravel",
                 "nova"
             ],
-            "time": "2018-11-23T13:49:46+00:00"
+            "time": "2018-12-19T19:06:09+00:00"
         },
         {
             "name": "spatie/db-dumper",
@@ -4615,16 +4615,16 @@
         },
         {
             "name": "titasgailius/search-relations",
-            "version": "v1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TitasGailius/nova-search-relations.git",
-                "reference": "add69b7d7bf8b849fafb5f3599daf1a2a033a046"
+                "reference": "1e7408a678b9258537cb15ceb58a56016501243a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TitasGailius/nova-search-relations/zipball/add69b7d7bf8b849fafb5f3599daf1a2a033a046",
-                "reference": "add69b7d7bf8b849fafb5f3599daf1a2a033a046",
+                "url": "https://api.github.com/repos/TitasGailius/nova-search-relations/zipball/1e7408a678b9258537cb15ceb58a56016501243a",
+                "reference": "1e7408a678b9258537cb15ceb58a56016501243a",
                 "shasum": ""
             },
             "require": {
@@ -4647,7 +4647,7 @@
                 "relations",
                 "search"
             ],
-            "time": "2018-09-02T07:55:27+00:00"
+            "time": "2018-12-18T18:06:27+00:00"
         },
         {
             "name": "treestoneit/belongs-to-field",
@@ -5291,16 +5291,16 @@
         },
         {
             "name": "laravel/dusk",
-            "version": "v4.0.3",
+            "version": "v4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/dusk.git",
-                "reference": "94a2497d4a7ff3b4fc75acb55f9faeb50dcb4585"
+                "reference": "3b2df334d92b6215400ddd183253eb4bcc07debb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/dusk/zipball/94a2497d4a7ff3b4fc75acb55f9faeb50dcb4585",
-                "reference": "94a2497d4a7ff3b4fc75acb55f9faeb50dcb4585",
+                "url": "https://api.github.com/repos/laravel/dusk/zipball/3b2df334d92b6215400ddd183253eb4bcc07debb",
+                "reference": "3b2df334d92b6215400ddd183253eb4bcc07debb",
                 "shasum": ""
             },
             "require": {
@@ -5348,7 +5348,7 @@
                 "testing",
                 "webdriver"
             ],
-            "time": "2018-11-25T14:35:43+00:00"
+            "time": "2018-12-19T13:55:39+00:00"
         },
         {
             "name": "lorisleiva/laravel-deployer",
