@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Observers\ExtractSampleData;
-use App\ResultHandlers\ResultHandler;
-use App\Scopes\OnlyCurrentStudy;
 use App\User;
-use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
+use App\Scopes\OnlyCurrentStudy;
+use App\Observers\ExtractSampleData;
+use Illuminate\Support\Facades\Auth;
+use App\ResultHandlers\ResultHandler;
+use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Experiment extends Model implements AuditableContract
@@ -30,6 +31,11 @@ class Experiment extends Model implements AuditableContract
         parent::boot();
 
         static::addGlobalScope(new OnlyCurrentStudy('experiments'));
+
+        static::saving(function ($model) {
+            $model->requested_at = now();
+            $model->requester_id = Auth::user()->id;
+        });
     }
 
     public function reagent()

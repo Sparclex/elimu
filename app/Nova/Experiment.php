@@ -69,12 +69,12 @@ class Experiment extends Resource
             Text::make('Requester', 'requester_name')
                 ->exceptOnForms()
                 ->sortable(),
-            Number::make('Number of Samples', 'samples_count')
-                ->onlyOnIndex()
-                ->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
-                ->hideWhenUpdating()
+                ->exceptOnForms()
+                ->sortable(),
+            Number::make('Number of Samples', 'samples_count')
+                ->onlyOnIndex()
                 ->sortable(),
             Trix::make('Comment')
                 ->hideFromIndex(),
