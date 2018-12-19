@@ -12,7 +12,7 @@ class DeleteExperimentFile
         if (!$model->result_file) {
             return;
         }
-        ResultHandler::removeSampleData($model->id);
+
         Storage::disk('local')->delete($model->result_file);
         return [
             'result_file' => null,

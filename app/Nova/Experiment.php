@@ -83,6 +83,7 @@ class Experiment extends Resource
             HasMany::make('Result Data', 'resultData', ResultData::class),
 
             File::make('Result File')
+                ->hideWhenCreating()
                 ->prunable()
                 ->delete(new DeleteExperimentFile)
                 ->resolveUsing(function () {

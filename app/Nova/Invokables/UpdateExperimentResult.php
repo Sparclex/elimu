@@ -15,10 +15,6 @@ class UpdateExperimentResult
 
         $this->handleResults(new $model->result_handler($model, $request->result_file));
 
-        $this->removeOldFile($model);
-
-
-
         return [
             'result_file' => $resultFile,
             'original_filename' => $request->result_file->getClientOriginalName(),
@@ -28,12 +24,5 @@ class UpdateExperimentResult
     private function handleResults(ResultHandler $resultHandler)
     {
         $resultHandler->handle();
-    }
-
-    private function removeOldFile(Experiment $model)
-    {
-        if ($model->resultFile) {
-            Storage::disk('local')->delete($model->resultFile);
-        }
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class Result extends Model
 {
+    use DependsOnStudy;
+
     protected $fillable = ['sample_id', 'target', 'assay_id'];
 
     protected $output = null;

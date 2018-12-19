@@ -5,6 +5,7 @@ namespace App\ResultHandlers;
 use App\Models\Experiment;
 use App\Models\Result;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -39,14 +40,14 @@ abstract class ResultHandler
 
         $error = '';
 
-        if (count($missingIds['missingInDb'])) {
+        if ($missingIds['missingInDb']->isNotEmpty()) {
             $error = "The following sample ids were present in the file but not requested for this experiment: " .
-                implode(', ', $missingIds['missingInDb']);
+                $missingIds['missingInDb']->implode(', ');
         }
 
-        if (count($missingIds['missingInFile'])) {
+        if ($missingIds['missingInFile']->isNotEmpty()) {
             $error .= "The following sample ids were requested for the experiment but missing in the file: " .
-                implode(', ', $missingIds['missingInFile']) . ". ";
+                $missingIds['missingInFile']->implode(', ') . ". ";
         }
 
         if (strlen($error)) {
@@ -54,6 +55,10 @@ abstract class ResultHandler
         }
     }
 
+    /**
+     * @param $sampleIds
+     * @return Collection[]
+     */
     public function diffExperimentSamples($sampleIds)
     {
         $existingSampleIds = $this->experimentSamples();
