@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Fields\CustomBelongsToMany;
 use App\Fields\ReagentsFields;
 use App\Fields\SampleIds;
 use App\Fields\SampleTypeField;
@@ -78,7 +79,7 @@ class Experiment extends Resource
             Trix::make('Comment')
                 ->hideFromIndex(),
 
-            BelongsToMany::make('Samples'),
+            CustomBelongsToMany::make('Samples'),
 
             HasMany::make('Result Data', 'resultData', ResultData::class),
 
