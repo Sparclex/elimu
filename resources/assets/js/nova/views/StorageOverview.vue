@@ -30,38 +30,41 @@
                         </div>
                     </div>
 
-                    <div v-if="numberOfRows > 0" class="max-w-full overflow-x-auto">
+                    <div v-if="numberOfRows > 0">
                         <div class="py-8" v-if="loadingStorage">
                             <loader />
                         </div>
 
-                        <table v-else class="min-w-full">
-                            <tr>
-                                <th class="td-fit p-2 bg-30 text-80"></th>
-                                <th v-for="column in numberOfColumns" class="p-2 bg-30 text-80">{{column}}</th>
-                            </tr>
-                            <tr v-for="row in numberOfRows">
-                                <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
-                                <td v-for="column in numberOfColumns"
-                                    class="p-2"
-                                    :title="'B ' + currentSample(row, column).fields[4].value + ' P '
-                                    + currentSample(row, column).fields[5].value">
-                                    {{currentSample(row, column).fields[2].value}}
-                                </td>
-                            </tr>
-                        </table>
+                        <div v-else class="max-w-full overflow-x-auto">
+                            <table class="min-w-full">
+                                <tr>
+                                    <th class="td-fit p-2 bg-30 text-80"></th>
+                                    <th v-for="column in numberOfColumns" class="p-2 bg-30 text-80">{{columnLabel(column)}}</th>
+                                </tr>
+                                <tr v-for="row in numberOfRows">
+                                    <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
+                                    <td v-for="column in numberOfColumns"
+                                        class="p-2"
+                                        :title="'B ' + currentSample(row, column).fields[4].value + ' P '
+                                        + currentSample(row, column).fields[5].value">
+                                        {{currentSample(row, column).fields[2].value}}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <pagination-links
+                            resource-name="storages"
+                            :resources="samples"
+                            :resource-response="resourceResponse"
+                            @previous="selectPreviousPage"
+                            @next="selectNextPage"
+                        >
+                        </pagination-links>
                     </div>
 
-                    <pagination-links
-                        resource-name="storages"
-                        :resources="samples"
-                        :resource-response="resourceResponse"
-                        @previous="selectPreviousPage"
-                        @next="selectNextPage"
-                    >
-                    </pagination-links>
-                    <div v-if="numberOfRows === -1" class="py-8">
-                        <p>Invalid number of columns {{boxSize}} can not be divided by {{numberOfColumns}}.</p>
+
+                    <div v-if="numberOfRows === -1" class="py-8 px-4">
+                        <p>Invalid number of columns. {{boxSize}} can not be divided by {{numberOfColumns}}.</p>
                     </div>
 
                 </div>
@@ -216,6 +219,10 @@
                         columns: this.numberOfColumns,
                     }}
                 );
+            },
+
+            columnLabel(column) {
+                return String.fromCharCode(97 + column).toUpperCase();
             }
         },
 
