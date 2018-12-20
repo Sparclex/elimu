@@ -11,7 +11,7 @@ class Status extends Field
      *
      * @var string
      */
-    public $component = 'status';
+    public $component = 'custom-status-field';
 
     private $loadingWord;
 

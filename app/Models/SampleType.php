@@ -37,4 +37,9 @@ class SampleType extends Model implements AuditableContract
     {
         return optional($this->pivot)->size;
     }
+
+    public function storages()
+    {
+        return $this->hasMany(Storage::class);
+    }
 }

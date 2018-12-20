@@ -13,12 +13,8 @@
     </div>
 </template>
 <script>
-    import Multiselect from 'vue-multiselect';
     export default {
         props: ['study'],
-        components: {
-            Multiselect
-        },
         data() {
             return {
                 studies: [],
@@ -48,4 +44,3 @@
         }
     }
 </script>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

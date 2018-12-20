@@ -13,7 +13,7 @@ class DownloadReport extends Field
      *
      * @var string
      */
-    public $component = 'download-report';
+    public $component = 'download-report-field';
 
     public $showOnCreation = false;
 

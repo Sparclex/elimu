@@ -20,6 +20,6 @@ class IntroductionCard extends Card
      */
     public function component()
     {
-        return 'IntroductionCard';
+        return 'cards-introduction-card';
     }
 }

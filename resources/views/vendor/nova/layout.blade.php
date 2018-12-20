@@ -44,7 +44,7 @@
                 @if (count(Nova::globallySearchableResources(request())) > 0)
                     <global-search></global-search>
                 @endif
-                <study-chooser class="mx-8 px-8 flex-1" :study="{{ Auth::user()->study_id ?? 0 }}"></study-chooser>
+                <study-selector class="mx-8 px-8 flex-1" :study="{{ Auth::user()->study_id ?? 0 }}"></study-selector>
                 <dropdown class="ml-auto h-9 flex items-center" style="right: 20px">
                     @include('nova::partials.user')
                 </dropdown>
@@ -67,6 +67,7 @@
 
 <script>
     window.config = @json(Nova::jsonVariables(request()));
+    window.selectedStudy = "{{ Auth::user()->study_id ?? 0 }}";
 </script>
 
 <!-- Scripts -->

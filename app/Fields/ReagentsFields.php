@@ -17,6 +17,10 @@ class ReagentsFields extends Field
      */
     public $component = 'reagent-field';
 
+    public $showOnDetail = false;
+
+    public $showOnIndex = false;
+
     public function __construct($assays)
     {
         parent::__construct('form');

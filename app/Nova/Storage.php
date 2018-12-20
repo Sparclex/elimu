@@ -42,9 +42,9 @@ class Storage extends Resource
     public static function indexQuery(NovaRequest $request, $query)
     {
         $query->getQuery()->orders = [];
-        return $query->orderBy('study_id')
+        return $query
             ->orderBy('sample_type_id')
-            ->orderByDesc('box')
-            ->orderByDesc('position');
+            ->orderby('box')
+            ->orderBy('position');
     }
 }

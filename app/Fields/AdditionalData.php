@@ -11,11 +11,13 @@ class AdditionalData extends Field
      *
      * @var string
      */
-    public $component = 'additional-data';
+    public $component = 'additional-data-field';
 
     public $showOnCreation = false;
 
     public $showOnUpdate = false;
+
+    public $showOnIndex = false;
 
     public function __construct($attribute, $resolveCallback = null)
     {

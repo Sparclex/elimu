@@ -14,7 +14,7 @@
             </router-link>
         </li>
         <li class="leading-tight mb-4 ml-8 text-sm">
-            <router-link :to="{name: 'index', params: {resourceName: 'storages'}}" class="text-white text-justify no-underline dim">
+            <router-link :to="{name: 'storage-overview'}" class="text-white text-justify no-underline dim">
                 Storage
             </router-link>
         </li>

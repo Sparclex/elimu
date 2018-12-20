@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Fields\StorageSizeField;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 
@@ -39,7 +40,8 @@ class SampleType extends Resource
                 ->creationRules('required', 'unique:sample_types,name')
                 ->updateRules('required', 'unique:sample_types,name,{{resourceId}}'),
             BelongsToMany::make('Study', 'studies', Study::class)
-                ->fields(new StorageSizeField)
+                ->fields(new StorageSizeField),
+            HasMany::make('Storage', 'storages', Storage::class),
         ];
     }
 }
