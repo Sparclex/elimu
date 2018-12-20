@@ -123,7 +123,7 @@ class RdmlResultHandler extends ResultHandler
 
     private static function determineOutput(Result $result)
     {
-        $inputParameters = $result->assay->inputParameters;
+        $inputParameters = $result->inputParameter;
 
         $acceptedResults = $result->resultData->onlyAccepted();
 
