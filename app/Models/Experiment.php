@@ -30,7 +30,7 @@ class Experiment extends Model implements AuditableContract
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy('experiments'));
+        static::addGlobalScope(new OnlyCurrentStudy);
 
         static::saving(function ($model) {
             $model->requested_at = now();
