@@ -44,7 +44,10 @@
                                 <tr v-for="row in numberOfRows" class="border-b-2 border-40">
                                     <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
                                     <td v-for="column in numberOfColumns"
-                                        class="p-2 border-r-2 border-40">
+                                        class="p-2 border-40"
+                                        :class="{
+                                            'border-r-2': column < numberOfColumns - 1
+                                        }">
                                         {{currentSample(row, column).fields[1].value}}
                                     </td>
                                 </tr>
