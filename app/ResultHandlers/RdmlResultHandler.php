@@ -68,10 +68,10 @@ class RdmlResultHandler extends ResultHandler
                         'secondary_value' => $data['position'],
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
+                        'sample_id' => $sampleId,
                         'extra' => json_encode(
                             collect($data)
                                 ->except(['position', 'sampleId', 'cq', 'data'])
-                                ->merge(['sample ID' => $sampleId])
                                 ->sortKeys()
                                 ->toArray()
                         )

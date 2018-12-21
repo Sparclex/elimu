@@ -58,9 +58,9 @@ class CsvResultHandler extends ResultHandler
                         'secondary_value' => $sampleData['secondary'] ?? null,
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
+                        'sample_id' => $sampleId,
                         'extra' => collect($sampleData)
                             ->except(['sample', 'target', 'data', 'secondary'])
-                            ->merge(['sample ID' => $sampleId])
                             ->sortKeys()
                             ->toJson()
                     ];

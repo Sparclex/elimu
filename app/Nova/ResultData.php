@@ -24,7 +24,10 @@ class ResultData extends Resource
 
     public static $title = 'id';
 
-    public static $search = [];
+    public static $search = [
+        'sample_id',
+        'status',
+    ];
 
     public static $with = ['result', 'experiment'];
 
@@ -45,6 +48,7 @@ class ResultData extends Resource
                 ->sortable(),
             BelongsToField::make('Result'),
             BelongsToField::make('Experiment'),
+            Text::make('Sample ID')->sortable(),
             Status::make('Status')
                 ->failedWhen('Declined', 0)
                 ->successWhen('Accepted', 1),
