@@ -44,10 +44,8 @@
                                 <tr v-for="row in numberOfRows" class="border-b-2 border-40">
                                     <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
                                     <td v-for="column in numberOfColumns"
-                                        class="p-2 border-r-2 border-40"
-                                        :title="'B ' + currentSample(row, column).fields[4].value + ' P '
-                                        + currentSample(row, column).fields[5].value">
-                                        {{currentSample(row, column).fields[2].value}}
+                                        class="p-2 border-r-2 border-40">
+                                        {{currentSample(row, column).fields[1].value}}
                                     </td>
                                 </tr>
                             </table>
@@ -254,10 +252,10 @@
             sortedSamples() {
                 let sortedSamples = {};
                 this.samples.forEach((sample) => {
-                    if(!sortedSamples[sample.fields[4].value]) {
-                        sortedSamples[sample.fields[4].value] = {};
+                    if(!sortedSamples[sample.fields[2].value]) {
+                        sortedSamples[sample.fields[2].value] = {};
                     }
-                    sortedSamples[sample.fields[4].value][sample.fields[5].value] = sample;
+                    sortedSamples[sample.fields[2].value][sample.fields[3].value] = sample;
                 });
 
                 return sortedSamples;

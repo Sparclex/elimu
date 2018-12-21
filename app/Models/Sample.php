@@ -44,9 +44,9 @@ class Sample extends Model implements AuditableContract
         return $this->belongsTo(SampleInformation::class);
     }
 
-    public function storage()
+    public function storages()
     {
-        return $this->hasOne(Storage::class);
+        return $this->hasMany(Storage::class);
     }
 
     public function experiments()

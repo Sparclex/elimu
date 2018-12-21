@@ -5,6 +5,7 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Number;
+use App\Fields\CustomBelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
@@ -14,10 +15,11 @@ class Storage extends Resource
 
     public static $title = 'id';
 
-    public static $with = ['sample'];
+    public static $with = ['sample.sampleInformation'];
 
     public static $search = [
-        'id',
+        'box',
+        'position',
     ];
 
     public static function label()
@@ -30,10 +32,7 @@ class Storage extends Resource
         return [
             ID::make()
                 ->onlyOnForms(),
-            BelongsToField::make('Study')
-                ->onlyOnDetail(),
             BelongsToField::make('Sample'),
-            BelongsToField::make('SampleType'),
             Number::make('Box'),
             Number::make('Position'),
         ];

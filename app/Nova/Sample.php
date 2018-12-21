@@ -91,6 +91,7 @@ class Sample extends Resource
 
             Code::make('Extra')->json(),
            // DownloadReport::make($this->id),
+            HasMany::make('Storage Places', 'storages', Storage::class),
 
             BelongsToMany::make('Experiments'),
             HasMany::make('Results')
