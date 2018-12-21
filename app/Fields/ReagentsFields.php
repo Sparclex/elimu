@@ -3,9 +3,10 @@
 namespace App\Fields;
 
 use App\Models\Reagent;
+use App\Models\Experiment;
 use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ReagentsFields extends Field
@@ -42,15 +43,19 @@ class ReagentsFields extends Field
         return [
             'form.assay' => 'required|exists:assays,id',
             'form.useExisting' => 'required|boolean',
-            'form.reagent' => 'required_if:useExisting,1|exists:reagents,id',
-            'form.lot' => 'required_if:useExisting,0',
-            'form.name' => 'required_if:useExisting,0',
-            'form.expires_at' => 'required_if:useExisting,0|date',
+            'form.reagent' => 'required_if:form.useExisting,1|exists:reagents,id',
+            'form.lot' => 'required_if:form.useExisting,0',
+            'form.name' => 'required_if:form.useExisting,0',
+            'form.expires_at' => 'required_if:form.useExisting,0|date',
         ];
     }
 
     protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {
+        if (!($model instanceof Experiment)) {
+            return parent::fillAttributeFromRequest($request, $requestAttribute, $model, $attribute);
+        }
+
         $form = $request[$requestAttribute];
 
         $reagentId = null;

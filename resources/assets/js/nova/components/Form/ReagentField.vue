@@ -71,7 +71,7 @@
              * are truthy or falsey
              */
             fill(formData) {
-                if(!this.assay || !this.useExisting) {
+                if(!this.assay) {
                     return;
                 }
                 formData.append('form[assay]', this.assay.id);
@@ -93,6 +93,7 @@
                     .then(({data}) => {
                         this.reagents = data;
                         this.loading = false;
+                        this.useExisting = this.reagents.length > 0;
                     });
             },
 
