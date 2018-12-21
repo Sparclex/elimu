@@ -70,9 +70,13 @@ class Experiment extends Resource
             Text::make('Requester', 'requester_name')
                 ->exceptOnForms()
                 ->sortable(),
+            BelongsToField::make('Requester', 'requester', User::class)
+                ->onlyOnForms()
+                ->hideWhenCreating()
+                ->searchable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
-                ->exceptOnForms()
+                ->hideWhenCreating()
                 ->sortable(),
             Number::make('Number of Samples', 'samples_count')
                 ->onlyOnIndex()
