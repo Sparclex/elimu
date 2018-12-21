@@ -46,7 +46,7 @@
                                     <td v-for="column in numberOfColumns"
                                         class="p-2 border-40"
                                         :class="{
-                                            'border-r-2': column < numberOfColumns - 1
+                                            'border-r-2': column != numberOfColumns
                                         }">
                                         {{currentSample(row, column).fields[1].value}}
                                     </td>
