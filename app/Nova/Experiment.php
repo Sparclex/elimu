@@ -2,26 +2,27 @@
 
 namespace App\Nova;
 
-use App\Fields\CustomBelongsToMany;
-use App\Fields\ReagentsFields;
 use App\Fields\SampleIds;
-use App\Fields\SampleTypeField;
-use App\Nova\Invokables\UpdateExperimentResult;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\File;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
+use App\Fields\ReagentsFields;
+use App\Fields\SampleTypeField;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Textarea;
+use App\Fields\CustomBelongsToMany;
+use App\Models\Assay as AssayModel;
 use Laravel\Nova\Fields\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Invokables\DeleteExperimentFile;
 use Treestoneit\BelongsToField\BelongsToField;
-use App\Models\Assay as AssayModel;
+use App\Nova\Invokables\UpdateExperimentResult;
 use Illuminate\Support\Facades\Storage as StorageFacade;
 
 class Experiment extends Resource
@@ -85,12 +86,12 @@ class Experiment extends Resource
 
             File::make('Result File')
                 ->hideWhenCreating()
-                ->prunable()
-                ->delete(new DeleteExperimentFile)
+                //->prunable()
                 ->resolveUsing(function () {
                     return $this->original_filename;
                 })
                 ->store(new UpdateExperimentResult)
+                ->delete(new DeleteExperimentFile)
                 ->download(function ($request, $model) {
                     return StorageFacade::download($model->result_file, $model->original_filename);
                 }),

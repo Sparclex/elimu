@@ -2,10 +2,11 @@
 
 namespace App\ResultHandlers;
 
-use App\FileTypes\RDML;
 use App\Models\Result;
-use Illuminate\Support\Facades\Auth;
+use App\FileTypes\RDML;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RdmlResultHandler extends ResultHandler
 {
@@ -19,7 +20,7 @@ class RdmlResultHandler extends ResultHandler
             $this->error(__('Input parameters not set'));
         }
 
-        $rdml = new RDML($this->file, $this->inputParameters);
+        $rdml = new RDML(new File(storage_path('app/'.$this->path)), $this->inputParameters);
 
         if ($rdml->getData()->isEmpty()) {
             $this->error(__('Invalid rdml file'));

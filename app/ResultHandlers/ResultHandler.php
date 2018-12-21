@@ -2,9 +2,9 @@
 
 namespace App\ResultHandlers;
 
-use App\Models\Experiment;
 use App\Models\Result;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Http\File;
+use App\Models\Experiment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -12,10 +12,8 @@ use Illuminate\Validation\ValidationException;
 abstract class ResultHandler
 {
     protected $experimentId;
-    /**
-     * @var UploadedFile
-     */
-    protected $file;
+
+    protected $path;
 
     protected $attributeName;
 
@@ -23,11 +21,11 @@ abstract class ResultHandler
 
     public static $additionalDataLabel = 'Additional Data';
 
-    public function __construct(Experiment $experiment, UploadedFile $file)
+    public function __construct(Experiment $experiment, $path)
     {
         $this->experiment = $experiment;
 
-        $this->file = $file;
+        $this->path = $path;
 
         $this->inputParameters = $experiment->inputParameters;
     }

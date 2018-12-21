@@ -14,7 +14,7 @@ class CsvResultHandler extends ResultHandler
 {
     public function handle()
     {
-        $data = Excel::toCollection(new ResultImporter, $this->file)->first();
+        $data = Excel::toCollection(new ResultImporter, $this->path)->first();
 
         if (!$this->hasRequiredColumns($data->first())) {
             $this->error(__('Columns \'sample\', \'target\' and \'data\' have to be present.'));
