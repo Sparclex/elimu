@@ -204,12 +204,12 @@
             },
 
             selectPreviousPage() {
-                this.currentPage = this.currentPage - 1;
+                this.currentPage = parseInt(this.currentPage) - 1;
                 this.fetchSamples();
             },
 
             selectNextPage() {
-                this.currentPage = this.currentPage + 1;
+                this.currentPage = parseInt(this.currentPage) + 1;
                 this.fetchSamples();
             },
 
