@@ -53,6 +53,10 @@ class RdmlResultHandler extends ResultHandler
         $targets = $rdml
             ->cyclesOfQuantificationWithoutControl()
             ->groupBy(['target', 'sampleId']);
+
+        $createdAt = now();
+        $updatedAt = now();
+
         $resultData = [];
         foreach ($targets as $target => $samples) {
             foreach ($samples as $sampleId => $sample) {
@@ -70,6 +74,8 @@ class RdmlResultHandler extends ResultHandler
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
                         'sample_id' => $sampleId,
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
                         'extra' => json_encode(
                             collect($data)
                                 ->except(['position', 'sampleId', 'cq', 'data'])

@@ -43,6 +43,9 @@ class CsvResultHandler extends ResultHandler
 
         $resultData = [];
 
+        $createdAt = now();
+        $updatedAt = now();
+
         foreach ($data->groupBy(['target', 'sample']) as $target => $samples) {
             foreach ($samples as $sampleId => $sample) {
                 $result = Result::firstOrCreate([
@@ -59,6 +62,8 @@ class CsvResultHandler extends ResultHandler
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
                         'sample_id' => $sampleId,
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
                         'extra' => collect($sampleData)
                             ->except(['sample', 'target', 'data', 'secondary'])
                             ->sortKeys()
