@@ -73,9 +73,7 @@ class SampleInformation extends Resource
 
     public function cards(Request $request)
     {
-        return [
-            new NovaImportCard(static::class)
-        ];
+        return [];
     }
 
     public function filters(Request $request)

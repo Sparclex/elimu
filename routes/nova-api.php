@@ -8,3 +8,7 @@ Route::post('samples/{sample}/report', 'SampleReportController@downloadLink');
 Route::get('samples/{sample}/report/{experiment}/download', 'SampleReportController@download')->name('report-download');
 Route::get('assays/{assay}/reagents', 'AssayRelatedReagentController@handle');
 Route::get('result-overview/{assay}', 'ResultOverviewController@handle');
+
+
+Route::get('import-template/{resource}', 'ImportTemplateController@show');
+Route::get('import-template/{resource}/download', 'ImportTemplateController@download');
