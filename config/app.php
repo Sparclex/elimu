@@ -152,6 +152,7 @@ return [
          */
 
         Nathanmac\Utilities\Parser\ParserServiceProvider::class,
+        \App\Providers\GoogleDriveServiceProvider::class,
         /*
          * Application Service Providers...
          */
