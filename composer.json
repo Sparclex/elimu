@@ -27,6 +27,7 @@
         "owen-it/laravel-auditing": "^8.0",
         "predis/predis": "^1.1",
         "reinink/advanced-eloquent": "^0.2.0",
+        "sparclex/nova-creatable-belongs-to": "^0.0.1",
         "sparclex/nova-import-card": "^1.0",
         "spatie/laravel-backup": "^6.0",
         "titasgailius/search-relations": "^1.0",

@@ -72,4 +72,9 @@ class Sample extends Model implements AuditableContract
         $query->addSubSelect('sample_id', SampleInformation::select('sample_id')
         ->whereColumn('id', 'sample_information_id'));
     }
+
+    public function shipments()
+    {
+        return $this->belongsToMany(Shipment::class, 'shipped_samples');
+    }
 }

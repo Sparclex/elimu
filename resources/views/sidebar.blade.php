@@ -18,6 +18,11 @@
                 Storage
             </router-link>
         </li>
+        <li class="leading-tight mb-4 ml-8 text-sm">
+            <router-link :to="{name: 'index', params: {resourceName: 'shipments'}}" class="text-white text-justify no-underline dim">
+                Shipments
+            </router-link>
+        </li>
     </ul>
     <h3 class="flex items-center font-normal text-white mb-6 text-base no-underline">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="sidebar-icon" fill="none" stroke="var(--sidebar-icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>

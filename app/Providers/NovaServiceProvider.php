@@ -97,20 +97,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
     protected function resources()
     {
-        Nova::resources([
-            User::class,
-            Study::class,
-            SampleType::class,
-            SampleInformation::class,
-            Sample::class,
-            InputParameter::class,
-            Experiment::class,
-            ResultData::class,
-            Result::class,
-            Reagent::class,
-            Assay::class,
-            Storage::class,
-            Audit::class,
-        ]);
+        Nova::resourcesIn(app_path('Nova'));
     }
 }
