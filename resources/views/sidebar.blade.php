@@ -5,11 +5,6 @@
     <ul class="list-reset mb-8">
         <li class="leading-tight mb-4 ml-8 text-sm">
             <router-link :to="{name: 'index', params: {resourceName: 'sample-informations'}}" class="text-white text-justify no-underline dim">
-                Sample Informations
-            </router-link>
-        </li>
-        <li class="leading-tight mb-4 ml-8 text-sm">
-            <router-link :to="{name: 'index', params: {resourceName: 'samples'}}" class="text-white text-justify no-underline dim">
                 Samples
             </router-link>
         </li>

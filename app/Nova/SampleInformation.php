@@ -28,12 +28,12 @@ class SampleInformation extends Resource
 
     public static function label()
     {
-        return 'Sample Informations';
+        return 'Samples';
     }
 
     public static function singularLabel()
     {
-        return 'Sample Information';
+        return 'Sample';
     }
 
     public function subtitle()
