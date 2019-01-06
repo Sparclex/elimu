@@ -14,14 +14,14 @@ class CreateInstrumentsTable extends Migration
     public function up()
     {
         Schema::create('instruments', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('instrument_id')->unique();
             $table->string('name')->index();
             $table->string('serial_number')->index();
             $table->string('responsible')->index();
 
-            $table->bigInteger('institution_id')->unsigned();
-            $table->bigInteger('laboratory_id')->unsigned();
+            $table->unsignedInteger('institution_id');
+            $table->unsignedInteger('laboratory_id');
             $table->timestamps();
 
             $table->foreign('institution_id')->references('id')->on('institutions');

@@ -14,18 +14,18 @@ class CreateProtocolsTable extends Migration
     public function up()
     {
         Schema::create('protocols', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('protocol_id')->unique();
             $table->string('name')->index();
             $table->string('version');
             $table->date('implemented_at');
             $table->string('attachment');
-            $table->string('responsible')->index();
-
-            $table->bigInteger('institution_id')->unsigned();
+            $table->unsignedInteger('responsible_id');
+            $table->unsignedInteger('institution_id');
             $table->timestamps();
 
             $table->foreign('institution_id')->references('id')->on('institutions');
+            $table->foreign('responsible_id')->references('id')->on('persons');
         });
     }
 

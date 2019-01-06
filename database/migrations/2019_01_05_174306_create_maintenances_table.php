@@ -15,11 +15,14 @@ class CreateMaintenancesTable extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('instrument_id');
+            $table->unsignedInteger('instrument_id');
+            $table->unsignedInteger('technician_id');
             $table->date('date');
-            $table->string('technician')->index();
             $table->text('procedure')->nullable();
             $table->timestamps();
+
+            $table->foreign('instrument_id')->references('id')->on('instruments');
+            $table->foreign('technician_id')->references('id')->on('persons');
         });
     }
 

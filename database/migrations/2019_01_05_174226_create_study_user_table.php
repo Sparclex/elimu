@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStudyIdToAuditsTable extends Migration
+class CreateStudyUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +13,14 @@ class AddStudyIdToAuditsTable extends Migration
      */
     public function up()
     {
-        DB::table('audits')->delete();
-        Schema::table('audits', function (Blueprint $table) {
-            $table->bigInteger('study_id')->unsigned();
+        Schema::create('study_user', function (Blueprint $table) {
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('study_id');
 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('study_id')->references('id')->on('studies');
+
+            $table->primary(['user_id', 'study_id']);
         });
     }
 
@@ -29,10 +31,6 @@ class AddStudyIdToAuditsTable extends Migration
      */
     public function down()
     {
-        Schema::table('audits', function (Blueprint $table) {
-            $table->dropForeign('audits_study_id_foreign');
-
-            $table->dropColumn('study_id');
-        });
+        Schema::dropIfExists('study_user');
     }
 }

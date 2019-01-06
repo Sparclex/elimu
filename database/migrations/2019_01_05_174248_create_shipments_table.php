@@ -14,15 +14,14 @@ class CreateShipmentsTable extends Migration
     public function up()
     {
         Schema::create('shipments', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('study_id')->unsigned();
-            $table->bigInteger('recipient_id')->unsigned();
+            $table->increments('id');
+            $table->integer('study_id')->unsigned();
+            $table->string('recipient');
             $table->date('shipment_date');
             $table->text('comment')->nullable();
             $table->timestamps();
 
             $table->foreign('study_id')->references('id')->on('studies');
-            $table->foreign('recipient_id')->references('id')->on('recipients');
         });
     }
 
@@ -33,6 +32,6 @@ class CreateShipmentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shipments');
+        Schema::dropIfExists('shippments');
     }
 }

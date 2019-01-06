@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateReagentsTable extends Migration
+class CreateLaboratoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class UpdateReagentsTable extends Migration
      */
     public function up()
     {
-        Schema::table('reagents', function(Blueprint $table) {
-            $table->dropForeign('reagents_assay_id_foreign');
-            $table->dropColumn('assay_id');
+        Schema::create('laboratories', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +27,6 @@ class UpdateReagentsTable extends Migration
      */
     public function down()
     {
-
+        Schema::dropIfExists('laboratories');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDescriptionToStudiesTable extends Migration
+class CreateStudiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddDescriptionToStudiesTable extends Migration
      */
     public function up()
     {
-        Schema::table('studies', function (Blueprint $table) {
-            $table->text('description')->nullable();
+        Schema::create('studies', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('study_id')->unique();
+            $table->string('name')->unique();
+
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ class AddDescriptionToStudiesTable extends Migration
      */
     public function down()
     {
-        Schema::table('studies', function (Blueprint $table) {
-            $table->dropColumn('description');
-        });
+        Schema::dropIfExists('studies');
     }
 }

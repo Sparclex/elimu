@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSamplesTable extends Migration
+class CreateSampleMutationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,19 @@ class CreateSamplesTable extends Migration
      */
     public function up()
     {
-        Schema::create('samples', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('sample_type_id')->unsigned();
-            $table->bigInteger('sample_information_id')->unsigned();
-            $table->integer('quantity')->default(0)->nullable();
+        Schema::create('sample_mutations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('sample_type_id')->unsigned();
+            $table->integer('sample_id')->unsigned();
+            $table->integer('study_id')->unsigned();
+            $table->integer('quantity')->default(0);
             $table->json('extra')->nullable();
             $table->timestamps();
 
-            $table->unique(['sample_type_id', 'sample_information_id']);
+            $table->unique(['sample_type_id', 'sample_id']);
             $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
-            $table->foreign('sample_information_id')->references('id')->on('sample_informations')->onDelete('CASCADE');
+            $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
 
-            $table->bigInteger('study_id')->unsigned();
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
         });
     }
@@ -37,6 +37,6 @@ class CreateSamplesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('samples');
+        Schema::dropIfExists('sample_mutations');
     }
 }

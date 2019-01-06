@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateShippedSamples extends Migration
+class CreateShippedSamplesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,13 @@ class CreateShippedSamples extends Migration
     public function up()
     {
         Schema::create('shipped_samples', function (Blueprint $table) {
-            $table->bigInteger('sample_id')->unsigned();
-            $table->bigInteger('shipment_id')->unsigned();
+            $table->unsignedInteger('sample_id');
+            $table->unsignedInteger('shipment_id');
+            $table->integer('quantity')->default(1);
 
             $table->foreign('sample_id')->references('id')->on('samples');
             $table->foreign('shipment_id')->references('id')->on('shipments');
+
             $table->primary(['sample_id', 'shipment_id']);
         });
     }

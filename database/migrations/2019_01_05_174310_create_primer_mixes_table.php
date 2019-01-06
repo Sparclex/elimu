@@ -15,7 +15,16 @@ class CreatePrimerMixesTable extends Migration
     {
         Schema::create('primer_mixes', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name')->unique();
+            $table->unsignedInteger('reagent_id');
+            $table->unsignedInteger('person_id');
+            $table->date('date');
+            $table->date('expires_at');
+            $table->integer('volume');
             $table->timestamps();
+
+            $table->foreign('reagent_id')->references('id')->on('reagents');
+            $table->foreign('person_id')->references('id')->on('persons');
         });
     }
 
