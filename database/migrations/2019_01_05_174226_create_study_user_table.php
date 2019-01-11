@@ -17,6 +17,7 @@ class CreateStudyUserTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('study_id');
             $table->unsignedInteger('power')->default(10);
+            $table->boolean('selected')->default(false);
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('study_id')->references('id')->on('studies');

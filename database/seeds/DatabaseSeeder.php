@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Study;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,6 +12,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(DevelopmentSeeder::class);
+        $user = factory(\App\User::class)->create([
+            'name' => 'Silvan',
+            'email' => 'silvan.wehner@gmail.com',
+            'password' => \Hash::make('12345')
+        ]);
+
+        $study = factory(Study::class)->create([
+            'study_id' => '12345',
+            'name' => 'Test Study'
+        ]);
+
+        $user->studies()->attach($study, [
+            'power' => \App\Policies\Authorization::LABMANAGER,
+            'selected' => true,
+        ]);
     }
 }
