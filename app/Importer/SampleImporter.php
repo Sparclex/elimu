@@ -1,9 +1,9 @@
 <?php
 namespace App\Importer;
 
-use App\Models\Sample;
+use App\Models\SampleMutation;
 use App\Models\SampleType;
-use App\Models\SampleInformation;
+use App\Models\Sample;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +14,7 @@ use Sparclex\NovaImportCard\ImportException;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class SampleInformationImporter implements ToCollection, WithHeadingRow, WithValidation
+class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 {
     use Importable;
 
@@ -73,10 +73,10 @@ class SampleInformationImporter implements ToCollection, WithHeadingRow, WithVal
     private function saveSampleInformation(Collection $row)
     {
 
-        $sampleInformation = SampleInformation::where('sample_id', $row['id'])->first();
+        $sampleInformation = Sample::where('sample_id', $row['id'])->first();
 
         if (!$sampleInformation) {
-            $sampleInformation = new SampleInformation;
+            $sampleInformation = new Sample;
             $sampleInformation->sample_id = $row['id'];
 
             foreach ($row->only($this->sampleInformationColumns()) as $key => $value) {
@@ -108,7 +108,7 @@ class SampleInformationImporter implements ToCollection, WithHeadingRow, WithVal
 
     private function saveSample(Collection $row, $sampleInformation, $sampleType)
     {
-        $sample = Sample::firstOrNew([
+        $sample = SampleMutation::firstOrNew([
             'sample_information_id' => $sampleInformation->id,
             'sample_type_id' => $sampleType->id
         ]);

@@ -2,8 +2,6 @@
 
 namespace App\Nova;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 trait RelationSortable
@@ -20,11 +18,11 @@ trait RelationSortable
         $query->getQuery()->orders = null;
         $model = self::newModel();
         $relation = $model->{$relation}();
-        $query->select($model->getTable().'.*', 'tmp.'.$orderColumn. ' as ordercolumn');
+        $query->select($model->getTable() . '.*', 'tmp.' . $orderColumn . ' as ordercolumn');
 
         $query->leftJoin(
-            $relation->getRelated()->getTable(). ' as tmp',
-            $model->getTable(). "." .$relation->getForeignKey(),
+            $relation->getRelated()->getTable() . ' as tmp',
+            $model->getTable() . "." . $relation->getForeignKey(),
             "tmp.id"
         );
         $query->orderBy('ordercolumn', $request->get('orderByDirection'));

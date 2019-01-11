@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Models\Sample;
+use App\Models\SampleMutation;
 use App\Models\Storage;
 
 class AutoStorageSaver
@@ -11,15 +11,15 @@ class AutoStorageSaver
      * Generates additional storage positions if the quantity has been increased
      * Deletes the most recent storage positions if the quantity has been reduced
      *
-     * @param  \App\Models\Sample $sample
+     * @param  \App\Models\SampleMutation $sample
      * @return void
      */
-    public function updated(Sample $sample)
+    public function updated(SampleMutation $sample)
     {
         if ($sample->getOriginal('quantity') > $sample->quantity) {
             Storage::where([
                 'sample_id' => $sample->id,
-                'study_id' => $sample->sampleInformation->study_id,
+                'study_id' => $sample->study_id,
                 'sample_type_id' => $sample->sample_type_id
             ])->orderByDesc('id')
                 ->limit($sample->getOriginal('quantity') - $sample->quantity)
@@ -27,7 +27,7 @@ class AutoStorageSaver
         } elseif ($sample->getOriginal('quantity') < $sample->quantity) {
             Storage::generateStoragePosition(
                 $sample->id,
-                $sample->sampleInformation->study_id,
+                $sample->study_id,
                 $sample->sample_type_id,
                 $sample->quantity - $sample->getOriginal('quantity')
             );
@@ -37,11 +37,14 @@ class AutoStorageSaver
     /**
      * Generates storage position according to the quantity
      *
-     * @param  \App\Models\Sample $sample
+     * @param  \App\Models\SampleMutation $sample
      * @return void
      */
-    public function created(Sample $sample)
+    public function created(SampleMutation $sample)
     {
+        if ($sample->quantity == 0) {
+            return;
+        }
         Storage::generateStoragePosition(
             $sample->id,
             $sample->study_id,

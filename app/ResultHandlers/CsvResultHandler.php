@@ -46,10 +46,14 @@ class CsvResultHandler extends ResultHandler
         $createdAt = now();
         $updatedAt = now();
 
+        $data->each(function ($row) {
+            $row['sample'] = (int) $row['sample'];
+        });
+
         foreach ($data->groupBy(['target', 'sample']) as $target => $samples) {
             foreach ($samples as $sampleId => $sample) {
                 $result = Result::firstOrCreate([
-                    'assay_id' => $this->experiment->reagent->assay->id,
+                    'assay_id' => $this->experiment->assay_id,
                     'sample_id' => $sampleIds[$sampleId],
                     'target' => $sample[0]['target']
                 ]);
@@ -61,7 +65,6 @@ class CsvResultHandler extends ResultHandler
                         'secondary_value' => $sampleData['secondary'] ?? null,
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
-                        'sample_id' => $sampleId,
                         'created_at' => $createdAt,
                         'updated_at' => $updatedAt,
                         'extra' => collect($sampleData)

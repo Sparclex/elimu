@@ -2,10 +2,9 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use App\Fields\CustomBelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
@@ -36,14 +35,5 @@ class Storage extends Resource
             Number::make('Box'),
             Number::make('Position'),
         ];
-    }
-
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        $query->getQuery()->orders = [];
-        return $query
-            ->orderBy('sample_type_id')
-            ->orderby('box')
-            ->orderBy('position');
     }
 }

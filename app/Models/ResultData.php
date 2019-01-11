@@ -15,6 +15,8 @@ class ResultData extends Model
         'extra' => 'array'
     ];
 
+    protected $fillable = ['result_id', 'primary_value', 'secondary_value', 'experiment_id'];
+
     public function result()
     {
         return $this->belongsTo(Result::class);

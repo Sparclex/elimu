@@ -11,14 +11,10 @@ class Study extends Model implements AuditableContract
 {
     use Auditable;
 
-    public function sampleInformations()
-    {
-        return $this->hasMany(SampleInformation::class);
-    }
-
     public function sampleTypes()
     {
-        return $this->belongsToMany(SampleType::class, 'storage_sizes')->withPivot('size');
+        return $this->belongsToMany(SampleType::class, 'storage_box_sizes')
+            ->withPivot(['rows', 'columns']);
     }
 
     public function users()

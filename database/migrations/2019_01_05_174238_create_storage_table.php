@@ -16,14 +16,14 @@ class CreateStorageTable extends Migration
         Schema::create('storage', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('study_id')->unsigned();
-            $table->integer('sample_mutation_id')->unsigned();
+            $table->integer('sample_id')->unsigned();
             $table->integer('sample_type_id')->unsigned();
             $table->integer('position');
             $table->timestamps();
 
             $table->unique(['study_id', 'sample_type_id', 'position']);
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
-            $table->foreign('sample_mutation_id')->references('id')->on('sample_mutations')->onDelete('CASCADE');
+            $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
             $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
         });
     }

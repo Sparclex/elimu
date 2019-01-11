@@ -2,7 +2,7 @@
 
 namespace App\Nova\Filters;
 
-use App\Models\SampleInformation;
+use App\Models\Sample;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -86,6 +86,6 @@ class SampleInformationFilter extends Filter
      */
     public function options(Request $request)
     {
-        return SampleInformation::pluck($this->attribute, $this->attribute)->unique();
+        return Sample::pluck($this->attribute, $this->attribute)->unique();
     }
 }

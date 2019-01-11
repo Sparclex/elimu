@@ -2,13 +2,15 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
+use App\Fields\StorageSizeField;
+use App\Policies\Authorization;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use App\Fields\StorageSizeField;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\BelongsToMany;
 
 class Study extends Resource
 {
@@ -43,10 +45,19 @@ class Study extends Resource
                 ->updateRules('required', 'unique:studies,name,{{resourceId}}'),
             Trix::make('Description'),
 
-            HasMany::make('SampleInformations'),
             BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)
                 ->fields(new StorageSizeField),
-            BelongsToMany::make('Users'),
+            BelongsToMany::make('Users')
+                ->fields(function () {
+                    return [
+                        Select::make('Role', 'power')
+                            ->options([
+                                Authorization::SCIENTIST => 'Scientist',
+                                Authorization::LABMANAGER => 'Lab Manager',
+                                Authorization::MONITOR => 'Monitor'
+                            ])
+                    ];
+                })
         ];
     }
 }

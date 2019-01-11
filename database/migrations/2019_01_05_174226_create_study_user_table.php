@@ -16,6 +16,7 @@ class CreateStudyUserTable extends Migration
         Schema::create('study_user', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('study_id');
+            $table->unsignedInteger('power')->default(10);
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('study_id')->references('id')->on('studies');

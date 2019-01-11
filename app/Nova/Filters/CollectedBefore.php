@@ -14,6 +14,7 @@ class CollectedBefore extends DateFilter
     {
         $this->relation = $relation;
     }
+
     /**
      * Apply the filter to the given query.
      *

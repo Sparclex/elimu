@@ -2,7 +2,6 @@
 
 namespace App\Nova\Invokables;
 
-use App\ResultHandlers\ResultHandler;
 use Illuminate\Support\Facades\Storage;
 
 class DeleteExperimentFile

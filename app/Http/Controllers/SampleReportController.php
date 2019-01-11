@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Experiment;
-use App\Models\Sample;
+use App\Models\SampleMutation;
 use Illuminate\Http\Request;
 use Laravel\Nova\Actions\Action;
 
 class SampleReportController extends Controller
 {
-    public function downloadLink(Sample $sample, Request $request)
+    public function downloadLink(SampleMutation $sample, Request $request)
     {
         $this->validate($request, [
             'experiment' => 'exists:sample_data,experiment_id,sample_id,' . $sample->id . ',status,Accepted'
@@ -18,7 +18,7 @@ class SampleReportController extends Controller
         return Action::download(route('report-download', compact('experiment', 'sample')), 'experiment-report.pdf');
     }
 
-    public function download(Sample $sample, Experiment $experiment)
+    public function download(SampleMutation $sample, Experiment $experiment)
     {
         $sampleData = $sample->data()->where('experiment_id', $experiment->id)->get();
         abort_if(!$sampleData, 404);

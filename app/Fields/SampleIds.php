@@ -19,12 +19,7 @@ class SampleIds extends Textarea
     protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {
         $sampleIds = array_filter(array_map('trim', explode("\n", $request[$requestAttribute])));
-        $samples = Sample::where('sample_type_id', $request['sampleType'])
-            ->with('sampleInformation')
-            ->whereHas('sampleInformation', function ($query) use ($sampleIds) {
-                $query->whereIn('sample_id', $sampleIds);
-            })
-            ->get();
+        $samples = Sample::whereIn('sample_id', $sampleIds)->get();
         $class = get_class($model);
         $class::saved(function ($model) use ($samples) {
             $model->samples()->saveMany($samples);

@@ -18,7 +18,7 @@ class CreateInstrumentsTable extends Migration
             $table->string('instrument_id')->unique();
             $table->string('name')->index();
             $table->string('serial_number')->index();
-            $table->string('responsible')->index();
+            $table->unsignedInteger('responsible_id');
 
             $table->unsignedInteger('institution_id');
             $table->unsignedInteger('laboratory_id');
@@ -26,6 +26,7 @@ class CreateInstrumentsTable extends Migration
 
             $table->foreign('institution_id')->references('id')->on('institutions');
             $table->foreign('laboratory_id')->references('id')->on('laboratories');
+            $table->foreign('responsible_id')->references('id')->on('people');
         });
     }
 

@@ -2,16 +2,14 @@
 
 namespace App\Nova;
 
-use App\Fields\Status;
-use Laravel\Nova\Nova;
-use Laravel\Nova\Panel;
-use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
-use App\Fields\AdditionalData;
-use Laravel\Nova\Fields\Number;
 use App\Actions\ChangeValidationStatus;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Fields\AdditionalData;
+use App\Fields\Status;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Panel;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class ResultData extends Resource
@@ -39,6 +37,11 @@ class ResultData extends Resource
     public static function label()
     {
         return 'Data';
+    }
+
+    public static function uriKey()
+    {
+        return 'result-data';
     }
 
     public function fields(Request $request)
@@ -87,10 +90,5 @@ class ResultData extends Resource
                 return true;
             }),
         ];
-    }
-
-    public static function uriKey()
-    {
-        return 'result-data';
     }
 }

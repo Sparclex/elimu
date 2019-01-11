@@ -22,7 +22,7 @@ class CreateMaintenancesTable extends Migration
             $table->timestamps();
 
             $table->foreign('instrument_id')->references('id')->on('instruments');
-            $table->foreign('technician_id')->references('id')->on('persons');
+            $table->foreign('technician_id')->references('id')->on('people');
         });
     }
 

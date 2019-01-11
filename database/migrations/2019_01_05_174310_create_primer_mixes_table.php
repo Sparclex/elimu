@@ -17,14 +17,13 @@ class CreatePrimerMixesTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->unsignedInteger('reagent_id');
-            $table->unsignedInteger('person_id');
-            $table->date('date');
+            $table->unsignedInteger('creator_id');
             $table->date('expires_at');
             $table->integer('volume');
             $table->timestamps();
 
             $table->foreign('reagent_id')->references('id')->on('reagents');
-            $table->foreign('person_id')->references('id')->on('persons');
+            $table->foreign('creator_id')->references('id')->on('people');
         });
     }
 

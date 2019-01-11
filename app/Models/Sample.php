@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Scopes\OnlyCurrentStudy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -11,18 +12,22 @@ class Sample extends Model implements AuditableContract
 {
     use DependsOnStudy, Auditable;
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'collected_at',
+        'birthdate'
+    ];
+
     protected $fillable = [
-        'sample_type_id',
-        'sample_information_id',
-        'study_id',
-        'quantity'
+        'sample_id',
+        'subject_id',
+        'collected_at',
+        'visit_id',
+        'study_id'
     ];
 
-    protected $casts = [
-        'extra' => 'array'
-    ];
-
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -34,26 +39,9 @@ class Sample extends Model implements AuditableContract
         return $this->belongsTo(Study::class);
     }
 
-    public function sampleType()
+    public function types()
     {
-        return $this->belongsTo(SampleType::class);
-    }
-
-    public function sampleInformation()
-    {
-        return $this->belongsTo(SampleInformation::class);
-    }
-
-    public function storages()
-    {
-        return $this->hasMany(Storage::class);
-    }
-
-    public function experiments()
-    {
-        return $this
-            ->belongsToMany(Experiment::class, 'requested_experiments')
-            ->withTimestamps();
+        return $this->belongsToMany(SampleType::class, 'sample_mutations');
     }
 
     public function results()
@@ -61,20 +49,16 @@ class Sample extends Model implements AuditableContract
         return $this->hasMany(Result::class);
     }
 
-    public function scopeWithType($query)
+    public function experiments()
     {
-        $query->addSubSelect('sample_type_name', SampleType::select('name')
-                            ->whereColumn('id', 'sample_type_id'));
+        return $this->belongsToMany(Experiment::class, 'requested_experiments');
     }
 
-    public function scopeWithSampleId($query)
+    public function scopeTested(Builder $query, $assay)
     {
-        $query->addSubSelect('sample_id', SampleInformation::select('sample_id')
-        ->whereColumn('id', 'sample_information_id'));
-    }
-
-    public function shipments()
-    {
-        return $this->belongsToMany(Shipment::class, 'shipped_samples');
+        $assayId = $assay instanceof Assay ? $assay->id : $assay;
+        return $query->whereHas('results', function ($query) use ($assayId) {
+            return $query->where('assay_id', $assayId);
+        });
     }
 }

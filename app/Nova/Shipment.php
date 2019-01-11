@@ -4,15 +4,12 @@ namespace App\Nova;
 
 use App\Fields\CustomBelongsToMany;
 use App\Fields\SampleIds;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
-use Treestoneit\BelongsToField\BelongsToField;
 
 class Shipment extends Resource
 {
@@ -44,7 +41,7 @@ class Shipment extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
@@ -70,7 +67,7 @@ class Shipment extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -81,7 +78,7 @@ class Shipment extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -92,7 +89,7 @@ class Shipment extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -103,7 +100,7 @@ class Shipment extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)

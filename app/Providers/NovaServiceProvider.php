@@ -2,23 +2,10 @@
 
 namespace App\Providers;
 
-use App\Nova\Audit;
-use App\Nova\User;
-use App\Nova\Assay;
-use App\Nova\Study;
-use App\Nova\Result;
-use App\Nova\Sample;
-use App\Nova\Reagent;
-use App\Nova\Storage;
-use App\Tools\Lims;
-use Laravel\Nova\Nova;
-use App\Nova\Experiment;
-use App\Nova\ResultData;
-use App\Nova\SampleType;
-use App\Nova\InputParameter;
 use App\Cards\IntroductionCard;
-use App\Nova\SampleInformation;
+use App\Tools\Lims;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider

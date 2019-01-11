@@ -6,6 +6,14 @@ use Illuminate\Support\Facades\Auth;
 
 trait DependsOnStudy
 {
+    public function save(array $options = [])
+    {
+        if ($this->preSave() === false) {
+            return false;
+        }
+        parent::save($options);
+    }
+
     protected function preSave()
     {
         if ($this->study_id) {
@@ -15,14 +23,6 @@ trait DependsOnStudy
         $this->study_id = Auth::user()->study_id;
 
         return true;
-    }
-
-    public function save(array $options = [])
-    {
-        if ($this->preSave() === false) {
-            return false;
-        }
-        parent::save($options);
     }
 
     public function study()

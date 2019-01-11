@@ -15,7 +15,7 @@ class Result extends Model
 
     public function sample()
     {
-        return $this->belongsTo(Sample::class);
+        return $this->belongsTo(SampleMutation::class);
     }
 
     public function assay()
@@ -40,7 +40,7 @@ class Result extends Model
 
     public function getInputParameterAttribute()
     {
-        return collect($this->assay->inputParameter->parameters)
+        return collect($this->assay->parameters)
             ->firstWhere('target', $this->target);
     }
 
@@ -49,13 +49,13 @@ class Result extends Model
         $query->addSubSelect(
             'result_value',
             ResultData::select(
-                DB::raw('POW(10, '.$this->inputParameter['slope'].' 
+                DB::raw('POW(10, ' . $this->inputParameter['slope'] . '
                 * AVG(primary_value) 
-                + '.$this->inputParameter['intercept'].')')
+                + ' . $this->inputParameter['intercept'] . ')')
             )
-            ->whereColumn('result_id', 'results.id')
-            ->where('status', 1)
-            ->groupBy('result_id')
+                ->whereColumn('result_id', 'results.id')
+                ->where('status', 1)
+                ->groupBy('result_id')
         );
     }
 }

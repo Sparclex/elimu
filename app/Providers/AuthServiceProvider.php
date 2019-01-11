@@ -7,9 +7,9 @@ use App\Models\Experiment;
 use App\Models\InputParameter;
 use App\Models\Result;
 use App\Models\ResultData;
-use App\Models\Sample;
+use App\Models\SampleMutation;
 use App\Models\SampleData;
-use App\Models\SampleInformation;
+use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\Storage;
 use App\Models\Study;
@@ -21,7 +21,7 @@ use App\Policies\InputParameterPolicy;
 use App\Policies\ResultDataPolicy;
 use App\Policies\ResultPolicy;
 use App\Policies\SampleDataPolicy;
-use App\Policies\SampleInformationPolicy;
+use App\Policies\SampleMutationPolicy;
 use App\Policies\SamplePolicy;
 use App\Policies\SampleTypePolicy;
 use App\Policies\StoragePolicy;
@@ -43,9 +43,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Assay::class => AssayPolicy::class,
         Experiment::class => ExperimentPolicy::class,
-        InputParameter::class => InputParameterPolicy::class,
-        SampleInformation::class => SampleInformationPolicy::class,
         Sample::class => SamplePolicy::class,
+        SampleMutation::class => SampleMutationPolicy::class,
         SampleType::class => SampleTypePolicy::class,
         Study::class => StudyPolicy::class,
         User::class => UserPolicy::class,

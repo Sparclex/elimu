@@ -16,6 +16,11 @@ class CreateAssaysTable extends Migration
         Schema::create('assays', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
+            $table->text('description')->nullable();
+            $table->string('result_type');
+            $table->string('definition_file')->nullable();
+            $table->json('parameters')->nullable();
+
             $table->unsignedInteger('instrument_id');
             $table->unsignedInteger('protocol_id');
             $table->unsignedInteger('primer_mix_id');

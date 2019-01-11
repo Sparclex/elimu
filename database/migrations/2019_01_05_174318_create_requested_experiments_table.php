@@ -16,7 +16,6 @@ class CreateRequestedExperimentsTable extends Migration
         Schema::create('requested_experiments', function (Blueprint $table) {
             $table->integer('experiment_id')->unsigned();
             $table->integer('sample_id')->unsigned();
-            $table->integer('sample_type_id')->unsigned();
 
             $table->foreign('experiment_id')
                 ->references('id')
@@ -26,12 +25,8 @@ class CreateRequestedExperimentsTable extends Migration
                 ->references('id')
                 ->on('samples')
                 ->onDelete('CASCADE');
-            $table->foreign('sample_type_id')
-                ->references('id')
-                ->on('sample_types')
-                ->onDelete('CASCADE');
 
-            $table->primary(['experiment_id', 'sample_id', 'sample_type_id'], 'requested_experiments_primary');
+            $table->primary(['experiment_id', 'sample_id'], 'requested_experiments_primary');
 
         });
     }

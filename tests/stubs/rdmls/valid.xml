@@ -1,0 +1,185 @@
+<rdml version="1.1" xmlns="http://www.rdml.org">
+    <dateMade>2018-03-14T15:00:28.413+00:00</dateMade>
+    <dateUpdated>2018-04-08T14:35:16.443+00:00</dateUpdated>
+    <id>
+        <publisher>Bio-Rad Laboratories, Inc.</publisher>
+        <serialNumber>4.1.2433.1219</serialNumber>
+        <MD5Hash></MD5Hash>
+    </id>
+    <experimenter id="admin">
+        <firstName></firstName>
+        <lastName></lastName>
+        <email></email>
+        <labName>BIO-RAD LABORATORIES</labName>
+        <labAddress></labAddress>
+    </experimenter>
+    <dye id="FAM">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <dye id="Cy5">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <dye id="VIC">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <sample id="1179587">
+        <type>unkn</type>
+    </sample>
+    <sample id="pos">
+        <type>pos</type>
+    </sample>
+    <sample id="ntc">
+        <type>ntc</type>
+    </sample>
+    <sample id="neg">
+        <type>unkn</type>
+    </sample>
+    <target id="PfvarATS">
+        <type>toi</type>
+        <dyeId id="FAM"/>
+    </target>
+    <target id="Pspp18S">
+        <type>toi</type>
+        <dyeId id="Cy5"/>
+    </target>
+    <target id="HsRNaseP">
+        <type>toi</type>
+        <dyeId id="VIC"/>
+    </target>
+    <thermalCyclingConditions id="etienne_PCR.pcrd.prcl">
+        <description></description>
+        <lidTemperature>105</lidTemperature>
+        <step>
+            <nr>1</nr>
+            <temperature>
+                <temperature>95</temperature>
+                <duration>60</duration>
+            </temperature>
+        </step>
+        <step>
+            <nr>2</nr>
+            <temperature>
+                <temperature>95</temperature>
+                <duration>15</duration>
+            </temperature>
+        </step>
+        <step>
+            <nr>3</nr>
+            <description>plateread</description>
+            <temperature>
+                <temperature>57</temperature>
+                <duration>45</duration>
+                <measure>real time</measure>
+            </temperature>
+        </step>
+        <step>
+            <nr>4</nr>
+            <loop>
+                <goto>2</goto>
+                <repeat>44</repeat>
+            </loop>
+        </step>
+    </thermalCyclingConditions>
+    <experiment id="All Wells">
+        <description>A1-H12</description>
+        <run id="GeneEx FAM">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+        </run>
+        <run id="GeneEx Cy5">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+        </run>
+        <run id="GeneEx VIC">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.73933643569</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="1179587"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.8878614032012</cq>
+                </data>
+            </react>
+        </run>
+    </experiment>
+</rdml>

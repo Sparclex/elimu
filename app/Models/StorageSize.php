@@ -10,23 +10,9 @@ class StorageSize extends Model
 {
     use DependsOnStudy;
 
+    protected $table = 'storage_box_sizes';
+
     protected $fillable = ['sample_type_id', 'study_id', 'size'];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
-    }
-
-    public static function sizeFor($study_id, $sample_type_id)
-    {
-        $size = self::where('study_id', $study_id)
-            ->where('sample_type_id', $sample_type_id)
-            ->first(['size']);
-
-        return $size ? $size->size : null;
-    }
 
     public static function sampleTypesFor($study_id)
     {
@@ -37,6 +23,13 @@ class StorageSize extends Model
             return $names->names;
         }
         return new Collection();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new OnlyCurrentStudy);
     }
 
     public function study()

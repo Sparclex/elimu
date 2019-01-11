@@ -295,7 +295,8 @@ class RdmlCollection extends Collection
         $column = $column == 0 ? $numberOfColumns : $column;
         $row = (($reactId - $column) / $numberOfColumns) + 1;
 
-        return $this->convertNumberToLabel($rowLabel, $row) . $this->convertNumberToLabel($columnLabel, $column);
+        $well = $this->convertNumberToLabel($rowLabel, $row) . $this->convertNumberToLabel($columnLabel, $column);
+        return $well;
     }
 
     /**

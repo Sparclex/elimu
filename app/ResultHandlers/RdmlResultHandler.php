@@ -61,7 +61,7 @@ class RdmlResultHandler extends ResultHandler
         foreach ($targets as $target => $samples) {
             foreach ($samples as $sampleId => $sample) {
                 $result = Result::firstOrCreate([
-                    'assay_id' => $this->experiment->reagent->assay->id,
+                    'assay_id' => $this->experiment->assay_id,
                     'sample_id' => $sampleIds[$sampleId],
                     'target' => $sample[0]['target']
                 ]);
@@ -73,7 +73,6 @@ class RdmlResultHandler extends ResultHandler
                         'secondary_value' => $data['position'],
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
-                        'sample_id' => $sampleId,
                         'created_at' => $createdAt,
                         'updated_at' => $updatedAt,
                         'extra' => json_encode(

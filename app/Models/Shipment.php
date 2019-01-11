@@ -16,7 +16,7 @@ class Shipment extends Model implements AuditableContract
 
     public function samples()
     {
-        return $this->belongsToMany(Sample::class, 'shipped_samples');
+        return $this->belongsToMany(SampleMutation::class, 'shipped_samples');
     }
 
     public function recipient()

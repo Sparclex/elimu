@@ -23,16 +23,17 @@ class Storage extends Model
 
     public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
-        $size = StorageSize::sizeFor($studyId, $sampleTypeId);
-
-        if (!$size) {
+        if (!StorageSize::where('study_id', $studyId)
+            ->where('sample_type_id', $sampleTypeId)
+            ->exists()) {
             return false;
         }
-        $storage = self::latestPosition($studyId, $sampleTypeId);
+
+        $latestPosition = self::latestPosition($studyId, $sampleTypeId);
 
         $newPositions = new Collection();
         for ($i = 0; $i < $quantity; $i++) {
-            $storage = $newPositions[] = $storage->nextPosition($size, $sampleId);
+            $latestPosition = $newPositions[] = $latestPosition->nextEntry($sampleId);
         }
         if ($quantity === 1) {
             $position = $newPositions->first();
@@ -46,32 +47,30 @@ class Storage extends Model
 
     public static function latestPosition($studyId, $sampleTypeId)
     {
-        return self::where('study_id', $studyId)->where('sample_type_id', $sampleTypeId)->orderByDesc('id')->first()
-            ?? new Storage(['box' => 1, 'position' => 0, 'sample_type_id' => $sampleTypeId, 'study_id' => $studyId]);
+        return self::where('study_id', $studyId)
+                ->where('sample_type_id', $sampleTypeId)
+                ->orderByDesc('position')
+                ->first()
+            ?? new Storage([
+                'position' => -1,
+                'study_id' => $studyId,
+                'sample_type_id' => $sampleTypeId
+            ]);
     }
 
-    public function nextPosition($size, $sampleId)
+    public function nextEntry($sampleId)
     {
-        $storage = new Storage([
-            'box' => 1,
-            'position' => 1,
-            'sample_type_id' => $this->sample_type_id,
+        return new static([
             'study_id' => $this->study_id,
+            'sample_type_id' => $this->sample_type_id,
+            'position' => $this->position + 1,
             'sample_id' => $sampleId
         ]);
-
-        if ($this->position + 1 > $size) {
-            $storage->box = $this->box + 1;
-        } else {
-            $storage->box = $this->box;
-            $storage->position = $this->position + 1;
-        }
-        return $storage;
     }
 
     public function sample()
     {
-        return $this->belongsTo(Sample::class);
+        return $this->belongsTo(SampleMutation::class);
     }
 
     public function sampleType()
@@ -81,11 +80,7 @@ class Storage extends Model
 
     public function study()
     {
-        return $this->belongsTo(Study::class);
-    }
-
-    public function exceedsBoxSize($size)
-    {
-        return $this->position + 1 > $size;
+        return $this->belongsTo(Study::class, 'storage_box_sizes')
+            ->withPivot(['rows', 'columns']);
     }
 }

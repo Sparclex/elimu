@@ -3,25 +3,23 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Reagent extends Resource
 {
     public static $globallySearchable = false;
 
-    public static $displayInNavigation = false;
-
     public static $model = 'App\Models\Reagent';
 
-    public static $search = [];
+    public static $search = ['id', 'lot', 'name'];
 
     public function title()
     {
-        return $this->assay->name . " (" . $this->lot . ")";
+        return "{$this->name} ({$this->lot})";
     }
 
     public function fields(Request $request)
@@ -29,11 +27,14 @@ class Reagent extends Resource
         return [
             ID::make()
                 ->sortable(),
-            BelongsToField::make('Assay'),
-            HasMany::make('Experiments'),
-            Text::make('Lot'),
-            Text::make('Name'),
-            Date::make('Expires at', 'expires_at')
+            Text::make('Lot')
+                ->rules('required|unique,reagents,lot')
+                ->sortable(),
+            Text::make('Name')
+                ->rules('required')
+                ->sortable(),
+            Date::make('Expires at')
+                ->sortable()
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\Models\Assay;
-use App\Models\Sample;
+use App\Models\SampleMutation;
 use Laravel\Nova\Nova;
 use App\Models\Reagent;
 use App\Models\Experiment;

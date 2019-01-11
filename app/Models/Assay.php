@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -11,11 +10,9 @@ class Assay extends Model implements AuditableContract
 {
     use Auditable;
 
-    public function inputParameter()
-    {
-        return $this->hasOne(InputParameter::class)
-        ->where('study_id', Auth::user()->study_id);
-    }
+    protected $casts = [
+        'parameters' => 'collection'
+    ];
 
     public function reagents()
     {
@@ -29,6 +26,6 @@ class Assay extends Model implements AuditableContract
 
     public function getResultHandlerAttribute()
     {
-        return config('lims.result_types.' . $this->result_type);
+        return config('lims . result_types . ' . $this->result_type);
     }
 }

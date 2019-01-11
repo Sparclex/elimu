@@ -13,7 +13,7 @@ class CreatePersonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('persons', function (Blueprint $table) {
+        Schema::create('people', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
             $table->unsignedInteger('user_id')->nullable();
@@ -30,6 +30,6 @@ class CreatePersonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('persons');
+        Schema::dropIfExists('people');
     }
 }

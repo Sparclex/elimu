@@ -2,13 +2,13 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Laravel\Nova\Fields\HasOne;
-use Laravel\Nova\Fields\HasMany;
 
 class Assay extends Resource
 {
@@ -20,7 +20,7 @@ class Assay extends Resource
         'name',
     ];
 
-    public static $globallySearchable = false;
+    public static $globallySearchable = true;
 
     public function fields(Request $request)
     {
@@ -32,15 +32,10 @@ class Assay extends Resource
                 ->sortable()
                 ->creationRules('required', 'unique:assays,name')
                 ->updateRules('required', 'unique:assays,name,{{resourceId}}'),
-            Text::make('SOP')
-                ->rules('required')
-                ->sortable(),
             Select::make('Result Type')
-                ->hideFromIndex()
                 ->options(array_combine($resultTypes, $resultTypes))
                 ->rules('required', 'in:' . implode(',', $resultTypes)),
             Trix::make('Description'),
-            HasOne::make('Input Parameters', 'inputParameter', InputParameter::class),
             HasMany::make('Results')
         ];
     }

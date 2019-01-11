@@ -18,18 +18,16 @@ trait OnlyAvailableForChosenStudy
 
     public function create(User $user)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
     }
 
     public function update(User $user, $model)
     {
-        return $user->study_id == $model->study_id
-            && Authorization::isScientist();
+        return $model->study_id == $user->study_id &&  $user->isScientist();
     }
 
     public function delete(User $user, $model)
     {
-        return $user->study_id == $model->study_id
-             && $this->createdFiveMinutesAgo($user, $model);
+        return $model->study_id == $user->study_id &&  $user->isScientist();
     }
 }

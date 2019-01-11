@@ -25,12 +25,13 @@ class SampleType extends Model implements AuditableContract
 
     public function samples()
     {
-        return $this->belongsToMany(Sample::class);
+        return $this->belongsToMany(SampleMutation::class);
     }
 
     public function studies()
     {
-        return $this->belongsToMany(Study::class, 'storage_sizes');
+        return $this->belongsToMany(Study::class, 'storage_box_sizes')
+            ->withPivot(['rows', 'columns']);
     }
 
     public function getSizeAttribute()
