@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Study;
-use App\Policies\Authorization;
+use Facades\Tests\Setup\StudyFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,9 +14,17 @@ class StudyTest extends TestCase
     private const RESOURCE_URI = '/nova-api/studies';
 
     /** @test */
-    public function an_administrator_can_manage_a_study()
+    public function an_administrator_can_view_any_study()
     {
-        $this->withoutExceptionHandling();
+        $this->signInAsAdministrator();
+
+        $this->get(self::RESOURCE_URI . '/' . factory(Study::class)->create()->id)
+            ->assertSuccessful();
+    }
+
+    /** @test */
+    public function an_administrator_can_create_a_study()
+    {
         $this->signInAsAdministrator();
 
         $this->get(self::RESOURCE_URI)
@@ -24,25 +32,54 @@ class StudyTest extends TestCase
 
         $this->post(self::RESOURCE_URI, factory(Study::class)->raw())
             ->assertSuccessful();
+    }
+
+    /**
+     * @test
+     */
+    public function an_administrator_can_update_a_study()
+    {
+        $this->signInAsAdministrator();
 
         $study = factory(Study::class)->create();
         $study->name = $study->name . 'new name';
 
         $this->put(self::RESOURCE_URI . "/{$study->id}", $study->toArray())
             ->assertSuccessful();
+    }
+
+    /**
+     * @test
+     */
+    public function an_administrator_can_delete_a_study()
+    {
+        $this->signInAsAdministrator();
+        $study = factory(Study::class)->create();
 
         $this->novaDelete(self::RESOURCE_URI, $study->id)
             ->assertSuccessful();
+
+        $this->assertDatabaseMissing('studies', $study->toArray());
     }
 
     /** @test */
-    public function a_lab_manager_can_only_edit_his_study()
+    public function a_lab_manager_can_only_view_his_study()
     {
-        $user = $this->signIn();
-        [$study, $otherStudy] = factory(Study::class, 2)->create();
+        $study = StudyFactory::withManager($user = $this->signIn())->create();
 
-        $user->studies()->attach($study, ['power' => Authorization::LABMANAGER]);
-        $user->study()->associate($study);
+        $this->get(self::RESOURCE_URI . "/{$study->id}")
+            ->assertSuccessful();
+
+        $notHisStudy = factory(Study::class)->create();
+
+        $this->get(self::RESOURCE_URI . "/{$notHisStudy->id}")
+            ->assertForbidden();
+    }
+
+    /** @test */
+    public function a_lab_manager_can_update_his_study()
+    {
+        $study = StudyFactory::withManager($user = $this->signIn())->create();
 
         $this->get(self::RESOURCE_URI)
             ->assertSuccessful();
@@ -54,6 +91,12 @@ class StudyTest extends TestCase
 
         $this->put(self::RESOURCE_URI . "/{$study->id}", $study->toArray())
             ->assertSuccessful();
+    }
+
+    /** @test */
+    public function a_lab_manager_cannot_delete_his_study()
+    {
+        $study = StudyFactory::withManager($user = $this->signIn())->create();
 
         $this->novaDelete(self::RESOURCE_URI, $study->id)
             ->assertSuccessful();
@@ -61,16 +104,24 @@ class StudyTest extends TestCase
         $this->assertDatabaseHas('studies', [
             'id' => $study->id
         ]);
+    }
 
-        $this->get(self::RESOURCE_URI . "/{$otherStudy->id}")
+    /** @test */
+    public function a_lab_manager_cannot_update_another_study()
+    {
+        $this->signIn();
+
+        $study = StudyFactory::create();
+
+        $this->get(self::RESOURCE_URI . "/{$study->id}")
             ->assertForbidden();
 
-        $this->put(self::RESOURCE_URI . "/{$otherStudy->id}", $otherStudy->toArray())
+        $this->put(self::RESOURCE_URI . "/{$study->id}", $study->toArray())
             ->assertForbidden();
     }
 
     /** @test */
-    public function a_normal_user_cannot_manage_a_study()
+    public function a_normal_user_cannot_view_any_studies()
     {
         $this->signIn();
 
@@ -78,9 +129,21 @@ class StudyTest extends TestCase
 
         $this->get(self::RESOURCE_URI)
             ->assertForbidden();
+    }
+
+    /** @test */
+    public function a_normal_user_cannot_create_a_study()
+    {
+        $this->signIn();
 
         $this->post(self::RESOURCE_URI, $study = factory(Study::class)->raw())
             ->assertForbidden();
+    }
+
+    /** @test */
+    public function a_normal_user_cannot_update_a_study()
+    {
+        $this->signIn();
 
         $study = factory(Study::class)->create();
         $study->name = $study->name . 'new name';

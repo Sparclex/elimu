@@ -7,11 +7,10 @@ $factory->define(\App\Models\PrimerMix::class, function (Faker $faker) {
         'reagent_id' => function () {
             return factory(\App\Models\Reagent::class)->create()->id;
         },
-        'person_id' => function () {
+        'creator_id' => function () {
             return factory(\App\Models\Person::class)->create()->id;
         },
         'name' => $faker->unique()->word,
-        'date' => $faker->date,
         'expires_at' => $faker->date,
         'volume' => $faker->randomNumber(2)
     ];

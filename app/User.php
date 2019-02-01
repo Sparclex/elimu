@@ -77,10 +77,10 @@ class User extends Authenticatable
 
     public function isScientist()
     {
-        return $this->hasPowerForStudy(Authorization::SCIENTIST);
+        return $this->hasPower(Authorization::SCIENTIST);
     }
 
-    public function hasPowerForStudy($power)
+    public function hasPower($power)
     {
         $studyId = $this->study_id;
         return $this->studies()

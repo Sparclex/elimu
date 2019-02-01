@@ -57,7 +57,7 @@ class ExcelExperimentTest extends TestCase
 
         $this->assertDatabaseHas('result_data', [
             'experiment_id' => $experiment->id,
-            'primary_value' => 'Positive',
+            'primary_value' => 1,
             'secondary_value' => 'Bagamoyo',
             'status' => 1
         ]);

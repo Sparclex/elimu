@@ -16,7 +16,7 @@ class CreateSampleMutationsTable extends Migration
         Schema::create('sample_mutations', function (Blueprint $table) {
             $table->integer('sample_type_id')->unsigned();
             $table->integer('sample_id')->unsigned();
-            $table->integer('quantity')->default(0);
+            $table->integer('quantity')->nullable();
 
             $table->primary(['sample_type_id', 'sample_id']);
 

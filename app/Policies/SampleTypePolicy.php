@@ -22,12 +22,12 @@ class SampleTypePolicy extends Policy
 
     public function create(User $user)
     {
-        return true;
+        return $user->isScientist();
     }
 
     public function update(User $user, $model)
     {
-        return true;
+        return $user->isScientist();
     }
 
     public function delete(User $user, $model)

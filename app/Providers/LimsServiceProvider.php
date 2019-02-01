@@ -27,7 +27,6 @@ class LimsServiceProvider extends ServiceProvider
     {
         Validator::extend('existing_storage', StorageSizeExists::class . "@validate");
         Nova::serving(function (ServingNova $event) {
-            SampleMutation::observe(AutoStorageSaver::class);
             Experiment::observe(InsertSelectedStudy::class);
             Sample::observe(InsertSelectedStudy::class);
             StorageSize::observe(InsertSelectedStudy::class);

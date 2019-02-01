@@ -80,29 +80,10 @@ class RDMLExperimentTest extends TestCase
         $this->assertDatabaseHas('result_data', [
             'result_id' => 3,
             'experiment_id' => $experiment->id,
-            'primary_value' => '24.73933643569',
+            'primary_value' => 24.73933644,
             'secondary_value' => 'B02',
             'status' => 1
         ]);
-    }
-
-    /** @test */
-    public function a_monitor_can_see_the_evaluated_results()
-    {
-        $this->withoutExceptionHandling();
-        $this->signInMonitor();
-
-        $assay = factory(Assay::class)->create([
-            'parameters' => json_decode($this->stubContent('assay-definition.json'), true),
-            'result_type' => 'qPcr Rdml'
-        ]);
-
-        $this->createValidExperimentResult($assay, 1);
-
-        $this->createInvalidExperimentResult($assay, 5);
-
-        $this->get('nova-vendor/lims/results/'. $assay->id)
-            ->assertSuccessful();
     }
 
     protected function createValidExperimentResult($assay, $quantity)

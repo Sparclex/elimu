@@ -67,15 +67,12 @@ class ExperimentTest extends TestCase
 
         $this->assertDatabaseHas('requested_experiments', [
             'sample_id' => $samples->pluck('sample')->first()->id,
-            'experiment_id' => 1
         ]);
         $this->assertDatabaseHas('requested_experiments', [
             'sample_id' => $samples->pluck('sample')[1]->id,
-            'experiment_id' => 1
         ]);
         $this->assertDatabaseHas('requested_experiments', [
             'sample_id' => $samples->pluck('sample')->last()->id,
-            'experiment_id' => 1
         ]);
     }
 

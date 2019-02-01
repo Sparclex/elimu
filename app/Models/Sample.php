@@ -39,9 +39,17 @@ class Sample extends Model implements AuditableContract
         return $this->belongsTo(Study::class);
     }
 
-    public function types()
+    public function sampleTypes()
     {
-        return $this->belongsToMany(SampleType::class, 'sample_mutations');
+        return $this->belongsToMany(SampleType::class, 'sample_mutations')
+            ->withPivot('quantity');
+    }
+
+    public function storagePositions()
+    {
+        return $this->belongsToMany(SampleType::class, 'storage')
+            ->withPivot(['position', 'study_id'])
+            ->withTimestamps();
     }
 
     public function results()

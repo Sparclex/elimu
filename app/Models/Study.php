@@ -19,6 +19,7 @@ class Study extends Model implements AuditableContract
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot(['power']);
     }
 }

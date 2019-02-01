@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Support\Position;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
@@ -14,7 +15,7 @@ class Storage extends Resource
 
     public static $title = 'id';
 
-    public static $with = ['sample.sampleInformation'];
+    public static $with = ['sample'];
 
     public static $search = [
         'box',
@@ -32,8 +33,21 @@ class Storage extends Resource
             ID::make()
                 ->onlyOnForms(),
             BelongsToField::make('Sample'),
-            Number::make('Box'),
-            Number::make('Position'),
+            Number::make('Position')->resolveUsing(function () {
+                return $this->position;
+                $boxSize = auth()
+                    ->user()
+                    ->study
+                    ->sampleTypes()
+                    ->wherePivot('sample_type_id', $this->sample_type_id)
+                    ->first()->pivot;
+
+                return Position::fromPosition($this->position)
+                    ->withColumns($boxSize->columns)
+                    ->withRows($boxSize->rows)
+                    ->showPlates()
+                    ->toLabel();
+            })->sortable(),
         ];
     }
 }

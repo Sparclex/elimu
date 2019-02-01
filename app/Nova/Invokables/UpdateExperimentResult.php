@@ -14,7 +14,7 @@ class UpdateExperimentResult
         $resultFile = $request->result_file->storeAs('experiments', time() . "."
             . $request->result_file->getClientOriginalExtension());
 
-        $this->handleResults(new $model->result_handler($model, $resultFile));
+        $this->handleResults(new $model->assay->result_handler($model, $resultFile));
 
         $deleteFile = new DeleteExperimentFile();
         $deleteFile($request, $model);

@@ -18,7 +18,7 @@ class CreateStorageTable extends Migration
             $table->integer('study_id')->unsigned();
             $table->integer('sample_id')->unsigned();
             $table->integer('sample_type_id')->unsigned();
-            $table->integer('position');
+            $table->unsignedInteger('position');
             $table->timestamps();
 
             $table->unique(['study_id', 'sample_type_id', 'position']);

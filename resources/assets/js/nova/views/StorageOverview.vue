@@ -19,18 +19,9 @@
                                 />
                             </div>
                         </div>
-                        <div class="flex w-1/2 p-4" v-show="selectedBoxSize">
-                            <div class="w-1/2">
-                                <label class="inline-block text-80 pt-2 leading-tight">Number of Columns</label>
-                            </div>
-                            <div class="w-1/2">
-                                <input type="number" class="w-full form-control form-input form-input-bordered"
-                                :value="numberOfColumns" @input="changeNumberOfColumns">
-                            </div>
-                        </div>
                     </div>
 
-                    <div v-if="numberOfRows > 0">
+                    <div v-if="selectedBoxSize">
                         <div class="py-8" v-if="loadingStorage">
                             <loader />
                         </div>
@@ -63,11 +54,6 @@
                         </pagination-links>
                     </div>
 
-
-                    <div v-if="numberOfRows === -1" class="py-8 px-4">
-                        <p>Invalid number of columns. {{boxSize}} can not be divided by {{numberOfColumns}}.</p>
-                    </div>
-
                 </div>
             </loading-card>
 
@@ -94,7 +80,6 @@
                 loading: true,
                 boxSizes: [],
                 selectedBoxSize: null,
-                numberOfColumns: this.columns,
                 samples: [],
                 loadingStorage: true,
                 resourceResponse: null,
@@ -148,38 +133,6 @@
 
             selectBoxSize(boxSize) {
                 this.selectedBoxSize = boxSize;
-
-                this.setDefaultNumberOfColumns();
-            },
-
-            setDefaultNumberOfColumns() {
-                let numberOfColumns = 0;
-
-                switch (this.boxSize) {
-                    case 81:
-                        numberOfColumns = 9;
-                        break;
-                    case 96:
-                        numberOfColumns = 12;
-                        break;
-                }
-
-                this.changeNumberOfColumns(numberOfColumns);
-            },
-
-            changeNumberOfColumns(value) {
-                this.loadingStorage = true;
-
-                if(value.target !== undefined) {
-                    this.numberOfColumns = parseInt(value.target.value);
-                } else {
-                    this.numberOfColumns = parseInt(value);
-                }
-
-                if(this.numberOfRows <= 0) {
-                    return;
-                }
-
                 this.fetchSamples();
             },
 
@@ -233,7 +186,7 @@
                     return 0;
                 }
 
-                return this.selectedBoxSize.fields[3].value;
+                return this.selectedBoxSize.fields[3].value * this.selectedBoxSize.fields[4].value;
             },
 
             numberOfRows() {
@@ -241,15 +194,15 @@
                     return 0;
                 }
 
-                if(!this.numberOfColumns) {
+                return this.selectedBoxSize.fields[4].value;
+            },
+
+            numberOfColumns() {
+                if(!this.selectedBoxSize) {
                     return 0;
                 }
 
-                if(this.boxSize % this.numberOfColumns !== 0) {
-                    return -1;
-                }
-
-                return this.boxSize / this.numberOfColumns;
+                return this.selectedBoxSize.fields[3].value;
             },
 
             sortedSamples() {

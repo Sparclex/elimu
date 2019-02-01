@@ -70,17 +70,11 @@ class Storage extends Model
 
     public function sample()
     {
-        return $this->belongsTo(SampleMutation::class);
+        return $this->belongsTo(Sample::class);
     }
 
     public function sampleType()
     {
         return $this->belongsTo(SampleType::class);
-    }
-
-    public function study()
-    {
-        return $this->belongsTo(Study::class, 'storage_box_sizes')
-            ->withPivot(['rows', 'columns']);
     }
 }

@@ -42,6 +42,13 @@ class SampleType extends Resource
             BelongsToMany::make('Study', 'studies', Study::class)
                 ->fields(new StorageSizeField),
             HasMany::make('Storage', 'storages', Storage::class),
+
+            BelongsToMany::make('Samples', 'samples', Sample::class)
+                ->fields(function () {
+                    return [
+                        Text::make('Quantity')
+                    ];
+                })
         ];
     }
 }

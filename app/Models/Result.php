@@ -13,11 +13,6 @@ class Result extends Model
 
     protected $output = null;
 
-    public function sample()
-    {
-        return $this->belongsTo(SampleMutation::class);
-    }
-
     public function assay()
     {
         return $this->belongsTo(Assay::class);

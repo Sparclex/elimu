@@ -1,18 +1,20 @@
 <?php
+
 namespace App\Importer;
 
-use App\Models\SampleMutation;
-use App\Models\SampleType;
 use App\Models\Sample;
+use App\Models\SampleType;
+use App\Models\Storage;
+use App\Support\SampleTypeStorage;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Sparclex\NovaImportCard\ImportException;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 {
@@ -37,20 +39,65 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
     public function collection(Collection $rows)
     {
-        $sampleTypes[] = [];
+        $sampleTypes = [];
+        $sampleTypeStorage = [];
 
         Validator::make($rows->toArray(), $this->rules())->validate();
 
         $rows = $rows->first()->has('position') ? $rows->sortBy('position') : $rows;
+
         foreach ($rows->pluck('type')->unique() as $name) {
             $sampleTypes[$name] = SampleType::firstOrCreate(compact('name'));
+            $sampleTypeStorage[$name] = new SampleTypeStorage($sampleTypes[$name]->id, auth()->user()->study_id);
         }
 
-        foreach ($rows as $row) {
-            $sampleInformation = $this->saveSampleInformation($row);
+        $existingSamples = Sample::whereIn('sample_id', $rows->pluck('id'))
+            ->pluck('id', 'sample_id');
 
-            $this->saveSample($row, $sampleInformation, $sampleTypes[$row['type']]);
+        $newSamples = $rows->reject(function ($sample) use ($existingSamples) {
+            return $existingSamples->keys()->contains($sample['id']);
+        });
+
+        $existingSampleMutation = DB::table('sample_mutations')
+            ->whereIn('sample_id', $existingSamples->values())
+            ->get();
+
+        $newSampleMutation = $rows->diff($newSamples)->reject(function ($sample) use (
+            $existingSampleMutation,
+            $existingSamples,
+            $sampleTypes
+        ) {
+            foreach ($existingSampleMutation as $sampleMutation) {
+                if (isset($existingSamples[$sampleMutation['sample_id']])
+                    && $sample['id'] == $existingSamples[$sampleMutation['sample_id']]
+                    && $sampleTypes[$sample['type']]->id == $sampleMutation['sample_type_id']) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        $newPositions = [];
+
+        foreach ($newSamples as $sample) {
+            $sampleInformation = $this->saveSampleInformation($sample);
+
+            $this->saveMutation($sample, $sampleInformation->id, $sampleTypes[$sample['type']]);
+
+            $newPositions = $sampleTypeStorage[$sample['type']]
+                ->store($sampleInformation->id, $sample['quantity'], false);
         }
+
+        foreach ($newSampleMutation as $mutation) {
+            $this->saveMutation($mutation, $existingSamples[$mutation['id']], $sampleTypes[$mutation['type']]);
+
+            $newPositions = $sampleTypeStorage[$mutation['type']]
+                ->store($existingSamples[$mutation['id']], $mutation['quantity'], false);
+        }
+
+        collect($newPositions)->chunk(200)->each(function ($positions) {
+            Storage::insert($positions->toArray());
+        });
     }
 
     public function rules(): array
@@ -58,10 +105,10 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
         return [
             '*.id' => 'required',
             '*.type' => 'required',
-            '*.collected_at'=> 'nullable',
-            '*.birthdate' => 'nullable|date',
+            '*.collected_at' => 'nullable',
+            '*.birthdate' => 'nullable',
             '*.gender' => 'nullable|size:1',
-            '*.position' => 'numeric',
+            '*.position' => 'nullable|numeric',
         ];
     }
 
@@ -72,69 +119,42 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
     private function saveSampleInformation(Collection $row)
     {
+        $sampleInformation = new Sample;
+        $sampleInformation->sample_id = $row['id'];
 
-        $sampleInformation = Sample::where('sample_id', $row['id'])->first();
-
-        if (!$sampleInformation) {
-            $sampleInformation = new Sample;
-            $sampleInformation->sample_id = $row['id'];
-
-            foreach ($row->only($this->sampleInformationColumns()) as $key => $value) {
-                if ($key == 'gender') {
-                    switch (strtolower($value)) {
-                        case 'm':
-                            $value = 0;
-                            break;
-                        case 'f':
-                            $value = 1;
-                            break;
-                        default:
-                            $value = null;
-                    }
+        foreach ($row->only($this->sampleInformationColumns()) as $key => $value) {
+            if ($key == 'gender') {
+                switch (strtolower($value)) {
+                    case 'm':
+                        $value = 0;
+                        break;
+                    case 'f':
+                        $value = 1;
+                        break;
+                    default:
+                        $value = null;
                 }
-
-                if ($key == 'collected_at') {
-                    $value = Date::excelToDateTimeObject($value);
-                }
-
-                $sampleInformation->{$key} = $value;
             }
 
-            $sampleInformation->save();
+            if ($key == 'collected_at') {
+                $value = Date::excelToDateTimeObject($value);
+            }
+
+            $sampleInformation->{$key} = $value;
         }
+
+        $sampleInformation->save();
 
         return $sampleInformation;
     }
 
-    private function saveSample(Collection $row, $sampleInformation, $sampleType)
+    private function saveMutation(Collection $row, $sampleId, $sampleType)
     {
-        $sample = SampleMutation::firstOrNew([
-            'sample_information_id' => $sampleInformation->id,
-            'sample_type_id' => $sampleType->id
+        DB::table('sample_mutations')->insert([
+            'sample_id' => $sampleId,
+            'sample_type_id' => $sampleType->id,
+            'quantity' => $row['quantity'] ?? 0,
         ]);
-
-        if ($sample->isDirty()) {
-            if ($row->has('quantity')
-                && !$this->storageSizeExists($sampleType->id)) {
-                throw new ImportException(
-                    sprintf('Not storage size defined for sample type \'%s\'', $sampleType->name)
-                );
-            }
-            $sample->quantity = $row->get('quantity', null) ?: 0;
-
-            $extra = [];
-
-            foreach (array_except($row, $this->sampleInformationColumns()) as $key => $value) {
-                if (starts_with($key, 'extra_')) {
-                    $extra[str_replace_first('extra_', '', $key)] = $value;
-                }
-            }
-
-            $sample->extra = $extra;
-            $sample->save();
-        }
-
-        return $sample;
     }
 
     private function storageSizeExists($sampleTypeId)

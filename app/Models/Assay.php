@@ -26,6 +26,6 @@ class Assay extends Model implements AuditableContract
 
     public function getResultHandlerAttribute()
     {
-        return config('lims . result_types . ' . $this->result_type);
+        return config('lims.result_types.' . $this->result_type);
     }
 }

@@ -2,19 +2,17 @@
 
 namespace App\Nova;
 
-use App\Fields\HtmlReadonly;
+use App\Fields\QuickBelongsToMany;
 use App\Importer\SampleImporter;
-use App\Nova\Lenses\AssayResults;
+use App\Models\Storage;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Sample extends Resource
@@ -59,8 +57,61 @@ class Sample extends Resource
                 ->options([0 => 'Male', 1 => 'Female'])
                 ->hideFromIndex(),
 
-            BelongsToMany::make('Types', 'sampleTypes', SampleType::class)
+            QuickBelongsToMany::make('Types', 'sampleTypes')
+                ->fields([
+                    Select::make('Sample Type', 'id')
+                        ->options(\App\Models\SampleType::pluck('name', 'id'))
+                        ->rules('required_with:quantity', 'exists:sample_types,id'),
+                    Number::make('Quantity')
+                        ->rules('nullable', 'numeric', 'min:0', 'not_in:0')
+                ])
+                ->afterAttachCallback(function ($relatedModels, $changes) {
 
+                    foreach ($relatedModels as $sampleTypeId => $model) {
+                        if (!isset($model['quantity']) || !$model['quantity']) {
+                            continue;
+                        }
+
+                        if (in_array($sampleTypeId, $changes['attached'])) {
+                            Storage::generateStoragePosition(
+                                $this->id,
+                                $this->study_id,
+                                $sampleTypeId,
+                                $model['quantity']
+                            );
+                        } else {
+                            $oldQuantity = Storage::where([
+                                'sample_id' => $this->id,
+                                'study_id' => $this->study_id,
+                                'sample_type_id' => $sampleTypeId
+                            ])->count();
+
+                            if ($oldQuantity <= $model['quantity']) {
+                                Storage::generateStoragePosition(
+                                    $this->id,
+                                    $this->study_id,
+                                    $sampleTypeId,
+                                    $model['quantity'] - $oldQuantity
+                                );
+                            } else {
+                                Storage::where([
+                                    'sample_id' => $this->id,
+                                    'study_id' => $this->study_id,
+                                    'sample_type_id' => $sampleTypeId
+                                ])->orderByDesc('position')
+                                    ->limit($oldQuantity - $model['quantity'])
+                                    ->delete();
+                            }
+                        }
+                    }
+                }),
+
+            BelongsToMany::make('Types', 'sampleTypes', SampleType::class)
+                ->fields(function () {
+                    return [
+                        Text::make('Quantity')
+                    ];
+                })
         ];
     }
 }

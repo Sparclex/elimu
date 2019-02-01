@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Fields\StorageSizeField;
+use App\Fields\StudyUserFields;
 use App\Policies\Authorization;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -46,18 +47,10 @@ class Study extends Resource
             Trix::make('Description'),
 
             BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)
-                ->fields(new StorageSizeField),
+                ->fields(new StorageSizeField)
+                ->searchable(),
             BelongsToMany::make('Users')
-                ->fields(function () {
-                    return [
-                        Select::make('Role', 'power')
-                            ->options([
-                                Authorization::SCIENTIST => 'Scientist',
-                                Authorization::LABMANAGER => 'Lab Manager',
-                                Authorization::MONITOR => 'Monitor'
-                            ])
-                    ];
-                })
+                ->fields(new StudyUserFields)
         ];
     }
 }
