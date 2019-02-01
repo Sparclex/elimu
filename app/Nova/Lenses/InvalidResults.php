@@ -25,6 +25,10 @@ class InvalidResults extends Lens
     public static function query(LensRequest $request, $query)
     {
         $ids = Result::with('assay.inputParameter', 'sample.sampleInformation', 'resultData')
+            ->whereHas('assay', function ($query) {
+                return $query->join('input_parameters', 'assays.id', 'input_parameters.assay_id')
+                    ->where('input_parameters.study_id', auth()->user()->study_id);
+            })
             ->get()
             ->filter(function ($result) {
                 return $result->status == 'Pending';
