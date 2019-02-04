@@ -17,7 +17,11 @@ class CreateAssayDefinitionFiles extends Migration
             $table->increments('id');
             $table->string('original_name');
             $table->string('path');
+            $table->unsignedInteger('sample_type_id');
             $table->timestamps();
+
+
+            $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
         });
     }
 

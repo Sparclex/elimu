@@ -4,7 +4,7 @@ namespace App\Support;
 
 use App\Models\Storage;
 
-class SampleTypeStorage
+class StoragePointer
 {
     protected $lastPosition;
     protected $sampleTypeId;
@@ -14,7 +14,7 @@ class SampleTypeStorage
     {
 
         $this->sampleTypeId = $sampleTypeId;
-        $this->studyId = $studyId;
+        $this->studyId = auth()->check() ? auth()->user()->study_id : $studyId;
     }
 
     public function getNextPosition()
@@ -38,6 +38,8 @@ class SampleTypeStorage
 
     public function store($sampleId, $quantity = null, $persist = true)
     {
+        $sampleId = is_object($sampleId) ? $sampleId->id : $sampleId;
+
         $newPositions = [];
 
         if (is_array($sampleId)) {
@@ -65,7 +67,7 @@ class SampleTypeStorage
         ];
 
         if ($persist) {
-            Storage::forceCreate($newPosition);
+            return Storage::forceCreate($newPosition);
         }
 
         return $newPosition;

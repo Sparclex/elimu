@@ -111,7 +111,12 @@ class Sample extends Resource
                     return [
                         Text::make('Quantity')
                     ];
-                })
+                }),
+
+            BelongsToMany::make('Shipments')
+                ->fields(function () {
+                    return [Number::make('Quantity')];
+                }),
         ];
     }
 }

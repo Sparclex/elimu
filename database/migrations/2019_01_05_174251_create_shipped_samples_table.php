@@ -18,8 +18,8 @@ class CreateShippedSamplesTable extends Migration
             $table->unsignedInteger('shipment_id');
             $table->integer('quantity')->default(1);
 
-            $table->foreign('sample_id')->references('id')->on('samples');
-            $table->foreign('shipment_id')->references('id')->on('shipments');
+            $table->foreign('sample_id')->references('id')->on('samples')->onDelete('CASCADE');
+            $table->foreign('shipment_id')->references('id')->on('shipments')->onDelete('CASCADE');
 
             $table->primary(['sample_id', 'shipment_id']);
         });

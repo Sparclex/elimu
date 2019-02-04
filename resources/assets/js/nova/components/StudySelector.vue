@@ -39,7 +39,7 @@
                     });
             },
             label(study) {
-                return study.name;
+                return study.study_id;
             }
         }
     }

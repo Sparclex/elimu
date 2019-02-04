@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
@@ -35,8 +37,14 @@ class Shipment extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'id', 'recipient', 'shipment_date'
     ];
+
+    public function title()
+    {
+        return sprintf('%s - %s', $this->recipient, $this->shipment_date->format('Y-m-d'));
+    }
+
 
     /**
      * Get the fields displayed by the resource.
@@ -49,10 +57,11 @@ class Shipment extends Resource
         return [
             ID::make()->sortable(),
             SampleIds::make('Samples')
-                ->help('A new line for each sample id')
+                ->pivot('quantity')
+                ->help('A new line for each sample id,')
                 ->rules('required'),
-            CreatableBelongsTo::make('Recipient')
-                ->prepopulate(),
+            Text::make('Recipient')
+                ->rules('required'),
             Date::make('Shipment Date')
                 ->rules('required')
                 ->sortable(),
@@ -61,6 +70,9 @@ class Shipment extends Resource
                 return optional(($this->shipment_date))->isPast();
             }),
             CustomBelongsToMany::make('Samples')
+            ->fields(function () {
+                return [Number::make('quantity')];
+            })
         ];
     }
 

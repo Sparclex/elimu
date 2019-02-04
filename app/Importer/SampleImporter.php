@@ -5,7 +5,7 @@ namespace App\Importer;
 use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\Storage;
-use App\Support\SampleTypeStorage;
+use App\Support\StoragePointer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +48,7 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
         foreach ($rows->pluck('type')->unique() as $name) {
             $sampleTypes[$name] = SampleType::firstOrCreate(compact('name'));
-            $sampleTypeStorage[$name] = new SampleTypeStorage($sampleTypes[$name]->id, auth()->user()->study_id);
+            $sampleTypeStorage[$name] = new StoragePointer($sampleTypes[$name]->id, auth()->user()->study_id);
         }
 
         $existingSamples = Sample::whereIn('sample_id', $rows->pluck('id'))

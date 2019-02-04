@@ -3,6 +3,7 @@
 namespace Tests\Setup;
 
 use App\Models\Sample;
+use App\Models\SampleType;
 use App\Models\Study;
 use App\User;
 use Facades\Tests\Setup\StudyFactory;
@@ -15,6 +16,8 @@ class SampleFactory
      */
     public $study;
 
+    public $types = [];
+
     public function forManager($manager)
     {
         $this->study = $manager->study ?? StudyFactory::withManager($manager)->create();
@@ -22,12 +25,26 @@ class SampleFactory
         return $this;
     }
 
+    public function withType(SampleType $type)
+    {
+        $this->types[] = $type;
+
+        return $this;
+    }
+
     public function create($attributes = [])
     {
-        return factory(Sample::class)
+        $sample = factory(Sample::class)
             ->create(array_merge([
                 'study_id' => $this->study ?? factory(Study::class)
             ], $attributes));
+
+        if(count($this->types))
+        {
+            $sample->sampleTypes()->attach(collect($this->types)->pluck('id'));
+        }
+
+        return $sample;
     }
 
     public function raw()

@@ -17,16 +17,13 @@ class CreateExperimentTable extends Migration
             $table->increments('id');
             $table->integer('study_id')->unsigned();
             $table->integer('assay_id')->unsigned();
-            $table->unsignedInteger('sample_type_id')->unsigned();
             $table->timestamp('requested_at')->nullable();
             $table->text('comment')->nullable();
 
             $table->string('result_file')->nullable();
             $table->string('original_filename')->nullable();
-            $table->string('result_type')->nullable();
             $table->timestamps();
 
-            $table->foreign('sample_type_id')->references('id')->on('sample_types')->onDelete('CASCADE');
             $table->foreign('assay_id')->references('id')->on('assays')->onDelete('CASCADE');
             $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
         });

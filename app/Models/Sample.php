@@ -69,4 +69,11 @@ class Sample extends Model implements AuditableContract
             return $query->where('assay_id', $assayId);
         });
     }
+
+    public function shipments()
+    {
+        return $this->belongsToMany(Shipment::class, 'shipped_samples')
+            ->withPivot('quantity')
+            ->orderBy('shipment_date');
+    }
 }

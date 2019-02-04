@@ -12,3 +12,5 @@ Route::get('result-overview/{assay}', 'ResultOverview@index');
 
 Route::get('import-template/{resource}', 'ImportTemplateController@show');
 Route::get('import-template/{resource}/download', 'ImportTemplateController@download');
+
+Route::get('storage/{sampleType}', 'StorageController@index');
