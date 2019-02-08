@@ -2,11 +2,11 @@
 
 namespace App\Exports;
 
-use App\Models\Assay;
 use App\Collections\ResultDataCollection;
+use App\Models\Assay;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
 {
@@ -17,7 +17,7 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
         $this->assay = $assay;
     }
 
-    public function headings() : array
+    public function headings(): array
     {
 
         $headings[] = 'id';
@@ -40,14 +40,16 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
     }
 
     /**
-    * @return array
-    */
-    public function array() : array
+     * @return array
+     */
+    public function array(): array
     {
         $this->assay->load('results.sample.sampleInformation', 'results.resultData', 'inputParameter');
 
         $data = [];
-
+        if (!$this->assay->inputParameter) {
+            throw new \Exception('Input Parameter not set');
+        }
         foreach (collect($this->assay->results->toArray())->groupBy('sample_id') as $targets) {
             $row = [
                 'id' => $targets[0]['sample']['sample_information']['sample_id'],
@@ -56,12 +58,12 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
                 'visit_id' => $targets[0]['sample']['sample_information']['visit_id'],
                 'birthdate' => $targets[0]['sample']['sample_information']['birthdate'],
                 'gender' => $targets[0]['sample']['sample_information']['gender'],
-                'extra' => optional($targets[0]['sample']['extra'])->values()->implode(', '),
+                'extra' => $targets[0]['sample']['extra'] ? implode(', ', $targets[0]['sample']['extra']) : '',
             ];
 
             foreach ($targets as $result) {
                 $inputParameters = collect($this->assay->inputParameter->parameters)
-                ->firstWhere('target', $result['target']);
+                    ->firstWhere('target', $result['target']);
 
                 $resultData = (new ResultDataCollection($result['result_data']))->onlyAccepted();
                 $output = $resultData->determineResult($inputParameters['cutoff']);
