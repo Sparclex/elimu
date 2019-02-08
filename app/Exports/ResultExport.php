@@ -56,7 +56,7 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
                 'visit_id' => $targets[0]['sample']['sample_information']['visit_id'],
                 'birthdate' => $targets[0]['sample']['sample_information']['birthdate'],
                 'gender' => $targets[0]['sample']['sample_information']['gender'],
-                'extra' => reset($targets[0]['sample']['extra']),
+                'extra' => optional($targets[0]['sample']['extra'])->values()->implode(', '),
             ];
 
             foreach ($targets as $result) {
