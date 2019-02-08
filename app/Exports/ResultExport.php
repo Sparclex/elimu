@@ -20,14 +20,20 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
     public function headings() : array
     {
 
-        $headings[] = 'Sample ID';
+        $headings[] = 'id';
+        $headings[] = 'subject_id';
+        $headings[] = 'collected_at';
+        $headings[] = 'visit_id';
+        $headings[] = 'birthdate';
+        $headings[] = 'gender';
+        $headings[] = 'extra';
 
         foreach ($this->assay->results->pluck('target')->unique() as $target) {
-            $headings[] = 'n replicates accepted for target ' . $target;
-            $headings[] = 'mean Cq target ' . $target;
-            $headings[] = 'sd Cq target ' . $target;
-            $headings[] = 'qualitative target ' . $target;
-            $headings[] = 'quantitative target ' . $target;
+            $headings[] = 'replicas_' . $target;
+            $headings[] = 'mean_cq_' . $target;
+            $headings[] = 'sd_cq_' . $target;
+            $headings[] = 'qual_' . $target;
+            $headings[] = 'quant_' . $target;
         }
 
         return $headings;
@@ -44,7 +50,13 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
 
         foreach (collect($this->assay->results->toArray())->groupBy('sample_id') as $targets) {
             $row = [
-                'Sample ID' => $targets[0]['sample']['sample_information']['sample_id'],
+                'id' => $targets[0]['sample']['sample_information']['sample_id'],
+                'subject_id' => $targets[0]['sample']['sample_information']['subject_id'],
+                'collected_at' => $targets[0]['sample']['sample_information']['collected_at'],
+                'visit_id' => $targets[0]['sample']['sample_information']['visit_id'],
+                'birthdate' => $targets[0]['sample']['sample_information']['birthdate'],
+                'gender' => $targets[0]['sample']['sample_information']['gender'],
+                'extra' => reset($targets[0]['sample']['extra']),
             ];
 
             foreach ($targets as $result) {
@@ -54,11 +66,11 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
                 $resultData = (new ResultDataCollection($result['result_data']))->onlyAccepted();
                 $output = $resultData->determineResult($inputParameters['cutoff']);
 
-                $row['n replicates accepted for target ' . $result['target']] = $resultData->count();
-                $row['mean Cq target ' . $result['target']] = $resultData->averageCq();
-                $row['sd Cq target ' . $result['target']] = $resultData->cqStandardDeviation();
-                $row['qualitative target ' . $result['target']] = $this->toQualitativeWord($output);
-                $row['quantitative target ' . $result['target']] = $this->toQuantitativeValue(
+                $row['replicas_' . $result['target']] = $resultData->count();
+                $row['mean_cq_' . $result['target']] = $resultData->averageCq();
+                $row['sd_cq_' . $result['target']] = $resultData->cqStandardDeviation();
+                $row['qual_' . $result['target']] = $this->toQualitativeWord($output);
+                $row['quant_' . $result['target']] = $this->toQuantitativeValue(
                     $output,
                     $resultData,
                     $inputParameters['slope'],
