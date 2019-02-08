@@ -54,7 +54,7 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
             $row = [
                 'id' => $targets[0]['sample']['sample_information']['sample_id'],
                 'subject_id' => $targets[0]['sample']['sample_information']['subject_id'],
-                'collected_at' => $targets[0]['sample']['sample_information']['collected_at'],
+                'collected_at' => $targets[0]['sample']['sample_information']['collected_at']->format('Y-m-d'),
                 'visit_id' => $targets[0]['sample']['sample_information']['visit_id'],
                 'birthdate' => $targets[0]['sample']['sample_information']['birthdate'],
                 'gender' => $targets[0]['sample']['sample_information']['gender'],
