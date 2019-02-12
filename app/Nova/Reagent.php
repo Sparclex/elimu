@@ -11,15 +11,15 @@ use Treestoneit\BelongsToField\BelongsToField;
 
 class Reagent extends Resource
 {
-    public static $globallySearchable = false;
-
     public static $model = 'App\Models\Reagent';
 
     public static $search = ['id', 'lot', 'name'];
 
-    public function title()
+    public static $title = 'lot';
+
+    public function subtitle()
     {
-        return "{$this->name} ({$this->lot})";
+        return sprintf('%s | %s', $this->name, $this->expires_at->format('d.m.Y'));
     }
 
     public function fields(Request $request)

@@ -4,12 +4,9 @@ namespace App\Nova;
 
 use App\Fields\StorageSizeField;
 use App\Fields\StudyUserFields;
-use App\Policies\Authorization;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 
@@ -25,9 +22,11 @@ class Study extends Resource
         'id',
     ];
 
-    public function title()
+    public static $title = 'study_id';
+
+    public function subtitle()
     {
-        return $this->study_id . ": " . str_limit($this->name, 20);
+        return $this->name;
     }
 
 

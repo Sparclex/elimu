@@ -26,6 +26,11 @@ class Protocol extends Resource
      */
     public static $title = 'protocol_id';
 
+    public function subtitle()
+    {
+        return $this->name;
+    }
+
     /**
      * The columns that should be searched.
      *

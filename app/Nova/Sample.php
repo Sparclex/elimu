@@ -28,7 +28,7 @@ class Sample extends Resource
 
     public function subtitle()
     {
-        return 'Study: (' . $this->study->study_id . ') ' . $this->study->name;
+        return $this->subject_id;
     }
 
     public function fields(Request $request)
@@ -36,10 +36,6 @@ class Sample extends Resource
         return [
             ID::make()
                 ->onlyOnForms(),
-            BelongsToField::make('Study')
-                ->searchable()
-                ->rules('required')
-                ->onlyOnDetail(),
             Text::make('Sample ID')
                 ->creationRules('required', 'unique:samples,sample_id')
                 ->updateRules('required', 'unique:samples,sample_id,{{resourceId}}')

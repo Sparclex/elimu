@@ -24,6 +24,11 @@ class Instrument extends Resource
      */
     public static $title = 'instrument_id';
 
+    public function subtitle()
+    {
+        return sprintf('%s (%s)', $this->name, $this->serial_number);
+    }
+
     /**
      * The columns that should be searched.
      *

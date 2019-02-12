@@ -30,13 +30,10 @@ class Experiment extends Resource
     {
         return [
             ID::make()->sortable(),
-            BelongsToField::make('Sample Type', 'sampleType', SampleType::class),
             SampleIds::make('Samples')
                 ->help('A new line for each sample id')
                 ->rules('required'),
             BelongsToField::make('Assay'),
-            BelongsToField::make('Study')
-                ->onlyOnDetail(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
                 ->hideWhenCreating()
