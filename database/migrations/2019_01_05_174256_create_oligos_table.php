@@ -18,14 +18,16 @@ class CreateOligosTable extends Migration
 
             $table->string('oligo_id')->unique();
             $table->string('sequence')->index();
-            $table->string('5_min_modification')->nullable();
-            $table->string('3_min_modification')->nullable();
+            $table->string('5_prime_modification')->nullable();
+            $table->string('3_prime_modification')->nullable();
             $table->string('species');
             $table->string('target_gene');
-            $table->string('concentration');
             $table->string('publication');
             $table->text('comment')->nullable();
+            $table->unsignedInteger('study_id');
             $table->timestamps();
+
+            $table->foreign('study_id')->references('id')->on('studies');
         });
     }
 

@@ -49,7 +49,7 @@ class Protocol extends Resource
                 ->hideFromDetail()
                 ->hideFromIndex(),
             Text::make('Protocol Id')
-                ->rules('required|unique:protocols,protocol_id'),
+                ->rules('required', 'unique:protocols,protocol_id,{{resourceId}}'),
             Text::make('Name')
                 ->rules('required'),
             Text::make('Version')

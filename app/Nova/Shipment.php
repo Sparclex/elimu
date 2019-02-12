@@ -11,7 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Shipment extends Resource
 {
@@ -58,8 +58,9 @@ class Shipment extends Resource
             ID::make()->sortable(),
             SampleIds::make('Samples')
                 ->pivot('quantity')
-                ->help('A new line for each sample id,')
+                ->help('Each line in the following format: sample_id,aliquots')
                 ->rules('required'),
+            BelongsToField::make('Type', 'sampleType', SampleType::class),
             Text::make('Recipient')
                 ->rules('required'),
             Date::make('Shipment Date')
@@ -70,9 +71,9 @@ class Shipment extends Resource
                 return optional(($this->shipment_date))->isPast();
             }),
             CustomBelongsToMany::make('Samples')
-            ->fields(function () {
-                return [Number::make('quantity')];
-            })
+                ->fields(function () {
+                    return [Number::make('Aliquots', 'quantity')];
+                })
         ];
     }
 

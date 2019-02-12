@@ -5,24 +5,24 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
-class Oligo extends Resource
+class Instrument extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Models\Oligo';
+    public static $model = 'App\Models\Instrument';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'instrument_id';
 
     /**
      * The columns that should be searched.
@@ -30,7 +30,9 @@ class Oligo extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'instrument_id',
+        'name',
+        'serial_number'
     ];
 
     /**
@@ -44,21 +46,15 @@ class Oligo extends Resource
         return [
             ID::make()
                 ->sortable()
-                ->hideFromIndex()
-                ->hideFromDetail(),
-            Text::make('Oligo ID')
-                ->rules('required', 'unique:oligos,oligo_id,{{resourceId}}'),
-            Text::make('Sequence')
+                ->onlyOnForms(),
+            Text::make('Instrument ID')
+                ->rules('required', 'unique:instruments,instrument_id,{{resourceId}}'),
+            Text::make('Name')
                 ->rules('required'),
-            Text::make('5\' Modification', '5_prime_modification'),
-            Text::make('3\' Modification', '3_prime_modification'),
-            Text::make('Species')
-                ->rules('required'),
-            Text::make('Target Gene')
-                ->rules('required'),
-            Text::make('Publication')
-                ->rules('required'),
-            Trix::make('Comment')
+            Text::make('Serial Number'),
+            CreatableBelongsTo::make('Responsible', 'responsible', Person::class),
+            CreatableBelongsTo::make('Institution'),
+            CreatableBelongsTo::make('Laboratory'),
         ];
     }
 

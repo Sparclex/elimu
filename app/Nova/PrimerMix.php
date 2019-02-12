@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class PrimerMix extends Resource
@@ -22,7 +23,9 @@ class PrimerMix extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'name';
+
+    public static $search = ['name'];
 
     /**
      * Get the fields displayed by the resource.
@@ -35,9 +38,9 @@ class PrimerMix extends Resource
         return [
             ID::make()->sortable(),
             Text::make('Name')
-                ->rules('required|unique:primer_mixes,name,{{resourceId}}')
+                ->rules('required', 'unique:primer_mixes,name,{{resourceId}}')
                 ->sortable(),
-            BelongsToField::make('Creator', 'creator', Person::class),
+            CreatableBelongsTo::make('Creator', 'creator', Person::class),
             BelongsToField::make('Reagent'),
             Number::make('Expires in')
                 ->help('Amount of days until the primer mix expires')
@@ -48,7 +51,7 @@ class PrimerMix extends Resource
                 ->sortable(),
             Number::make('Volume')
                 ->help('Volume in μl (microliter)')
-                ->rules('required|numeric')
+                ->rules('required', 'numeric')
                 ->displayUsing(function ($value) {
                     return sprintf('%d μl', $value);
                 })

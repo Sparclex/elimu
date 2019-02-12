@@ -9,6 +9,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Assay extends Resource
 {
@@ -24,7 +25,6 @@ class Assay extends Resource
 
     public function fields(Request $request)
     {
-        $resultTypes = array_keys(config('lims.result_types'));
         return [
             ID::make()
                 ->hideFromIndex(),
@@ -32,9 +32,10 @@ class Assay extends Resource
                 ->sortable()
                 ->creationRules('required', 'unique:assays,name')
                 ->updateRules('required', 'unique:assays,name,{{resourceId}}'),
-            Select::make('Result Type')
-                ->options(array_combine($resultTypes, $resultTypes))
-                ->rules('required', 'in:' . implode(',', $resultTypes)),
+            BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
+            BelongsToField::make('Instrument'),
+            BelongsToField::make('Protocol'),
+            BelongsToField::make('Primer Mix', 'primerMix', PrimerMix::class),
             Trix::make('Description'),
             HasMany::make('Results')
         ];

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Oligo extends Model
 {
-    //
+    use DependsOnStudy;
 }

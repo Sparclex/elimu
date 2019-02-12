@@ -16,11 +16,14 @@ class CreateShipmentsTable extends Migration
         Schema::create('shipments', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('study_id')->unsigned();
+            $table->unsignedInteger('sample_type_id');
             $table->string('recipient');
             $table->date('shipment_date');
             $table->text('comment')->nullable();
             $table->timestamps();
 
+
+            $table->foreign('sample_type_id')->references('id')->on('sample_types');
             $table->foreign('study_id')->references('id')->on('studies');
         });
     }

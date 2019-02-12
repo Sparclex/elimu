@@ -3,17 +3,21 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
+use Treestoneit\BelongsToField\BelongsToField;
 
-class Recipient extends Resource
+class AssayDefinitionFile extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Models\Recipient';
+    public static $model = 'App\Models\AssayDefinitionFile';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -31,6 +35,17 @@ class Recipient extends Resource
         'name',
     ];
 
+    public static function label()
+    {
+        return 'Assay Definition Files';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Assay Definition File';
+    }
+
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -39,9 +54,19 @@ class Recipient extends Resource
      */
     public function fields(Request $request)
     {
+        $resultTypes = array_keys(config('lims.result_types'));
+
         return [
             ID::make()->sortable(),
-            Text::make('Name'),
+            Text::make('Name')
+                ->rules('required', 'unique:assay_definition_files,name,{{resourceId}}'),
+            BelongsToField::make('Sample Type', 'sampleType', SampleType::class),
+            Select::make('Result Type', 'result_type')
+                ->options(array_combine($resultTypes, $resultTypes))
+                ->rules('required', Rule::in($resultTypes)),
+            File::make('Path')
+                ->storeOriginalName('original_name')
+                ->rules('required')
         ];
     }
 

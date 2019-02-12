@@ -28,7 +28,7 @@ class Reagent extends Resource
             ID::make()
                 ->sortable(),
             Text::make('Lot')
-                ->rules('required|unique,reagents,lot')
+                ->rules('required', 'unique:reagents,lot,{{resourceId}}')
                 ->sortable(),
             Text::make('Name')
                 ->rules('required')

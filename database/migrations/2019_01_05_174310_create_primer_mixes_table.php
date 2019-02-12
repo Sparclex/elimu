@@ -20,8 +20,10 @@ class CreatePrimerMixesTable extends Migration
             $table->unsignedInteger('creator_id');
             $table->date('expires_at');
             $table->integer('volume');
+            $table->unsignedInteger('study_id');
             $table->timestamps();
 
+            $table->foreign('study_id')->references('id')->on('studies');
             $table->foreign('reagent_id')->references('id')->on('reagents');
             $table->foreign('creator_id')->references('id')->on('people');
         });

@@ -8,7 +8,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Reagent extends Model implements AuditableContract
 {
-    use Auditable;
+    use Auditable, DependsOnStudy;
 
     protected $dates = [
         'created_at',

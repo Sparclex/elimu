@@ -11,21 +11,21 @@ class AssayPolicy extends Policy
 
     public function delete(User $user, $model)
     {
-        return Authorization::isAdministrator($user);
+        return $user->isManager();
     }
 
     public function view(User $user, $model)
     {
-        return true;
+        return $user->study_id != null;
     }
 
     public function create(User $user)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
     }
 
     public function update(User $user, $model)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
     }
 }

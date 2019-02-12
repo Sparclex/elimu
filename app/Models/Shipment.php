@@ -19,4 +19,9 @@ class Shipment extends Model implements AuditableContract
         return $this->belongsToMany(Sample::class, 'shipped_samples')
             ->withPivot('quantity');
     }
+
+    public function sampleType()
+    {
+        return $this->belongsTo(SampleType::class);
+    }
 }

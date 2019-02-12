@@ -11,16 +11,13 @@ use Treestoneit\BelongsToField\BelongsToField;
 
 class Storage extends Resource
 {
+    public static $globallySearchable = false;
+
     public static $model = 'App\Models\Storage';
 
     public static $title = 'id';
 
     public static $with = ['sample'];
-
-    public static $search = [
-        'box',
-        'position',
-    ];
 
     public static function label()
     {

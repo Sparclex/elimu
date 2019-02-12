@@ -80,6 +80,11 @@ class User extends Authenticatable
         return $this->hasPower(Authorization::SCIENTIST);
     }
 
+    public function isManager()
+    {
+        return $this->hasPower(Authorization::LABMANAGER);
+    }
+
     public function hasPower($power)
     {
         $studyId = $this->study_id;

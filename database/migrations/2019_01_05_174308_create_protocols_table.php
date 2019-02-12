@@ -23,8 +23,10 @@ class CreateProtocolsTable extends Migration
             $table->string('attachment_path');
             $table->unsignedInteger('responsible_id');
             $table->unsignedInteger('institution_id');
+            $table->unsignedInteger('study_id');
             $table->timestamps();
 
+            $table->foreign('study_id')->references('id')->on('studies');
             $table->foreign('institution_id')->references('id')->on('institutions');
             $table->foreign('responsible_id')->references('id')->on('people');
         });

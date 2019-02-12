@@ -46,7 +46,7 @@ class SampleType extends Resource
             BelongsToMany::make('Samples', 'samples', Sample::class)
                 ->fields(function () {
                     return [
-                        Text::make('Quantity')
+                        Text::make('Aliquots', 'quantity')
                     ];
                 })
         ];

@@ -34,6 +34,11 @@
             </router-link>
         </li>
         <li class="leading-tight mb-4 ml-8 text-sm">
+            <router-link :to="{name: 'index', params: {resourceName: 'assay-definition-files'}}" class="text-white text-justify no-underline dim">
+                Assay Definition Files
+            </router-link>
+        </li>
+        <li class="leading-tight mb-4 ml-8 text-sm">
             <router-link :to="{name: 'index', params: {resourceName: 'primer-mixes'}}" class="text-white text-justify no-underline dim">
                 Primer Mixes
             </router-link>
@@ -51,6 +56,11 @@
         <li class="leading-tight mb-4 ml-8 text-sm">
             <router-link :to="{name: 'index', params: {resourceName: 'protocols'}}" class="text-white text-justify no-underline dim">
                 Protocols
+            </router-link>
+        </li>
+        <li class="leading-tight mb-4 ml-8 text-sm">
+            <router-link :to="{name: 'index', params: {resourceName: 'instruments'}}" class="text-white text-justify no-underline dim">
+                Instruments
             </router-link>
         </li>
         <li class="leading-tight mb-4 ml-8 text-sm">

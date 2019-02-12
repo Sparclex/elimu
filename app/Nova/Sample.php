@@ -55,6 +55,7 @@ class Sample extends Resource
                 ->hideFromIndex(),
             Select::make('Gender')
                 ->options([0 => 'Male', 1 => 'Female'])
+                ->displayUsingLabels()
                 ->hideFromIndex(),
 
             QuickBelongsToMany::make('Types', 'sampleTypes')
@@ -62,7 +63,7 @@ class Sample extends Resource
                     Select::make('Sample Type', 'id')
                         ->options(\App\Models\SampleType::pluck('name', 'id'))
                         ->rules('required_with:quantity', 'exists:sample_types,id'),
-                    Number::make('Quantity')
+                    Number::make('Aliquots', 'quantity')
                         ->rules('nullable', 'numeric', 'min:0', 'not_in:0')
                 ])
                 ->afterAttachCallback(function ($relatedModels, $changes) {
@@ -109,13 +110,13 @@ class Sample extends Resource
             BelongsToMany::make('Types', 'sampleTypes', SampleType::class)
                 ->fields(function () {
                     return [
-                        Text::make('Quantity')
+                        Text::make('Aliquots', 'quantity')
                     ];
                 }),
 
             BelongsToMany::make('Shipments')
                 ->fields(function () {
-                    return [Number::make('Quantity')];
+                    return [Number::make('Aliquots', 'quantity')];
                 }),
         ];
     }
