@@ -12,6 +12,6 @@ class ResultOverviewController extends Controller
 {
     public function handle(Assay $assay)
     {
-        return Excel::download(new ResultExport($assay), $assay->name . ".xlsx");
+        return Excel::download(new ResultExport($assay), "results.xlsx");
     }
 }
