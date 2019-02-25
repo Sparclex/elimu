@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Experiment;
-use App\User;
+use App\Policies\Traits\OnlyAvailableForChosenStudy;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ExperimentPolicy extends Policy

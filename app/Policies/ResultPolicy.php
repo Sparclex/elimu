@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\User;
+use App\Policies\Traits\OnlyViewPolicy;
 
 class ResultPolicy
 {

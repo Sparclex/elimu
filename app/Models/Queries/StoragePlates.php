@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Queries;
+namespace App\Models\Queries;
 
 use App\Models\Storage;
 

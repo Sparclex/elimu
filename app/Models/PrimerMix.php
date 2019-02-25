@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class PrimerMix extends Model implements AuditableContract
 {
-    use Auditable, DependsOnStudy;
+    use Auditable, SetUserStudyOnSave;
 
     protected $casts = [
         'expires_at' => 'date'

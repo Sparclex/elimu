@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Excel;
-use Maatwebsite\Excel\Factories\ReaderFactory;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class AssayDefinitionFile extends Model implements AuditableContract
 {
-    use Auditable, DependsOnStudy;
+    use Auditable, SetUserStudyOnSave;
 
     protected static function boot()
     {

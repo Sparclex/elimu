@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Traits;
 
+use App\Models\Study;
 use Illuminate\Support\Facades\Auth;
 
-trait DependsOnStudy
+trait SetUserStudyOnSave
 {
     public function save(array $options = [])
     {

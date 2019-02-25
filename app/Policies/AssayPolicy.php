@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Policies\Traits\OnlyAvailableForChosenStudy;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

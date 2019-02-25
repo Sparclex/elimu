@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Result extends Model
 {
-    use DependsOnStudy;
+    use SetUserStudyOnSave;
 
     protected $fillable = ['sample_id', 'target', 'assay_id'];
 

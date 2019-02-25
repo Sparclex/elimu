@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\Models\Queries\StoragePlates;
 use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\Shipment;
-use App\Queries\StoragePlates;
 use App\Support\StoragePointer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

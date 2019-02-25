@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Observers\ExtractSampleData;
+use App\Models\Scopes\OnlyCurrentStudy;
+use App\Models\Traits\SetUserStudyOnSave;
 use App\Observers\ResultExtractor;
-use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
@@ -12,7 +12,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Experiment extends Model implements AuditableContract
 {
-    use DependsOnStudy, Auditable;
+    use SetUserStudyOnSave, Auditable;
 
     protected $dates = [
         'created_at',

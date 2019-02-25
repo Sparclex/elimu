@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\InputParameter;
-use App\User;
+use App\Policies\Traits\OnlyAvailableForChosenStudy;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class InputParameterPolicy extends Policy

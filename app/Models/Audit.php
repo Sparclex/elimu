@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Scopes\OnlyCurrentStudy;
+use App\Models\Scopes\OnlyCurrentStudy;
+use App\Models\Traits\SetUserStudyOnSave;
 use OwenIt\Auditing\Models\Audit as AuditModel;
 
 class Audit extends AuditModel
 {
-    use DependsOnStudy;
+    use SetUserStudyOnSave;
 
     protected static function boot()
     {

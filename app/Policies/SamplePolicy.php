@@ -3,10 +3,9 @@
 namespace App\Policies;
 
 use App\Models\Sample;
-use App\Models\SampleType;
+use App\Policies\Traits\OnlyAvailableForChosenStudy;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\DB;
 
 class SamplePolicy extends Policy
 {

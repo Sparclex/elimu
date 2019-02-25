@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Scopes\OnlyCurrentStudy;
+use App\Models\Scopes\OnlyCurrentStudy;
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Storage extends Model
 {
-    use DependsOnStudy;
+    use SetUserStudyOnSave;
 
     protected $table = 'storage';
 

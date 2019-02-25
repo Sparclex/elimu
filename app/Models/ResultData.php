@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Collections\ResultDataCollection;
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
 
 class ResultData extends Model
 {
-    use DependsOnStudy;
+    use SetUserStudyOnSave;
 
     protected $table = 'result_data';
 
