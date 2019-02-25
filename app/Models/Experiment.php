@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\ExtractSampleData;
+use App\Observers\ResultExtractor;
 use App\Scopes\OnlyCurrentStudy;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ class Experiment extends Model implements AuditableContract
     ];
 
     protected $dispatchesEvents = [
-        'saved' => ExtractSampleData::class,
+        'saved' => ResultExtractor::class,
     ];
 
     protected static function boot()
@@ -30,7 +31,7 @@ class Experiment extends Model implements AuditableContract
 
         static::addGlobalScope(new OnlyCurrentStudy);
 
-        static::saving(function ($model) {
+        static::creating(function ($model) {
             $model->requested_at = now();
         });
     }

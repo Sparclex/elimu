@@ -4,10 +4,12 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Trix;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class AssayDefinitionFile extends Resource
@@ -65,8 +67,14 @@ class AssayDefinitionFile extends Resource
                 ->options(array_combine($resultTypes, $resultTypes))
                 ->rules('required', Rule::in($resultTypes)),
             File::make('Path')
+                ->disk('local')
+                ->path('assay-definition-files')
                 ->storeOriginalName('original_name')
                 ->rules('required')
+                ->deletable(false),
+            Code::make('Parameters')
+                ->onlyOnDetail()
+                ->json()
         ];
     }
 

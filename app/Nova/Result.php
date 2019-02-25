@@ -31,13 +31,8 @@ class Result extends Resource
             BelongsToField::make('Assay'),
             Text::make('Target')
                 ->sortable(),
-            Text::make('Value'),
-            Status::make('Status')
-                ->loadingWhen('Pending')
-                ->successWhen('Verified'),
 
             HasMany::make('Data', 'resultData', ResultData::class),
-
         ];
     }
 }

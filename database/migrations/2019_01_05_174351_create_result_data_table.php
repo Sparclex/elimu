@@ -18,11 +18,10 @@ class CreateResultDataTable extends Migration
             $table->integer('result_id')->unsigned();
             $table->integer('experiment_id')->unsigned();
             $table->integer('study_id')->unsigned();
-            //$table->string('primary_value')->nullable();
             $table->float('primary_value', 12, 8)->nullable();
             $table->string('secondary_value')->nullable();
             $table->json('extra')->nullable();
-            $table->tinyInteger('status')->default(1);
+            $table->boolean('included')->default(true);
             $table->timestamps();
 
             $table->foreign('result_id')

@@ -34,11 +34,6 @@ class Sample extends Model implements AuditableContract
         static::addGlobalScope(new OnlyCurrentStudy);
     }
 
-    public function study()
-    {
-        return $this->belongsTo(Study::class);
-    }
-
     public function sampleTypes()
     {
         return $this->belongsToMany(SampleType::class, 'sample_mutations')

@@ -10,9 +10,6 @@ $factory->define(\App\Models\Experiment::class, function (Faker $faker) {
         'assay_id' => function () {
             return factory(\App\Models\Assay::class)->create()->id;
         },
-        'sample_type_id' => function() {
-            return factory(\App\Models\SampleType::class)->create()->id;
-        },
         'requested_at' => $faker->dateTime,
         'comment' => $faker->paragraph
     ];

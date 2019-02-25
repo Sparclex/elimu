@@ -23,20 +23,9 @@ class Result extends Model
         return $this->hasMany(ResultData::class);
     }
 
-    public function getStatusAttribute()
+    public function sample()
     {
-        return $this->assay->result_handler::getStatus($this);
-    }
-
-    public function getValueAttribute()
-    {
-        return $this->assay->result_handler::determineResultValue($this);
-    }
-
-    public function getInputParameterAttribute()
-    {
-        return collect($this->assay->parameters)
-            ->firstWhere('target', $this->target);
+        return $this->belongsTo(Sample::class);
     }
 
     public function scopeCalculatedResult($query)

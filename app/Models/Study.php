@@ -17,6 +17,16 @@ class Study extends Model implements AuditableContract
             ->withPivot(['rows', 'columns']);
     }
 
+    public function samples()
+    {
+        return $this->hasMany(Sample::class);
+    }
+
+    public function assays()
+    {
+        return $this->hasMany(Assay::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class)

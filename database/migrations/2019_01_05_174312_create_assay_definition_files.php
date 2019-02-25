@@ -18,6 +18,7 @@ class CreateAssayDefinitionFiles extends Migration
             $table->string('name');
             $table->string('original_name');
             $table->string('path');
+            $table->json('parameters');
             $table->unsignedInteger('sample_type_id');
             $table->string('result_type');
             $table->unsignedInteger('study_id');

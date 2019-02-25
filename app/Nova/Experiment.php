@@ -4,11 +4,7 @@ namespace App\Nova;
 
 use App\Fields\CustomBelongsToMany;
 use App\Fields\SampleIds;
-use App\Nova\Invokables\DeleteExperimentFile;
-use App\Nova\Invokables\UpdateExperimentResult;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Storage as StorageFacade;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\HasMany;
@@ -46,19 +42,15 @@ class Experiment extends Resource
 
             CustomBelongsToMany::make('Samples'),
 
-            HasMany::make('Result Data', 'resultData', ResultData::class),
-
             File::make('Result File')
                 ->hideWhenCreating()
-                //->prunable()
-                ->resolveUsing(function () {
-                    return $this->original_filename;
-                })
-                ->store(new UpdateExperimentResult)
-                ->delete(new DeleteExperimentFile)
-                ->download(function ($request, $model) {
-                    return StorageFacade::download($model->result_file, $model->original_filename);
-                }),
+                ->disk('local')
+                ->path('experiments')
+                ->prunable()
+                ->storeOriginalName('original_filename')
+                ->deletable(false),
+
+            HasMany::make('Data', 'resultData', ResultData::class)
         ];
     }
 
