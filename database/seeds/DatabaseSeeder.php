@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\Assay;
+use App\Models\Sample;
 use App\Models\Study;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,5 +30,9 @@ class DatabaseSeeder extends Seeder
             'power' => \App\Policies\Authorization::LABMANAGER,
             'selected' => true,
         ]);
+
+        Auth::loginUsingId(1);
+        $study->samples()->save(factory(Sample::class)->make());
+        $study->assays()->save(factory(Assay::class)->make());
     }
 }
