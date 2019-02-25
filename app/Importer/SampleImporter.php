@@ -156,9 +156,4 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
             'quantity' => $row['quantity'] ?? 0,
         ]);
     }
-
-    private function storageSizeExists($sampleTypeId)
-    {
-        return $this->sampleTypeIdsWithStorage->search($sampleTypeId) !== false;
-    }
 }
