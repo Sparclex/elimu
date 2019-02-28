@@ -1,8 +1,10 @@
 <?php
 
+use App\Experiments\QPCR;
 use App\Models\Assay;
 use App\Models\Sample;
 use App\Models\Study;
+use Facades\Tests\Setup\ResultFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,7 +34,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Auth::loginUsingId(1);
-        $study->samples()->save(factory(Sample::class)->make());
-        $study->assays()->save(factory(Assay::class)->make());
+
+        ResultFactory::withParameters(collect([
+            [
+                'target' => 'PFvarts',
+                'cutoff' => 42,
+                'minvalues' => 2,
+                'cuttoffstdev' => 5
+            ]
+        ]))
+            ->withPositives(40)
+            ->withNegatives(8)
+            ->withError(QPCR::ERROR_REPLICAS)
+            ->withError(QPCR::ERROR_STDDEV)
+            ->withError(QPCR::ERROR_REPEAT)
+            ->create();
     }
 }

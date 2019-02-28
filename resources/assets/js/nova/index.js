@@ -26,8 +26,8 @@ Nova.booting((Vue, router) => {
 
     router.addRoutes([
         {
-            name: 'result-overview',
-            path: '/result-overview',
+            name: 'results',
+            path: '/results',
             component: ResultOverview,
         },
         {

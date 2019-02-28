@@ -5,10 +5,9 @@ namespace App\Experiments;
 use App\Exceptions\ExperimentException;
 use App\Models\Result;
 use App\Models\ResultData;
-use App\Models\Sample;
 use App\Support\Position;
+use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 use ZipArchive;
 
@@ -289,47 +288,99 @@ class QPCR extends ExperimentType
         $this->ignoredSamples = $ignoredSamples;
     }
 
-    public static function resultQuery($parameters)
+    public function results($filters)
     {
         $query = null;
+        $parameters = $this->parameters;
+
         foreach ($parameters as $target => $parameter) {
             if ($query) {
-                $query->union(self::targetQuery($parameter));
+                $query->union(self::targetQuery($parameter, $filters));
             } else {
-                $query = self::targetQuery($parameter);
+                $query = self::targetQuery($parameter, $filters);
             }
         }
-        return $query;
+        return $query->simplePaginate($filters['perPage'])
+            ->map(function ($result) use ($parameters) {
+                $parameters = $parameters[$result->target];
+                $error = null;
+                if ($result->replicas < $parameters['minvalues']) {
+                    $error = 'Not enough values';
+                } elseif ($result->positives != $result->replicas && $result->positives != 0) {
+                    $error = 'Needs repetition';
+                } elseif ($result->positives > 0 && $result->stddev > $parameters['cuttoffstdev']) {
+                    $error = 'Standard deviation too high';
+                }
+
+                $output = $result->avg_cq != null && $result->avg_cq <= $parameters['cutoff'] ? 'Positive' : 'Negative';
+
+                return [
+                'ID' => $result->id,
+                'Sample ID' => $result->sample->sample_id,
+                'Target' => $result->target,
+                'Result' => $error ? null : $output,
+                'Error' => $error,
+                ];
+            });
     }
 
-    protected static function targetQuery($parameters)
+    protected static function targetQuery($parameters, $filters)
     {
-        return DB::table('results as '. $parameters['target'])
-        ->where('target', $parameters['target'])
-        ->select($parameters['target']. ".*")
-        ->addSubSelect(
-            'avg_cq',
-            ResultData::where('included', true)
-            ->whereColumn('result_id', $parameters['target'].'.id')
-            ->selectRaw('avg(primary_value)')
-        )
-        ->addSubSelect(
-            'replicas',
-            ResultData::where('included', true)
-                ->whereColumn('result_id', $parameters['target'].'.id')
-                ->selectRaw('count(*)')
-        )->addSubSelect(
-            'stddev',
-            ResultData::where('included', true)
-                ->whereColumn('result_id', $parameters['target'].'.id')
-                ->selectRaw('stddev(primary_value)')
-        )->addSubSelect(
-            'positives',
-            ResultData::where('included', true)
-                ->whereColumn('result_id', $parameters['target'].'.id')
-                ->where('primary_value', '<=', $parameters['cutoff'])
-                ->whereNotNull('primary_value')
-                ->selectRaw('count(*)')
-        );
+        $query = Result::where('target', $parameters['target'])
+            ->select("results.*")
+            ->selectRaw('avg(primary_value) as avg_cq')
+            ->selectRaw('count(*) as replicas')
+            ->selectRaw('stddev(primary_value) as stddev')
+            ->selectRaw('count(case when primary_value <= '.$parameters['cutoff'].' then 1 end) as positives')
+            ->join('result_data', 'results.id', 'result_id')
+            ->groupBy('result_id')
+            ->where('included', true);
+
+        if (isset($filters['target'])) {
+            $query->where('target', $filters['target']);
+        }
+
+        if (isset($filters['status'])) {
+            switch ($filters['status']) {
+                case 'valid':
+                    $query->havingRaw(
+                        '((positives = replicas and stddev <= ?) or (positives = 0))',
+                        [$parameters['cuttoffstdev']]
+                    )
+                            ->having('replicas', $parameters['minvalues']);
+                    break;
+                case 'errors':
+                    $query->havingRaw('positives <> replicas')
+                        ->having('positives', '>', 0)
+                        ->orHaving('replicas', '<', $parameters['minvalues'])
+                        ->orHaving('stddev', '>', $parameters['cuttoffstdev']);
+                    break;
+                case 'positive':
+                    $query->havingRaw('positives = replicas')
+                        ->having('replicas', $parameters['minvalues'])
+                        ->having('stddev', '<=', $parameters['cuttoffstdev']);
+                    break;
+                case 'negative':
+                    $query->having('positives', 0)
+                        ->having('replicas', $parameters['minvalues'])
+                        ->havingRaw('(stddev <= ? or stddev is Null)', [$parameters['cuttoffstdev']]);
+                    break;
+                case 'stdev':
+                    $query->havingRaw('(positives = replicas or positives = 0)')
+                        ->having('replicas', $parameters['minvalues'])
+                        ->having('stddev', '>', $parameters['cuttoffstdev']);
+                    break;
+                case 'replicates':
+                    $query->having('replicas', '<', $parameters['minvalues']);
+                    break;
+                case 'repetition':
+                    $query->having('positives', '<>', $parameters['minvalues'])
+                    ->having('positives', '>', 0)
+                    ->having('replicas', $parameters['minvalues']);
+                    break;
+            }
+        }
+
+        return $query;
     }
 }

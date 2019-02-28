@@ -112,9 +112,7 @@ class ResultFactory
 
         $experiment->samples()->attach(array_pluck($samples,'id'));
 
-        return QPCR::resultQuery($this->parameters->keyBy('target'))
-            ->where('assay_id', $experiment->assay_id)
-            ->get();
+        return QPCR::results($this->parameters->keyBy('target'), ['assay_id' => $experiment->assay_id]);
     }
 
     /**
@@ -150,8 +148,12 @@ class ResultFactory
                 $result->resultData()->create([
                     'study_id' => $experiment->study_id,
                     'primary_value' => $value[$k],
-                    'sample_id' => $sample->id,
-                    'experiment_id' => $experiment->id
+                    'secondary_value' => 'A1',
+                    'experiment_id' => $experiment->id,
+                    'sample_id' => $sample->sample_id,
+                    'extra' => [
+                        'reactid' => '12'
+                    ]
                 ]);
             }
             $samples[] = $sample;

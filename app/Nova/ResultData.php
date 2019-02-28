@@ -47,20 +47,18 @@ class ResultData extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make()
-                ->sortable(),
+            ID::make()->onlyOnForms(),
             BelongsToField::make('Result'),
             BelongsToField::make('Experiment'),
-            Text::make('Sample ID')->sortable(),
-            Status::make('Status')
-                ->failedWhen('Declined', 0)
-                ->successWhen('Accepted', 1),
-            new Panel('Data', $this->data()),
+            Text::make('Sample ID', 'sample_id'),
+            Number::make('Primary Value'),
+            AdditionalData::make('extra')
         ];
     }
 
     private function data()
     {
+        /*
         if ($this->experiment) {
             $dataLabel = $this->experiment->result_handler::$dataLabel;
             $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
@@ -81,6 +79,7 @@ class ResultData extends Resource
                 ->sortable(),
             AdditionalData::make('extra')
         ];
+        */
     }
 
     public function actions(Request $request)

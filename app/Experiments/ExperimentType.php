@@ -43,4 +43,6 @@ abstract class ExperimentType
      * @return Collection
      */
     abstract public function getDatabaseData($experiment): Collection;
+
+    abstract public function results($filters);
 }

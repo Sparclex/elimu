@@ -16,7 +16,7 @@ class ResultData extends Model
         'extra' => 'array'
     ];
 
-    protected $fillable = ['result_id', 'primary_value', 'secondary_value', 'experiment_id'];
+    protected $guarded = [];
 
     public function result()
     {
@@ -26,11 +26,5 @@ class ResultData extends Model
     public function experiment()
     {
         return $this->belongsTo(Experiment::class);
-    }
-
-
-    public function newCollection(array $models = [])
-    {
-        return new ResultDataCollection($models);
     }
 }
