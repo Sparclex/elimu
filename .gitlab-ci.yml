@@ -73,22 +73,9 @@ staging:
   script:
   - *init_ssh
   - *change_file_permissions
-  - php artisan deploy lims.sparclex.com -s upload
+  - php artisan deploy elimu.ch -s upload
   environment:
     name: staging
-    url: http://lims.sparclex.com
-  only:
-  - master
-
-production:
-  stage: deploy
-  script:
-  - *init_ssh
-  - *change_file_permissions
-  - php artisan deploy lims.com -s upload
-  environment:
-    name: production
-    url: http://yourdomain.com
-  when: manual
+    url: https://elimu.ch
   only:
   - master

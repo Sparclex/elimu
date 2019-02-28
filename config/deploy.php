@@ -122,6 +122,10 @@ return [
             'deploy_path' => '/home/forge/lims.sparclex.com',
             'user' => 'forge',
         ],
+        'elimu.ch' => [
+            'deploy_path' => '/home/forge/elimu.ch',
+            'user' => 'forge'
+        ]
     ],
 
     /*
