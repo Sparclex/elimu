@@ -16,7 +16,7 @@ abstract class ExperimentType
     {
 
         $this->resultFile = $resultFile;
-        if (!file_exists($this->resultFile)) {
+        if ($this->resultFile !== null && !file_exists($this->resultFile)) {
             throw new InvalidArgumentException('Result file not found');
         }
         $this->parameters = $parameters;

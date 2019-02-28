@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Assay;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class ResultController extends Controller
 {

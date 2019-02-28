@@ -112,7 +112,9 @@ class ResultFactory
 
         $experiment->samples()->attach(array_pluck($samples,'id'));
 
-        return QPCR::results($this->parameters->keyBy('target'), ['assay_id' => $experiment->assay_id]);
+        return (new QPCR(null, $this->parameters->keyBy('target')))->resultQuery([
+            'assay_id' => $experiment->assay_id
+        ])->get();
     }
 
     /**

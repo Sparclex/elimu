@@ -288,19 +288,25 @@ class QPCR extends ExperimentType
         $this->ignoredSamples = $ignoredSamples;
     }
 
-    public function results($filters)
+    public function resultQuery($filters)
     {
         $query = null;
-        $parameters = $this->parameters;
 
-        foreach ($parameters as $target => $parameter) {
+        foreach ($this->parameters as $target => $parameter) {
             if ($query) {
                 $query->union(self::targetQuery($parameter, $filters));
             } else {
                 $query = self::targetQuery($parameter, $filters);
             }
         }
-        return $query->simplePaginate($filters['perPage'])
+
+        return $query;
+    }
+
+    public function results($filters)
+    {
+        $parameters = $this->parameters;
+        return $this->resultQuery($filters)->simplePaginate($filters['perPage'] ?? 25)
             ->map(function ($result) use ($parameters) {
                 $parameters = $parameters[$result->target];
                 $error = null;
