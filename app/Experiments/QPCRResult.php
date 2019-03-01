@@ -32,7 +32,7 @@ class QPCRResult extends Resource
                 $parameters = $this->assay->definitionFile->parameters->firstWhere('target', $this->target);
                 return (new QPCRResultSpecifier($parameters, $this->resource))
                     ->withStyles()
-                    ->quantitative();
+                    ->qualitative();
             })->asHtml(),
         ];
     }
