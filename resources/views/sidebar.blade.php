@@ -24,11 +24,6 @@
         <span class="sidebar-label">Analysis</span></h3>
     <ul class="list-reset mb-8">
         <li class="leading-tight mb-4 ml-8 text-sm">
-            <router-link :to="{name: 'index', params: {resourceName: 'experiments'}}" class="text-white text-justify no-underline dim">
-                Experiments
-            </router-link>
-        </li>
-        <li class="leading-tight mb-4 ml-8 text-sm">
             <router-link :to="{name: 'index', params: {resourceName: 'assays'}}" class="text-white text-justify no-underline dim">
                 Assays
             </router-link>

@@ -23,6 +23,7 @@ class CreateSamplesTable extends Migration
             $table->integer('study_id')->unsigned();
             $table->date('birthdate')->nullable();
             $table->tinyInteger('gender')->nullable();
+            $table->json('extra')->nullable();
 
             $table->timestamps();
 

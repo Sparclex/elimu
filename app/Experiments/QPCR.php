@@ -5,9 +5,15 @@ namespace App\Experiments;
 use App\Exceptions\ExperimentException;
 use App\Models\Result;
 use App\Models\ResultData;
+use App\Nova\Sample;
 use App\Support\Position;
+use App\Support\QPCRResultSpecifier;
 use Exception;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Text;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 use ZipArchive;
 
@@ -288,8 +294,13 @@ class QPCR extends ExperimentType
         $this->ignoredSamples = $ignoredSamples;
     }
 
-    public function resultQuery($filters)
+    public function resultQuery($request, $assay)
     {
+        $filters = [
+            'assay_id' => $assay->id,
+            'target' => $request ? $request->get('target') : null,
+            'status' => $request ? $request->get('status') : null,
+        ];
         $query = null;
 
         foreach ($this->parameters as $target => $parameter) {
@@ -303,12 +314,30 @@ class QPCR extends ExperimentType
         return $query;
     }
 
-    public function results($filters)
+    public function results($request, $assay)
     {
-        $parameters = $this->parameters;
-        return $this->resultQuery($filters)->simplePaginate($filters['perPage'] ?? 25)
-            ->map(function ($result) use ($parameters) {
-                $parameters = $parameters[$result->target];
+        $paginator = $this->resultQuery($request, $assay)->simplePaginate($request->get('perPage', 25));
+
+        return [
+            'label' => 'Results',
+            'resources' => $paginator->getCollection()
+                ->mapInto(QPCRResult::class)
+                ->map
+                ->serializeForIndex($request),
+            'prev_page_url' => $paginator->previousPageUrl(),
+            'next_page_url' => $paginator->nextPageUrl(),
+            'softDeletes' => false,
+        ];
+    }
+
+    public function serialize($result)
+    {
+        return [
+            ID::make(),
+            BelongsTo::make('Sample', 'sample', Sample::class),
+            Text::make('Target'),
+            Text::make('Result', function () use ($result) {
+                $parameters = $this->parameters[$result->target];
                 $error = null;
                 if ($result->replicas < $parameters['minvalues']) {
                     $error = 'Not enough values';
@@ -318,16 +347,13 @@ class QPCR extends ExperimentType
                     $error = 'Standard deviation too high';
                 }
 
-                $output = $result->avg_cq != null && $result->avg_cq <= $parameters['cutoff'] ? 'Positive' : 'Negative';
+                if ($error) {
+                    return $error;
+                }
 
-                return [
-                'ID' => $result->id,
-                'Sample ID' => $result->sample->sample_id,
-                'Target' => $result->target,
-                'Result' => $error ? null : $output,
-                'Error' => $error,
-                ];
-            });
+                return $result->avg_cq != null && $result->avg_cq <= $parameters['cutoff'] ? 'Positive' : 'Negative';
+            })
+        ];
     }
 
     protected static function targetQuery($parameters, $filters)
@@ -388,5 +414,55 @@ class QPCR extends ExperimentType
         }
 
         return $query;
+    }
+
+    public function export($assay)
+    {
+        $results = $this->resultQuery(null, $assay)->with('sample', 'sample.sampleTypes')->get();
+
+        $table = [];
+
+        foreach ($results->groupBy('sample_id') as $rowData) {
+            $row = [
+                'id' => $rowData[0]->sample->sample_id,
+                'subject_id' => $rowData[0]->sample->subject_id,
+                'collected_at' => $rowData[0]->sample->collected_at,
+                'visit_id' => $rowData[0]->sample->visit_id,
+                'birthdate' => $rowData[0]->sample->birthdate,
+                'gender' => $rowData[0]->sample->gender,
+                'extra' => $rowData[0]->sample->extra ? $rowData[0]->sample->extra->implode(',') : '',
+            ];
+
+            foreach ($rowData as $result) {
+                $specifier = new QPCRResultSpecifier(
+                    $assay->definitionFile->parameters->firstWhere('target', $result->target),
+                    $result
+                );
+                $row['replicas_' . $result->target] = $result->replicas;
+                $row['mean_cq_' . $result->target] = $result->avg_cq;
+                $row['sd_cq_' . $result->target] = $result->stddev;
+                $row['qual_' . $result->target] = $specifier->qualitative();
+                $row['quant_' . $result->target] = $specifier->quantitative();
+            }
+
+            $table[] = $row;
+        }
+
+        return $table;
+    }
+
+    public function headers($assay): array
+    {
+        $headings = [];
+
+        foreach ($assay->definitionFile->parameters->pluck('target') as $target) {
+            $headings[] = 'replicas_' . $target;
+            $headings[] = 'mean_cq_' . $target;
+            $headings[] = 'sd_cq_' . $target;
+            $headings[] = 'qual_' . $target;
+            $headings[] = 'quant_' . $target;
+        }
+
+        return $headings;
     }
 }

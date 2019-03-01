@@ -44,5 +44,11 @@ abstract class ExperimentType
      */
     abstract public function getDatabaseData($experiment): Collection;
 
-    abstract public function results($filters);
+    abstract public function resultQuery($request, $assay);
+
+    abstract public function results($request, $assay);
+
+    abstract public function export($assay);
+
+    abstract public function headers($assay): array;
 }

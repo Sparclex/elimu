@@ -4,16 +4,22 @@
             <heading class="flex mb-3">Results</heading>
             <p class="text-90 leading-tight mb-8">Choose an assay to view or export all related results:</p>
         </div>
-        <div class="w-1/3 mb-6">
-            <multiselect :value="assay" :options="assays" keyed-by="value" label="display"
-                         @input="selectAssay"></multiselect>
+        <div class="flex -mx-4 items-center mb-6">
+            <div class="w-1/3 px-4">
+                <multiselect :value="assay" :options="assays" keyed-by="value" label="display"
+                             @input="selectAssay"></multiselect>
+            </div>
+            <div class="w-1/3" v-if="response">
+                <button class="btn btn-default btn-primary" @click.prevent="download">Download</button>
+            </div>
         </div>
 
-        <div class="card">
+        <loading-card :loading="loading" v-if="assay">
             <div class="py-3 flex items-center border-b border-50">
                 <div class="ml-auto px-3">
                     <dropdown
                             class-whitelist="flatpickr-calendar"
+                            v-if="assay"
                     >
                         <dropdown-trigger
                                 slot-scope="{ toggle }"
@@ -21,7 +27,10 @@
                                 class="bg-30 px-3 border-2 border-30 rounded"
                                 :class="{ 'bg-primary border-primary': filtersAreApplied }"
                         >
-                            <icon type="filter" class="text-80"/>
+                            <icon type="filter" :class="filtersAreApplied ? 'text-white' : 'text-80'"/>
+                            <span v-if="filtersAreApplied" class="ml-2 font-bold text-white text-80">
+                                {{ activeFilterCount }}
+                            </span>
                         </dropdown-trigger>
 
                         <dropdown-menu slot="menu" width="290" direction="rtl" :dark="true">
@@ -126,41 +135,31 @@
                 </div>
             </div>
             <div class="overflow-hidden overflow-x-auto relative" v-else>
-                <table class="table w-full">
-                    <thead>
-                    <tr>
-                        <th v-for="header in headers" class="text-left">{{header}}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="result in results">
-                        <td v-for="field in result">
-                            {{field ? field : '—'}}
-                        </td>
-                        <td class="td-fit text-right pr-6">
-                            <!-- View Resource Link -->
-                            <span>
-                                <router-link
-                                        class="cursor-pointer text-70 hover:text-primary mr-3"
-                                        :to="{
-                                        name: 'detail',
-                                        params: {
-                                            resourceName: 'results',
-                                            resourceId: result.ID,
-                                        },
-                                    }"
-                                        :title="__('View')"
-                                >
-                                    <icon type="view" width="22" height="18" view-box="0 0 22 16"/>
-                                </router-link>
-                            </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <!-- Resource Table -->
+                <resource-table
+                        :authorized-to-relate="false"
+                        resource-name="results"
+                        :resources="results"
+                        singular-name="Result"
+                        :selected-resources="[]"
+                        :selected-resource-ids="[]"
+                        :actions-are-available="false"
+                        :should-show-checkboxes="false"
+                        ref="resourceTable"
+                />
             </div>
-        </div>
+
+            <!-- Pagination -->
+            <pagination-links
+                    v-if="response"
+                    resource-name="Results"
+                    :resources="results"
+                    :resource-response="response"
+                    @previous="selectPreviousPage"
+                    @next="selectNextPage"
+            >
+            </pagination-links>
+        </loading-card>
     </div>
 </template>
 
@@ -171,14 +170,17 @@
         components: {Multiselect},
         data() {
             return {
+                page: 1,
                 assay: null,
                 assays: [],
                 results: [],
+                response: null,
                 filters: [],
-                targets: ['PFvarts', 'Fluor', 'Cy5c'],
+                targets: [],
                 perPage: 25,
                 selectedStatus: null,
                 selectedTarget: null,
+                loading: false,
                 stati: [
                     {
                         label: 'Errors',
@@ -217,50 +219,86 @@
                 .then(({data}) => this.assays = data.resources);
         },
         methods: {
-            selectAssay(assay) {
+            async selectAssay(assay) {
                 this.assay = assay;
-                this.fetchResults();
+                this.loading = true;
+                await this.fetchResults();
+                await this.fetchTargets();
+                this.loading = false;
             },
-            async fetchResults(page = 1) {
-                let {data: results} = await axios.get(`/nova-vendor/lims/results/${this.assay.value}`, {
+            async fetchResults() {
+                let {data: response} = await Nova.request().get(`/nova-vendor/lims/results/${this.assay.value}`, {
                     params: {
+                        page: this.page,
                         perPage: this.perPage,
                         status: this.selectedStatus,
                         target: this.selectedTarget,
                     }
                 });
-                this.results = results;
+                this.response = response;
+                this.results = response.resources;
+            },
+
+            async fetchTargets() {
+                let {data: response} = await Nova.request().get(`/nova-vendor/lims/results/${this.assay.value}/targets`);
+                this.targets = response;
             },
 
             changeTarget(event) {
+                this.page = 1;
                 this.selectedTarget = event.target.value;
                 this.fetchResults();
             },
 
             changeStatus(event) {
+                this.page = 1;
                 this.selectedStatus = event.target.value;
                 this.fetchResults();
             },
 
             changePerPage(event) {
+                this.page = 1;
                 this.perPage = event.target.value;
                 this.fetchResults();
             },
 
             clearFilters() {
+                this.selectedStatus = null;
+                this.selectedTarget = null;
+                this.page = 1;
+                this.fetchResults();
+            },
 
+            selectNextPage() {
+                this.page++;
+                this.fetchResults();
+            },
+
+            selectPreviousPage() {
+                this.page--;
+                this.fetchResults();
+            },
+
+            async download() {
+                let {data: response} = await Nova.request()
+                    .get(`/nova-vendor/lims/results/${this.assay.value}/request-for-download`);
+
+                let link = document.createElement('a');
+                link.href = response.download;
+                link.download = response.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
         },
         computed: {
-            headers() {
-                if (this.results.length == 0) {
-                    return [];
-                }
-                return Object.keys(this.results[0]);
-            },
-
             filtersAreApplied() {
-                return false;
+                return this.selectedTarget || this.selectedStatus;
+            },
+            activeFilterCount() {
+                return [this.selectedTarget, this.selectedStatus].filter(function (value) {
+                    return value != null;
+                }).length;
             }
         }
     }

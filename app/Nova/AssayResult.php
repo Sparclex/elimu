@@ -2,7 +2,7 @@
 
 namespace App\Nova;
 
-use App\Nova\Filters\AssayFilter;
+use App\Nova\Filters\TargetFilte;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -83,7 +83,7 @@ class AssayResult extends Resource
     public function getAssayFromFilter(Request $request)
     {
         if ($this->assay === false) {
-            $filter = $this->decodedFilters($request)->firstWhere('class', AssayFilter::class);
+            $filter = $this->decodedFilters($request)->firstWhere('class', TargetFilte::class);
 
             $this->assay = null;
 
@@ -102,7 +102,7 @@ class AssayResult extends Resource
     public function filters(Request $request)
     {
         return [
-            new AssayFilter
+            new TargetFilte
         ];
     }
 

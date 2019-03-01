@@ -28,6 +28,10 @@ class Sample extends Model implements AuditableContract
         'study_id'
     ];
 
+    protected $casts = [
+        'extra' => 'collection'
+    ];
+
     protected static function boot()
     {
         parent::boot();
