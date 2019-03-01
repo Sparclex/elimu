@@ -2,13 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Experiment;
-use App\Models\InputParameter;
-use App\Models\Sample;
-use App\Models\SampleMutation;
-use App\Models\StorageSize;
-use App\Observers\AutoStorageSaver;
-use App\Observers\InsertSelectedStudy;
 use App\Rules\StorageSizeExists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -27,9 +20,6 @@ class LimsServiceProvider extends ServiceProvider
     {
         Validator::extend('existing_storage', StorageSizeExists::class . "@validate");
         Nova::serving(function (ServingNova $event) {
-            Experiment::observe(InsertSelectedStudy::class);
-            Sample::observe(InsertSelectedStudy::class);
-            StorageSize::observe(InsertSelectedStudy::class);
             Nova::script('custom-tools', public_path('js/custom-tools.js'));
         });
 
