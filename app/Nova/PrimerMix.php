@@ -2,7 +2,10 @@
 
 namespace App\Nova;
 
+use App\Nova\RelationFields\PrimerMixOligoFields;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -17,6 +20,16 @@ class PrimerMix extends Resource
      * @var string
      */
     public static $model = 'App\Models\PrimerMix';
+
+    public static function label()
+    {
+        return 'Master Mixes';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Master Mix';
+    }
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -55,7 +68,11 @@ class PrimerMix extends Resource
                 ->displayUsing(function ($value) {
                     return sprintf('%d μl', $value);
                 })
-                ->sortable()
+                ->sortable(),
+
+            BelongsToMany::make('Oligos')
+                ->searchable()
+                ->fields(new PrimerMixOligoFields),
 
         ];
     }

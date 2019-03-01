@@ -34,4 +34,9 @@ class PrimerMix extends Model implements AuditableContract
     {
         return $this->belongsTo(Reagent::class);
     }
+
+    public function oligos()
+    {
+        return $this->belongsToMany(Oligo::class)->withPivot('concentration');
+    }
 }

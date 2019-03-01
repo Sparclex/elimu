@@ -2,6 +2,8 @@
 
 namespace App\Nova;
 
+use App\Nova\RelationFields\PrimerMixOligoFields;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -22,7 +24,7 @@ class Oligo extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'oligo_id';
 
     /**
      * The columns that should be searched.
@@ -30,7 +32,7 @@ class Oligo extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'oligo_id',
     ];
 
     /**
@@ -58,7 +60,11 @@ class Oligo extends Resource
                 ->rules('required'),
             Text::make('Publication')
                 ->rules('required'),
-            Trix::make('Comment')
+            Trix::make('Comment'),
+
+            BelongsToMany::make('PrimerMix')
+                ->searchable()
+                ->fields(new PrimerMixOligoFields),
         ];
     }
 
