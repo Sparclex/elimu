@@ -25,7 +25,7 @@ class ChangeValidationStatus extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         foreach ($models as $model) {
-            $model->status = $fields->status;
+            $model->included = $fields->status;
             $model->save();
         }
     }
@@ -41,8 +41,8 @@ class ChangeValidationStatus extends Action
         return [
             Select::make('Status')
                 ->options([
-                    0 => 'Declined',
-                    1 => 'Accepted'
+                    0 => 'Excluded',
+                    1 => 'Included'
                 ])
         ];
     }

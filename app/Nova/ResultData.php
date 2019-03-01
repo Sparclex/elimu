@@ -6,6 +6,7 @@ use App\Actions\ChangeValidationStatus;
 use App\Fields\AdditionalData;
 use App\Fields\Status;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -52,6 +53,8 @@ class ResultData extends Resource
             BelongsToField::make('Experiment'),
             Text::make('Sample ID', 'sample_id'),
             Number::make('Primary Value'),
+            Text::make('Secondary Value'),
+            Boolean::make('included'),
             AdditionalData::make('extra')
         ];
     }
