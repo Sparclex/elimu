@@ -2,9 +2,9 @@
 
 namespace App\Nova;
 
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -54,7 +54,10 @@ class Protocol extends Resource
                 ->hideFromDetail()
                 ->hideFromIndex(),
             Text::make('Protocol Id')
-                ->rules('required', 'unique:protocols,protocol_id,{{resourceId}}'),
+                ->rules(
+                    'required',
+                    (new StudyUnique('protocols', 'protocol_id'))->ignore($request->resourceId)
+                ),
             Text::make('Name')
                 ->rules('required'),
             Text::make('Version')

@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\RelationFields\PrimerMixOligoFields;
+use App\Rules\StudyUnique;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
@@ -49,7 +50,10 @@ class Oligo extends Resource
                 ->hideFromIndex()
                 ->hideFromDetail(),
             Text::make('Oligo ID')
-                ->rules('required', 'unique:oligos,oligo_id,{{resourceId}}'),
+                ->rules(
+                    'required',
+                    (new StudyUnique('oligos', 'oligo_id'))->ignore($request->resourceId)
+                ),
             Text::make('Sequence')
                 ->rules('required'),
             Text::make('5\' Modification', '5_prime_modification'),

@@ -15,13 +15,6 @@ class Storage extends Model
 
     protected $fillable = ['study_id', 'sample_type_id', 'sample_id', 'box', 'position'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
-    }
-
     public static function generateStoragePosition($sampleId, $studyId, $sampleTypeId, $quantity, $create = true)
     {
         if (!StorageSize::where('study_id', $studyId)

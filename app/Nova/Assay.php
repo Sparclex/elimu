@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\HasOne;
@@ -30,8 +31,10 @@ class Assay extends Resource
                 ->hideFromIndex(),
             Text::make('Name')
                 ->sortable()
-                ->creationRules('required', 'unique:assays,name')
-                ->updateRules('required', 'unique:assays,name,{{resourceId}}'),
+                ->rules(
+                    'required',
+                    (new StudyUnique('assays', 'name'))->ignore($request->resourceId)
+                ),
             BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
             BelongsToField::make('Instrument'),
             BelongsToField::make('Protocol'),

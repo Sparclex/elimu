@@ -13,11 +13,6 @@ class AssayDefinitionFile extends Model implements AuditableContract
 {
     use Auditable, SetUserStudyOnSave;
 
-    protected static function boot()
-    {
-        parent::boot();
-    }
-
     protected $casts = [
         'parameters' => 'collection'
     ];

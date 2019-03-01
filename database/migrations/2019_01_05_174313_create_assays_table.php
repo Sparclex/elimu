@@ -15,7 +15,7 @@ class CreateAssaysTable extends Migration
     {
         Schema::create('assays', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->text('description')->nullable();
 
             $table->unsignedInteger('assay_definition_file_id');
@@ -25,11 +25,28 @@ class CreateAssaysTable extends Migration
             $table->unsignedInteger('study_id');
             $table->timestamps();
 
-            $table->foreign('study_id')->references('id')->on('studies');
-            $table->foreign('primer_mix_id')->references('id')->on('primer_mixes');
-            $table->foreign('instrument_id')->references('id')->on('instruments');
-            $table->foreign('protocol_id')->references('id')->on('protocols');
-            $table->foreign('assay_definition_file_id')->references('id')->on('assay_definition_files');
+            $table->unique(['name', 'study_id']);
+
+            $table->foreign('study_id')
+                ->references('id')
+                ->on('studies')
+                ->onDelete('CASCADE');
+            $table->foreign('primer_mix_id')
+                ->references('id')
+                ->on('primer_mixes')
+                ->onDelete('CASCADE');
+            $table->foreign('instrument_id')
+                ->references('id')
+                ->on('instruments')
+                ->onDelete('CASCADE');
+            $table->foreign('protocol_id')
+                ->references('id')
+                ->on('protocols')
+                ->onDelete('CASCADE');
+            $table->foreign('assay_definition_file_id')
+                ->references('id')
+                ->on('assay_definition_files')
+                ->onDelete('CASCADE');
         });
     }
 

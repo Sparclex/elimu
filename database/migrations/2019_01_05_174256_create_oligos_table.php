@@ -16,7 +16,7 @@ class CreateOligosTable extends Migration
         Schema::create('oligos', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('oligo_id')->unique();
+            $table->string('oligo_id')->index();
             $table->string('sequence')->index();
             $table->string('5_prime_modification')->nullable();
             $table->string('3_prime_modification')->nullable();
@@ -26,6 +26,8 @@ class CreateOligosTable extends Migration
             $table->text('comment')->nullable();
             $table->unsignedInteger('study_id');
             $table->timestamps();
+
+            $table->unique(['oligo_id', 'study_id']);
 
             $table->foreign('study_id')->references('id')->on('studies');
         });

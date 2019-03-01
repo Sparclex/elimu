@@ -15,10 +15,15 @@ class CreateReagentsTable extends Migration
     {
         Schema::create('reagents', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('lot')->unique();
+            $table->string('lot')->index();
             $table->string('name');
             $table->date('expires_at')->nullable();
+            $table->unsignedInteger('study_id');
             $table->timestamps();
+
+            $table->unique(['lot', 'study_id']);
+
+            $table->foreign('study_id')->references('id')->on('studies')->onDelete('CASCADE');
         });
     }
 

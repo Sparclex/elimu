@@ -32,13 +32,6 @@ class Sample extends Model implements AuditableContract
         'extra' => 'collection'
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
-    }
-
     public function sampleTypes()
     {
         return $this->belongsToMany(SampleType::class, 'sample_mutations')

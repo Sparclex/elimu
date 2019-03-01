@@ -2,12 +2,11 @@
 
 namespace App\Nova;
 
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Treestoneit\BelongsToField\BelongsToField;
 
 class Reagent extends Resource
 {
@@ -28,7 +27,10 @@ class Reagent extends Resource
             ID::make()
                 ->sortable(),
             Text::make('Lot')
-                ->rules('required', 'unique:reagents,lot,{{resourceId}}')
+                ->rules(
+                    'required',
+                    (new StudyUnique('reagents', 'lot'))->ignore($request->resourceId)
+                )
                 ->sortable(),
             Text::make('Name')
                 ->rules('required')

@@ -13,16 +13,6 @@ class SampleType extends Model implements AuditableContract
 
     protected $fillable = ['name'];
 
-    public static function boot()
-    {
-        parent::boot();
-        Pivot::creating(function (Pivot $pivot) {
-            if ($pivot->getTable() == 'storage_places') {
-                $pivot->stores = true;
-            }
-        });
-    }
-
     public function samples()
     {
         return $this->belongsToMany(Sample::class, 'sample_mutations');
@@ -32,11 +22,6 @@ class SampleType extends Model implements AuditableContract
     {
         return $this->belongsToMany(Study::class, 'storage_box_sizes')
             ->withPivot(['rows', 'columns']);
-    }
-
-    public function getSizeAttribute()
-    {
-        return optional($this->pivot)->size;
     }
 
     public function storages()

@@ -15,7 +15,7 @@ class CreateProtocolsTable extends Migration
     {
         Schema::create('protocols', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('protocol_id')->unique();
+            $table->string('protocol_id')->index();
             $table->string('name')->index();
             $table->string('version');
             $table->date('implemented_at');
@@ -25,6 +25,8 @@ class CreateProtocolsTable extends Migration
             $table->unsignedInteger('institution_id');
             $table->unsignedInteger('study_id');
             $table->timestamps();
+
+            $table->unique(['protocol_id', 'study_id']);
 
             $table->foreign('study_id')->references('id')->on('studies');
             $table->foreign('institution_id')->references('id')->on('institutions');
