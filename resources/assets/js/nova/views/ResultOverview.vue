@@ -14,6 +14,25 @@
             </div>
         </div>
 
+        <div class="flex" v-if="response">
+            <!-- Search -->
+            <div
+                    class="relative h-9 mb-6 flex-no-shrink"
+            >
+                <icon type="search" class="absolute search-icon-center ml-3 text-70" />
+
+                <input
+                        data-testid="search-input"
+                        class="appearance-none form-control form-input w-search pl-search"
+                        :placeholder="__('Search')"
+                        type="search"
+                        v-model="search"
+                        @keydown.stop="performSearch"
+                        @search="performSearch"
+                />
+            </div>
+        </div>
+
         <loading-card :loading="loading" v-if="assay">
             <div class="py-3 flex items-center border-b border-50">
                 <div class="ml-auto px-3">
@@ -178,6 +197,7 @@
                 filters: [],
                 targets: [],
                 perPage: 25,
+                search: '',
                 selectedStatus: null,
                 selectedTarget: null,
                 loading: false,
@@ -233,6 +253,7 @@
                         perPage: this.perPage,
                         status: this.selectedStatus,
                         target: this.selectedTarget,
+                        search: this.search,
                     }
                 });
                 this.response = response;
@@ -289,7 +310,18 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-            }
+            },
+
+            performSearch(event) {
+                this.debouncer(() => {
+                    // Only search if we're not tabbing into the field
+                    if (event.which != 9) {
+                        this.fetchResults();
+                    }
+                })
+            },
+
+            debouncer: _.debounce(callback => callback(), 500),
         },
         computed: {
             filtersAreApplied() {

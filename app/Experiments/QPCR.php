@@ -4,12 +4,9 @@ namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
 use App\Models\Result;
-use App\Models\ResultData;
 use App\Nova\Sample;
 use App\Support\Position;
 use App\Support\QPCRResultSpecifier;
-use Exception;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
@@ -300,6 +297,7 @@ class QPCR extends ExperimentType
             'assay_id' => $assay->id,
             'target' => $request ? $request->get('target') : null,
             'status' => $request ? $request->get('status') : null,
+            'search' => $request ? $request->get('search') : null,
         ];
         $query = null;
 
@@ -363,7 +361,7 @@ class QPCR extends ExperimentType
             ->selectRaw('avg(primary_value) as avg_cq')
             ->selectRaw('count(*) as replicas')
             ->selectRaw('stddev(primary_value) as stddev')
-            ->selectRaw('count(case when primary_value <= '.$parameters['cutoff'].' then 1 end) as positives')
+            ->selectRaw('count(case when primary_value <= ' . $parameters['cutoff'] . ' then 1 end) as positives')
             ->join('result_data', 'results.id', 'result_id')
             ->groupBy('result_id')
             ->where('included', true);
@@ -379,7 +377,7 @@ class QPCR extends ExperimentType
                         '((positives = replicas and stddev <= ?) or (positives = 0))',
                         [$parameters['cuttoffstdev']]
                     )
-                            ->having('replicas', $parameters['minvalues']);
+                        ->having('replicas', $parameters['minvalues']);
                     break;
                 case 'errors':
                     $query->havingRaw('positives <> replicas')
@@ -407,10 +405,16 @@ class QPCR extends ExperimentType
                     break;
                 case 'repetition':
                     $query->having('positives', '<>', $parameters['minvalues'])
-                    ->having('positives', '>', 0)
-                    ->having('replicas', $parameters['minvalues']);
+                        ->having('positives', '>', 0)
+                        ->having('replicas', $parameters['minvalues']);
                     break;
             }
+        }
+
+        if ($filters['search']) {
+            $query->whereHas('sample', function ($query) use ($filters) {
+                return $query->where('sample_id', 'LIKE', sprintf('%%%s%%', $filters['search']));
+            });
         }
 
         return $query;
