@@ -9,12 +9,8 @@ class ImportTemplateController extends Controller
 {
     private $importTemplates = [
         'samples',
-        'assays',
-        'primer-mixes',
         'oligos',
         'reagents',
-        'protocols',
-        'maintenances'
     ];
 
     public function show($resourceName, Request $request)

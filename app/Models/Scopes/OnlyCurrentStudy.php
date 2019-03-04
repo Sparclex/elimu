@@ -18,6 +18,9 @@ class OnlyCurrentStudy implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
+        if (!Auth::check()) {
+            abort(401);
+        }
         $builder->where($model->qualifyColumn('study_id'), Auth::user()->study_id);
     }
 }
