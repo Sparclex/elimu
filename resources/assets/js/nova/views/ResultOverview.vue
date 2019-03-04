@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <loading-view :loading="initialLoading">
         <div class="w-full max-w-xl">
             <heading class="flex mb-3">Results</heading>
             <p class="text-90 leading-tight mb-8">Choose an assay to view or export all related results:</p>
@@ -14,12 +14,12 @@
             </div>
         </div>
 
-        <div class="flex" v-if="response">
+        <div class="flex" v-if="assay">
             <!-- Search -->
             <div
                     class="relative h-9 mb-6 flex-no-shrink"
             >
-                <icon type="search" class="absolute search-icon-center ml-3 text-70" />
+                <icon type="search" class="absolute search-icon-center ml-3 text-70"/>
 
                 <input
                         data-testid="search-input"
@@ -73,7 +73,7 @@
                                                 dusk="per-page-select"
                                                 class="block w-full form-control-sm form-select"
                                                 :value="perPage"
-                                                @change="changePerPage"
+                                                @change="updatePerPageChanged"
                                         >
                                             <option value="25">25</option>
                                             <option value="50">50</option>
@@ -179,14 +179,16 @@
             >
             </pagination-links>
         </loading-card>
-    </div>
+    </loading-view>
 </template>
 
 <script>
     import Multiselect from 'vue-multiselect';
+    import {Errors, InteractsWithQueryString, Paginatable, PerPageable,} from 'laravel-nova'
 
     export default {
         components: {Multiselect},
+        mixins: [InteractsWithQueryString, PerPageable, Paginatable],
         data() {
             return {
                 page: 1,
@@ -200,6 +202,7 @@
                 search: '',
                 selectedStatus: null,
                 selectedTarget: null,
+                initialLoading: true,
                 loading: false,
                 stati: [
                     {
@@ -233,18 +236,80 @@
                 ]
             }
         },
-        mounted() {
-            Nova.request()
-                .get('/nova-api/results/associatable/assay?first=false&search=&withTrashed=false')
-                .then(({data}) => this.assays = data.resources);
+        async created() {
+            let {data} = await Nova.request()
+                .get('/nova-api/results/associatable/assay?first=false&search=&withTrashed=false');
+            this.assays = data.resources;
+
+            this.initializeSearchFromQueryString();
+            this.initializeAssayFromQueryString();
+            this.initializePerPageFromQueryString();
+            this.initializeCurrentPageFromQueryString();
+            this.initializeStatusFromQueryString();
+            this.initializeTargetFromQueryString();
+
+            this.initialLoading = false;
+
+
+            if (this.assay) {
+                this.loading = true;
+                await [this.fetchResults(), this.fetchTargets()];
+                this.loading = false;
+            }
+
+            this.$watch(
+                () => {
+                    return (
+                        this.currentSearch +
+                        this.currentPage +
+                        this.currentPerPage +
+                        this.currentStatus +
+                        this.currentAssay +
+                        this.currentTarget
+                    )
+                },
+                () => {
+                    this.initializeSearchFromQueryString();
+                    this.initializeAssayFromQueryString();
+                    this.initializePerPageFromQueryString();
+                    this.initializeCurrentPageFromQueryString();
+                    this.initializeStatusFromQueryString();
+                    this.initializeTargetFromQueryString();
+                    if (this.assay) {
+                        this.fetchTargets()
+                        this.fetchResults()
+                    }
+                }
+            )
+
         },
         methods: {
-            async selectAssay(assay) {
-                this.assay = assay;
-                this.loading = true;
-                await this.fetchResults();
-                await this.fetchTargets();
-                this.loading = false;
+            initializeStatusFromQueryString() {
+                this.selectedStatus = this.currentStatus;
+            },
+
+            initializeTargetFromQueryString() {
+                this.selectedTarget = this.currentTarget;
+            },
+
+            initializeCurrentPageFromQueryString() {
+                this.page = this.currentPage;
+            },
+            initializeAssayFromQueryString() {
+                this.assay = this.currentAssay;
+            },
+            initializeSearchFromQueryString() {
+                this.search = this.currentSearch;
+            },
+
+            selectAssay(assay) {
+                if (!assay) {
+                    this.$router.push({query: {}});
+                } else {
+                    this.updateQueryString({
+                        'assay': assay.value
+                    });
+                }
             },
             async fetchResults() {
                 let {data: response} = await Nova.request().get(`/nova-vendor/lims/results/${this.assay.value}`, {
@@ -266,38 +331,25 @@
             },
 
             changeTarget(event) {
-                this.page = 1;
-                this.selectedTarget = event.target.value;
-                this.fetchResults();
+                this.updateQueryString({
+                    [this.pageParameter]: 1,
+                    'target': event.target.value
+                });
             },
 
             changeStatus(event) {
-                this.page = 1;
-                this.selectedStatus = event.target.value;
-                this.fetchResults();
-            },
-
-            changePerPage(event) {
-                this.page = 1;
-                this.perPage = event.target.value;
-                this.fetchResults();
+                this.updateQueryString({
+                    [this.pageParameter]: 1,
+                    'status': event.target.value
+                });
             },
 
             clearFilters() {
-                this.selectedStatus = null;
-                this.selectedTarget = null;
-                this.page = 1;
-                this.fetchResults();
-            },
-
-            selectNextPage() {
-                this.page++;
-                this.fetchResults();
-            },
-
-            selectPreviousPage() {
-                this.page--;
-                this.fetchResults();
+                this.updateQueryString({
+                    [this.pageParameter]: 1,
+                    'status': null,
+                    'target': null
+                });
             },
 
             async download() {
@@ -316,14 +368,65 @@
                 this.debouncer(() => {
                     // Only search if we're not tabbing into the field
                     if (event.which != 9) {
-                        this.fetchResults();
+                        this.updateQueryString({
+                            [this.pageParameter]: 1,
+                            [this.searchParameter]: this.search,
+                        })
                     }
                 })
+            },
+
+            updatePerPageChanged(event) {
+                this.perPage = event.target.value;
+
+                this.perPageChanged()
             },
 
             debouncer: _.debounce(callback => callback(), 500),
         },
         computed: {
+
+            pageParameter() {
+                return 'analyzed-results_page'
+            },
+
+            searchParameter() {
+                return 'analyzed-results_search'
+            },
+
+            perPageParameter() {
+                return 'analyzed-results_per-page'
+            },
+
+            /**
+             * Get the current search value from the query string.
+             */
+            currentSearch() {
+                return this.$route.query[this.searchParameter] || ''
+            },
+
+            currentAssay() {
+                if (!this.$route.query['assay']) {
+                    return null;
+                }
+
+                for (let assay of this.assays) {
+                    if (assay.value == this.$route.query['assay']) {
+                        return assay;
+                    }
+                }
+
+                return null;
+            },
+
+            currentTarget() {
+                return this.$route.query['target'] || ''
+            },
+
+            currentStatus() {
+                return this.$route.query['status'] || '';
+            },
+
             filtersAreApplied() {
                 return this.selectedTarget || this.selectedStatus;
             },
