@@ -7,6 +7,7 @@ use App\Nova\Resource;
 use App\Support\QPCRResultSpecifier;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -34,6 +35,11 @@ class QPCRResult extends Resource
                     ->withStyles()
                     ->qualitative();
             })->asHtml(),
+            Number::make('Quant', function () {
+                $parameters = $this->assay->definitionFile->parameters->firstWhere('target', $this->target);
+                return (new QPCRResultSpecifier($parameters, $this->resource))
+                    ->quantitative();
+            }),
         ];
     }
 }

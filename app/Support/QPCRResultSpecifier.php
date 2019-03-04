@@ -45,6 +45,13 @@ class QPCRResultSpecifier
 
     public function quantitative()
     {
-        return '';
+        if ($this->qualitative() != 'Positive'
+            || !isset($this->targetParameters['slope'])
+            || !isset($this->targetParameters['intercept'])) {
+            return null;
+        }
+
+        return pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
+            + $this->targetParameters['intercept']);
     }
 }
