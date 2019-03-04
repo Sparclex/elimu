@@ -8,11 +8,11 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SampleTypePolicy extends Policy
 {
-    use HandlesAuthorization, OnlyAvailableForChosenStudy;
+    use HandlesAuthorization;
 
-    public function delete(User $user, $model)
+    public function viewAny(User $user)
     {
-        return Authorization::isAdministrator($user);
+        return true;
     }
 
     public function view(User $user, $model)
@@ -22,11 +22,16 @@ class SampleTypePolicy extends Policy
 
     public function create(User $user)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
     }
 
     public function update(User $user, $model)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
+    }
+
+    public function delete(User $user, $model)
+    {
+        return $user->is_admin;
     }
 }

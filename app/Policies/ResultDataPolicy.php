@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use Illuminate\Foundation\Auth\User;
+use App\Policies\Traits\OnlyViewPolicy;
 
 class ResultDataPolicy
 {

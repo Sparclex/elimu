@@ -2,15 +2,13 @@
 
 namespace App\Nova;
 
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Trix;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Panel;
 
@@ -42,7 +40,7 @@ class Audit extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
@@ -52,20 +50,20 @@ class Audit extends Resource
             $values[] = Code::make('Old Values')->json();
         }
         if ($this->event != 'deleted') {
-            $values[] =  Code::make('New Values')->json();
+            $values[] = Code::make('New Values')->json();
         }
 
         $values[] = new Panel('User Information', $this->userInformation());
 
         return array_merge([
-                ID::make()->sortable()->onlyOnForms(),
-                Text::make('Description', function () {
-                    return $this->user->name . " ".$this->event . " " .
-                        strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
-                }),
-                MorphTo::make('Auditable')->hideFromIndex(),
-                DateTime::make('Date', 'created_at'),
-            ], $values);
+            ID::make()->sortable()->onlyOnForms(),
+            Text::make('Description', function () {
+                return $this->user->name . " " . $this->event . " " .
+                    strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
+            }),
+            MorphTo::make('Auditable')->hideFromIndex(),
+            DateTime::make('Date', 'created_at'),
+        ], $values);
     }
 
     public function userInformation()

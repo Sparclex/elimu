@@ -2,16 +2,15 @@
 
 namespace App\Nova;
 
-use App\Fields\Status;
-use Laravel\Nova\Nova;
-use Laravel\Nova\Panel;
-use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
-use App\Fields\AdditionalData;
-use Laravel\Nova\Fields\Number;
 use App\Actions\ChangeValidationStatus;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Fields\AdditionalData;
+use App\Fields\Status;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Panel;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class ResultData extends Resource
@@ -41,23 +40,28 @@ class ResultData extends Resource
         return 'Data';
     }
 
+    public static function uriKey()
+    {
+        return 'result-data';
+    }
+
     public function fields(Request $request)
     {
         return [
-            ID::make()
-                ->sortable(),
+            ID::make()->onlyOnForms(),
             BelongsToField::make('Result'),
             BelongsToField::make('Experiment'),
-            Text::make('Sample ID')->sortable(),
-            Status::make('Status')
-                ->failedWhen('Declined', 0)
-                ->successWhen('Accepted', 1),
-            new Panel('Data', $this->data()),
+            Text::make('Sample ID', 'sample_id'),
+            Number::make('Primary Value'),
+            Text::make('Secondary Value'),
+            Boolean::make('included'),
+            AdditionalData::make('extra')
         ];
     }
 
     private function data()
     {
+        /*
         if ($this->experiment) {
             $dataLabel = $this->experiment->result_handler::$dataLabel;
             $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
@@ -78,6 +82,7 @@ class ResultData extends Resource
                 ->sortable(),
             AdditionalData::make('extra')
         ];
+        */
     }
 
     public function actions(Request $request)
@@ -87,10 +92,5 @@ class ResultData extends Resource
                 return true;
             }),
         ];
-    }
-
-    public static function uriKey()
-    {
-        return 'result-data';
     }
 }

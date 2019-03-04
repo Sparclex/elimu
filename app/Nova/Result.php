@@ -3,11 +3,11 @@
 namespace App\Nova;
 
 use App\Fields\Status;
-use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\HasMany;
 use App\Nova\Lenses\InvalidResults;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Text;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Result extends Resource
@@ -22,8 +22,6 @@ class Result extends Resource
         'id',
     ];
 
-    public static $with = ['assay.inputParameter','sample.sampleInformation', 'resultData'];
-
     public function fields(Request $request)
     {
         return [
@@ -33,20 +31,8 @@ class Result extends Resource
             BelongsToField::make('Assay'),
             Text::make('Target')
                 ->sortable(),
-            Text::make('Value'),
-            Status::make('Status')
-                ->loadingWhen('Pending')
-                ->successWhen('Verified'),
 
             HasMany::make('Data', 'resultData', ResultData::class),
-
-        ];
-    }
-
-    public function lenses(Request $request)
-    {
-        return [
-            new InvalidResults,
         ];
     }
 }

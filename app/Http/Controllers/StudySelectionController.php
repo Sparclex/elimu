@@ -3,18 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Study;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Auth\Guard;
 use Laravel\Nova\Actions\Action;
 
 class StudySelectionController extends Controller
 {
-    public function handle(Study $study)
+    public function handle(Study $study, Guard $guard)
     {
-        if (!Auth::user()->can('select-study', $study)) {
+        $user = $guard->user();
+        if (!$user->can('select-study', $study)) {
             abort(403);
         }
-        Auth::user()->study_id = $study->id;
-        Auth::user()->save();
+
+        $user->studies()->updateExistingPivot($user->study, [
+            'selected' => false
+        ]);
+
+        $user->studies()->updateExistingPivot($study, [
+            'selected' => true
+        ]);
+
         return Action::message('Changed study successfully');
     }
 }

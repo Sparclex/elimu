@@ -2,26 +2,23 @@
 
 namespace App\Nova;
 
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
-use Treestoneit\BelongsToField\BelongsToField;
 use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 
 class Reagent extends Resource
 {
-    public static $globallySearchable = false;
-
-    public static $displayInNavigation = false;
-
     public static $model = 'App\Models\Reagent';
 
-    public static $search = [];
+    public static $search = ['id', 'lot', 'name'];
 
-    public function title()
+    public static $title = 'lot';
+
+    public function subtitle()
     {
-        return $this->assay->name . " (" . $this->lot . ")";
+        return sprintf('%s | %s', $this->name, $this->expires_at->format('d.m.Y'));
     }
 
     public function fields(Request $request)
@@ -29,11 +26,17 @@ class Reagent extends Resource
         return [
             ID::make()
                 ->sortable(),
-            BelongsToField::make('Assay'),
-            HasMany::make('Experiments'),
-            Text::make('Lot'),
-            Text::make('Name'),
-            Date::make('Expires at', 'expires_at')
+            Text::make('Lot')
+                ->rules(
+                    'required',
+                    (new StudyUnique('reagents', 'lot'))->ignore($request->resourceId)
+                )
+                ->sortable(),
+            Text::make('Name')
+                ->rules('required')
+                ->sortable(),
+            Date::make('Expires at')
+                ->sortable()
         ];
     }
 }

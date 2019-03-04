@@ -5,7 +5,7 @@ use Faker\Generator as Faker;
 $factory->define(\App\Models\StorageSize::class, function (Faker $faker) {
     return [
         'study_id' => function () {
-            return factory(\App\Models\Study::class)->create()->id;
+            return \Illuminate\Support\Facades\Auth::user()->study_id ?? factory(\App\Models\Study::class)->create()->id;
         },
         'sample_type_id' => function()  {
             return factory(\App\Models\SampleType::class)->create()->id;

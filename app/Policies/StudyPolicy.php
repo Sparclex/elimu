@@ -12,28 +12,30 @@ class StudyPolicy extends Policy
 
     public function viewAny(User $user)
     {
-        return Authorization::isLabManager($user);
+        return $user->is_admin || $user->managedStudies()->exists();
     }
 
     public function view(User $user, Study $study)
     {
-        return $user->studies->contains($study)
-        || Authorization::isAdministrator($user);
+        return $user->is_admin || $user->managedStudies()
+                ->wherePivot('study_id', $study->id)
+                ->exists();
     }
 
     public function create(User $user)
     {
-        return Authorization::isAdministrator($user);
+        return $user->is_admin;
     }
 
     public function update(User $user, Study $study)
     {
-        return ($user->studies->contains($study) && Authorization::isLabManager($user))
-        || Authorization::isAdministrator($user);
+        return $user->is_admin || $user->managedStudies()
+                ->wherePivot('study_id', $study->id)
+                ->exists();
     }
 
     public function delete(User $user, Study $study)
     {
-        return Authorization::isAdministrator($user);
+        return $user->is_admin;
     }
 }

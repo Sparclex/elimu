@@ -14,10 +14,11 @@ var _lodash = __webpack_require__("./node_modules/lodash/lodash.js");
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
 //
 //
 //
@@ -153,6 +154,18 @@ exports.default = {
     },
 
     methods: {
+        /**
+         * Determine whether the action should redirect or open a confirmation modal
+         */
+        determineActionStrategy: function determineActionStrategy() {
+            if (this.selectedAction.withoutConfirmation) {
+                this.executeAction();
+            }
+
+            this.openConfirmationModal();
+        },
+
+
         /**
          * Confirm with the user that they actually want to run the selected action.
          */
@@ -379,6 +392,10 @@ exports.default = {
     components: { Checkbox: _Checkbox2.default },
 
     props: {
+        resourceName: {
+            type: String,
+            required: true
+        },
         filter: Object,
         option: Object
     },
@@ -388,7 +405,7 @@ exports.default = {
             var oldValue = this.filter.currentValue;
             var newValue = (0, _extends4.default)({}, oldValue, (0, _defineProperty3.default)({}, optionKey, event.target.checked));
 
-            this.$store.commit('updateFilterState', {
+            this.$store.commit(this.resourceName + '/updateFilterState', {
                 filterClass: this.filter.class,
                 value: newValue
             });
@@ -399,7 +416,7 @@ exports.default = {
 
     computed: {
         isChecked: function isChecked() {
-            return this.$store.getters.filterOptionValue(this.filter.class, this.option.value) == true;
+            return this.$store.getters[this.resourceName + '/filterOptionValue'](this.filter.class, this.option.value) == true;
         }
     }
 }; //
@@ -427,7 +444,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     props: {
@@ -475,10 +492,6 @@ exports.default = {
         }
     }
 }; //
-//
-//
-//
-//
 //
 //
 //
@@ -580,6 +593,141 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -807,10 +955,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
-//
-//
 
 exports.default = {
     props: {
@@ -971,7 +1115,7 @@ exports.default = {
         placeholder: {
             type: String,
             default: function _default() {
-                return moment().format('YYYY-MM-DD kk:mm:ss');
+                return moment().format('YYYY-MM-DD HH:mm:ss');
             }
         },
         disabled: {
@@ -993,6 +1137,10 @@ exports.default = {
         enableSeconds: {
             type: Boolean,
             default: true
+        },
+        firstDayOfWeek: {
+            type: Number,
+            default: 0
         }
     },
 
@@ -1012,7 +1160,8 @@ exports.default = {
                 dateFormat: _this.dateFormat,
                 allowInput: true,
                 // static: true,
-                time_24hr: !_this.twelveHourTime
+                time_24hr: !_this.twelveHourTime,
+                locale: { firstDayOfWeek: _this.firstDayOfWeek }
             });
         });
     },
@@ -1048,7 +1197,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
 
 exports.default = {};
 
@@ -1063,6 +1211,17 @@ exports.default = {};
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1197,11 +1356,7 @@ exports.default = {
          * Delete the selected resources.
          */
         deleteSelectedResources: function deleteSelectedResources() {
-            if (this.allMatchingSelected) {
-                this.$emit('deleteAllMatching');
-            }
-
-            this.$emit('deleteSelected');
+            this.$emit(this.allMatchingSelected ? 'deleteAllMatching' : 'deleteSelected');
         },
 
 
@@ -1209,11 +1364,7 @@ exports.default = {
          * Force delete the selected resources.
          */
         forceDeleteSelectedResources: function forceDeleteSelectedResources() {
-            if (this.allMatchingSelected) {
-                this.$emit('forceDeleteAllMatching');
-            }
-
-            this.$emit('forceDeleteSelected');
+            this.$emit(this.allMatchingSelected ? 'forceDeleteAllMatching' : 'forceDeleteSelected');
         },
 
 
@@ -1221,11 +1372,7 @@ exports.default = {
          * Restore the selected resources.
          */
         restoreSelectedResources: function restoreSelectedResources() {
-            if (this.allMatchingSelected) {
-                this.$emit('restoreAllMatching');
-            }
-
-            this.$emit('restoreSelected');
+            this.$emit(this.allMatchingSelected ? 'restoreAllMatching' : 'restoreSelected');
         },
 
 
@@ -1275,6 +1422,9 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
 //
 //
 //
@@ -1416,6 +1566,10 @@ __webpack_require__("./node_modules/codemirror/mode/dockerfile/dockerfile.js");
 
 __webpack_require__("./node_modules/codemirror/keymap/vim.js");
 
+__webpack_require__("./node_modules/codemirror/mode/twig/twig.js");
+
+__webpack_require__("./node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //
@@ -1460,32 +1614,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
+_codemirror2.default.defineMode('htmltwig', function (config, parserConfig) {
+    return _codemirror2.default.overlayMode(_codemirror2.default.getMode(config, parserConfig.backdrop || 'text/html'), _codemirror2.default.getMode(config, 'twig'));
+});
+
+// Modes
 exports.default = {
     props: ['resource', 'resourceName', 'resourceId', 'field'],
 
@@ -1502,7 +1636,8 @@ exports.default = {
             indentWithTabs: true,
             lineWrapping: true,
             lineNumbers: true,
-            theme: 'dracula'
+            theme: 'dracula',
+            viewportMargin: Infinity
         }, this.field.options, { readOnly: true });
 
         this.codemirror = _codemirror2.default.fromTextArea(this.$refs.theTextarea, config);
@@ -1510,8 +1645,6 @@ exports.default = {
         this.codemirror.getDoc().setValue(this.field.value);
     }
 };
-
-// Modes
 
 /***/ }),
 
@@ -1560,7 +1693,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.InteractsWithDates],
@@ -1597,14 +1730,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _regenerator = __webpack_require__("./node_modules/babel-runtime/regenerator/index.js");
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
 var _ImageLoader = __webpack_require__("./resources/js/components/ImageLoader.vue");
 
 var _ImageLoader2 = _interopRequireDefault(_ImageLoader);
@@ -1617,7 +1742,7 @@ exports.default = {
     components: { ImageLoader: _ImageLoader2.default },
 
     data: function data() {
-        return { removeModalOpen: false, missing: false, deleted: false };
+        return { missing: false };
     },
 
     methods: {
@@ -1636,92 +1761,27 @@ exports.default = {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        },
-
-
-        /**
-         * Confirm removal of the linked file
-         */
-        confirmRemoval: function confirmRemoval() {
-            this.removeModalOpen = true;
-        },
-
-
-        /**
-         * Close the upload removal modal
-         */
-        closeRemoveModal: function closeRemoveModal() {
-            this.removeModalOpen = false;
-        },
-
-
-        /**
-         * Remove the linked file from storage
-         */
-        removeFile: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var resourceName, resourceId, attribute;
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                resourceName = this.resourceName, resourceId = this.resourceId;
-                                attribute = this.field.attribute;
-                                _context.prev = 2;
-                                _context.next = 5;
-                                return Nova.request().delete('/nova-api/' + resourceName + '/' + resourceId + '/field/' + attribute);
-
-                            case 5:
-                                this.closeRemoveModal();
-                                this.deleted = true;
-                                _context.next = 12;
-                                break;
-
-                            case 9:
-                                _context.prev = 9;
-                                _context.t0 = _context['catch'](2);
-
-                                this.closeRemoveModal();
-
-                            case 12:
-                            case 'end':
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this, [[2, 9]]);
-            }));
-
-            function removeFile() {
-                return _ref.apply(this, arguments);
-            }
-
-            return removeFile;
-        }()
+        }
     },
 
     computed: {
         hasValue: function hasValue() {
-            return Boolean(this.field.value || this.field.thumbnailUrl) && !Boolean(this.deleted) && !Boolean(this.missing);
+            return Boolean(this.field.value || this.imageUrl) && !Boolean(this.missing);
         },
         shouldShowLoader: function shouldShowLoader() {
-            return !Boolean(this.deleted) && Boolean(this.field.thumbnailUrl);
+            return Boolean(this.imageUrl);
         },
         shouldShowToolbar: function shouldShowToolbar() {
-            return Boolean(this.field.downloadable || this.field.deletable) && this.hasValue;
+            return Boolean(this.field.downloadable && this.hasValue);
+        },
+        imageUrl: function imageUrl() {
+            return this.field.previewUrl || this.field.thumbnailUrl;
+        },
+        maxWidth: function maxWidth() {
+            return this.field.maxWidth || 320;
         }
     }
 }; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -1840,6 +1900,47 @@ exports.default = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Detail/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: ['resource', 'resourceName', 'resourceId', 'field'],
+
+    computed: {
+        fieldValue: function fieldValue() {
+            if (this.field.value === '' || this.field.value === null || this.field.value === undefined) {
+                return false;
+            }
+
+            return String(this.field.value);
+        },
+        shouldDisplayAsHtml: function shouldDisplayAsHtml() {
+            return this.field.asHtml;
+        }
+    }
+};
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Detail/MarkdownField.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1934,6 +2035,9 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
 
 exports.default = {
     props: ['resourceName', 'resourceId', 'field']
@@ -1989,7 +2093,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.BehavesAsPanel],
@@ -2044,9 +2148,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
-//
 
 exports.default = {
     props: ['resource', 'resourceName', 'resourceId', 'field']
@@ -2064,11 +2165,12 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.BehavesAsPanel]
 }; //
+//
 //
 //
 //
@@ -2096,6 +2198,10 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
 //
 //
 //
@@ -2225,8 +2331,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
-//
 
 exports.default = {
     props: {
@@ -2261,9 +2365,9 @@ exports.default = {
 function pathIncludesClass(event, className) {
     return (0, _composedPath2.default)(event).filter(function (el) {
         return el !== document && el !== window;
-    }).flatMap(function (e) {
-        return [].concat((0, _toConsumableArray3.default)(e.classList));
-    }).includes(className);
+    }).reduce(function (acc, e) {
+        return acc.concat([].concat((0, _toConsumableArray3.default)(e.classList)));
+    }, []).includes(className);
 }
 
 /***/ }),
@@ -2416,9 +2520,20 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     props: {
+        plainText: {
+            type: Boolean,
+            default: false
+        },
         shouldShow: {
             type: Boolean,
             default: false
@@ -2556,7 +2671,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
 
 exports.default = {
     props: (_props = {
@@ -2588,7 +2702,7 @@ exports.default = {
          * Return the filters from state
          */
         filters: function filters() {
-            return this.$store.state.resources.filters;
+            return this.$store.getters[this.resourceName + '/filters'];
         },
 
 
@@ -2596,7 +2710,7 @@ exports.default = {
          * Determine via state whether filters are applied
          */
         filtersAreApplied: function filtersAreApplied() {
-            return this.$store.getters.filtersAreApplied;
+            return this.$store.getters[this.resourceName + '/filtersAreApplied'];
         },
 
 
@@ -2604,7 +2718,7 @@ exports.default = {
          * Return the number of active filters
          */
         activeFilterCount: function activeFilterCount() {
-            return this.$store.getters.activeFilterCount;
+            return this.$store.getters[this.resourceName + '/activeFilterCount'];
         }
     }
 };
@@ -2631,6 +2745,10 @@ exports.default = {
     components: { BooleanOption: _BooleanOption2.default },
 
     props: {
+        resourceName: {
+            type: String,
+            required: true
+        },
         filterKey: {
             type: String,
             required: true
@@ -2645,13 +2763,14 @@ exports.default = {
 
     computed: {
         filter: function filter() {
-            return this.$store.getters.getFilter(this.filterKey);
+            return this.$store.getters[this.resourceName + '/getFilter'](this.filterKey);
         },
         options: function options() {
-            return this.$store.getters.getOptionsForFilter(this.filterKey);
+            return this.$store.getters[this.resourceName + '/getOptionsForFilter'](this.filterKey);
         }
     }
 }; //
+//
 //
 //
 //
@@ -2688,6 +2807,10 @@ exports.default = {
     components: { DateTimePicker: _DateTimePicker2.default },
 
     props: {
+        resourceName: {
+            type: String,
+            required: true
+        },
         filterKey: {
             type: String,
             required: true
@@ -2696,26 +2819,33 @@ exports.default = {
 
     methods: {
         handleChange: function handleChange(value) {
-            this.$store.commit('updateFilterState', { filterClass: this.filterKey, value: value });
+            this.$store.commit(this.resourceName + '/updateFilterState', {
+                filterClass: this.filterKey,
+                value: value
+            });
             this.$emit('change');
         }
     },
 
     computed: {
         placeholder: function placeholder() {
-            return this.__('Choose date');
+            return this.filter.placeholder || this.__('Choose date');
         },
         value: function value() {
             return this.filter.currentValue;
         },
         filter: function filter() {
-            return this.$store.getters.getFilter(this.filterKey);
+            return this.$store.getters[this.resourceName + '/getFilter'](this.filterKey);
         },
         options: function options() {
-            return this.$store.getters.getOptionsForFilter(this.filterKey);
+            return this.$store.getters[this.resourceName + '/getOptionsForFilter'](this.filterKey);
+        },
+        firstDayOfWeek: function firstDayOfWeek() {
+            return this.filter.firstDayOfWeek || 0;
         }
     }
 }; //
+//
 //
 //
 //
@@ -2769,11 +2899,13 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
 
 exports.default = {
     props: {
+        resourceName: {
+            type: String,
+            required: true
+        },
         filterKey: {
             type: String,
             required: true
@@ -2782,7 +2914,7 @@ exports.default = {
 
     methods: {
         handleChange: function handleChange(event) {
-            this.$store.commit('updateFilterState', {
+            this.$store.commit(this.resourceName + '/updateFilterState', {
                 filterClass: this.filterKey,
                 value: event.target.value
             });
@@ -2793,7 +2925,7 @@ exports.default = {
 
     computed: {
         filter: function filter() {
-            return this.$store.getters.getFilter(this.filterKey);
+            return this.$store.getters[this.resourceName + '/getFilter'](this.filterKey);
         },
         value: function value() {
             return this.filter.currentValue;
@@ -2821,12 +2953,16 @@ var _BelongsToFieldStorage = __webpack_require__("./resources/js/storage/Belongs
 
 var _BelongsToFieldStorage2 = _interopRequireDefault(_BelongsToFieldStorage);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 var _vueClickaway = __webpack_require__("./node_modules/vue-clickaway/dist/vue-clickaway.common.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
 //
 //
 //
@@ -3073,7 +3209,7 @@ exports.default = {
          * Determine if we are creating a new resource via a parent relation
          */
         creatingViaRelatedResource: function creatingViaRelatedResource() {
-            return this.viaResource == this.field.resourceName && this.viaResourceId;
+            return this.viaResource == this.field.resourceName && this.viaRelationship === this.field.reverseRelation && this.viaResourceId;
         },
 
 
@@ -3107,7 +3243,7 @@ exports.default = {
             };
         },
         isLocked: function isLocked() {
-            return this.viaResource == this.field.resourceName;
+            return this.viaResource == this.field.resourceName && this.viaRelationship === this.field.reverseRelation;
         }
     }
 };
@@ -3124,7 +3260,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField],
@@ -3223,36 +3359,18 @@ __webpack_require__("./node_modules/codemirror/keymap/vim.js");
 
 __webpack_require__("./node_modules/codemirror/mode/sql/sql.js");
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+__webpack_require__("./node_modules/codemirror/mode/twig/twig.js");
+
+__webpack_require__("./node_modules/codemirror/mode/htmlmixed/htmlmixed.js");
+
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+// Modes
+_codemirror2.default.defineMode('htmltwig', function (config, parserConfig) {
+    return _codemirror2.default.overlayMode(_codemirror2.default.getMode(config, parserConfig.backdrop || 'text/html'), _codemirror2.default.getMode(config, 'twig'));
+}); //
 //
 //
 //
@@ -3314,7 +3432,8 @@ exports.default = {
             indentWithTabs: true,
             lineWrapping: true,
             lineNumbers: true,
-            theme: 'dracula'
+            theme: 'dracula',
+            viewportMargin: Infinity
         }, this.field.options);
 
         this.codemirror = _codemirror2.default.fromTextArea(this.$refs.theTextarea, config);
@@ -3334,8 +3453,6 @@ exports.default = {
     }
 };
 
-// Modes
-
 /***/ }),
 
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Form/DateField.vue":
@@ -3352,10 +3469,12 @@ var _DateTimePicker = __webpack_require__("./resources/js/components/DateTimePic
 
 var _DateTimePicker2 = _interopRequireDefault(_DateTimePicker);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
 //
 //
 //
@@ -3380,8 +3499,11 @@ exports.default = {
     components: { DateTimePicker: _DateTimePicker2.default },
 
     computed: {
+        firstDayOfWeek: function firstDayOfWeek() {
+            return this.field.firstDayOfWeek || 0;
+        },
         placeholder: function placeholder() {
-            return moment().format('YYYY-MM-DD');
+            return this.field.placeholder || moment().format('YYYY-MM-DD');
         }
     }
 };
@@ -3402,10 +3524,13 @@ var _DateTimePicker = __webpack_require__("./resources/js/components/DateTimePic
 
 var _DateTimePicker2 = _interopRequireDefault(_DateTimePicker);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
 //
 //
 //
@@ -3433,6 +3558,15 @@ exports.default = {
 
     data: function data() {
         return { localizedValue: '' };
+    },
+
+    computed: {
+        firstDayOfWeek: function firstDayOfWeek() {
+            return this.field.firstDayOfWeek || 0;
+        },
+        placeholder: function placeholder() {
+            return this.field.placeholder || moment().format('YYYY-MM-DD HH:mm:ss');
+        }
     },
 
     methods: {
@@ -3472,7 +3606,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors],
@@ -3552,7 +3686,7 @@ var _DeleteButton = __webpack_require__("./resources/js/components/DeleteButton.
 
 var _DeleteButton2 = _interopRequireDefault(_DeleteButton);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3566,7 +3700,6 @@ exports.default = {
     data: function data() {
         return {
             file: null,
-            label: 'no file selected',
             fileName: '',
             removeModalOpen: false,
             missing: false,
@@ -3681,7 +3814,7 @@ exports.default = {
          * The current label of the file field
          */
         currentLabel: function currentLabel() {
-            return this.fileName || this.label;
+            return this.fileName || this.__('no file selected');
         },
 
 
@@ -3706,7 +3839,7 @@ exports.default = {
          * Determine whether the field has a value
          */
         hasValue: function hasValue() {
-            return Boolean(this.field.value || this.field.thumbnailUrl) && !Boolean(this.deleted) && !Boolean(this.missing);
+            return Boolean(this.field.value || this.imageUrl) && !Boolean(this.deleted) && !Boolean(this.missing);
         },
 
 
@@ -3714,7 +3847,7 @@ exports.default = {
          * Determine whether the field should show the loader component
          */
         shouldShowLoader: function shouldShowLoader() {
-            return !Boolean(this.deleted) && Boolean(this.field.thumbnailUrl);
+            return !Boolean(this.deleted) && Boolean(this.imageUrl);
         },
 
 
@@ -3723,6 +3856,12 @@ exports.default = {
          */
         shouldShowRemoveButton: function shouldShowRemoveButton() {
             return Boolean(this.field.deletable);
+        },
+        imageUrl: function imageUrl() {
+            return this.field.previewUrl || this.field.thumbnailUrl;
+        },
+        maxWidth: function maxWidth() {
+            return this.field.maxWidth || 320;
         }
     }
 }; //
@@ -3795,9 +3934,54 @@ exports.default = {
 //
 //
 //
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Form/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 //
 //
 //
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: {
+        resourceName: {
+            type: String,
+            require: true
+        },
+        field: {
+            type: Object,
+            require: true
+        }
+    },
+
+    created: function created() {
+        this.field.fill = function () {};
+    },
+
+
+    computed: {
+        classes: function classes() {
+            return ['bg-20', 'remove-last-margin-bottom', 'leading-normal', 'w-full', 'py-6', 'px-8'];
+        },
+
+        shouldDisplayAsHtml: function shouldDisplayAsHtml() {
+            return this.field.asHtml || false;
+        }
+    }
+};
 
 /***/ }),
 
@@ -3828,8 +4012,6 @@ exports.default = {};
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
 //
 //
 //
@@ -3873,7 +4055,7 @@ var _codemirror2 = _interopRequireDefault(_codemirror);
 
 __webpack_require__("./node_modules/codemirror/mode/markdown/markdown.js");
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3905,6 +4087,26 @@ var actions = {
         this.fullScreen = false;
     }
 }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3983,6 +4185,7 @@ exports.default = {
             indentWithTabs: true,
             lineWrapping: true,
             mode: 'markdown',
+            viewportMargin: Infinity,
             extraKeys: (0, _extends3.default)({
                 Enter: 'newlineAndIndentContinueMarkdownList'
             }, _lodash2.default.map(this.tools, function (tool) {
@@ -4126,7 +4329,7 @@ var _MorphToFieldStorage = __webpack_require__("./resources/js/storage/MorphToFi
 
 var _MorphToFieldStorage2 = _interopRequireDefault(_MorphToFieldStorage);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4502,6 +4705,7 @@ exports.default = {
 //
 //
 //
+//
 
 /***/ }),
 
@@ -4515,7 +4719,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField]
@@ -4549,7 +4753,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField],
@@ -4611,6 +4815,9 @@ exports.default = {
                     Nova.$emit(_this2.field.postalCode + '-value', e.suggestion.postcode);
 
                     Nova.$emit(_this2.field.country + '-value', e.suggestion.countryCode.toUpperCase());
+
+                    Nova.$emit(_this2.field.latitude + '-value', e.suggestion.latlng.lat);
+                    Nova.$emit(_this2.field.longitude + '-value', e.suggestion.latlng.lng);
                 });
             });
 
@@ -4623,6 +4830,8 @@ exports.default = {
                     Nova.$emit(_this2.field.state + '-value', '');
                     Nova.$emit(_this2.field.postalCode + '-value', '');
                     Nova.$emit(_this2.field.country + '-value', '');
+                    Nova.$emit(_this2.field.latitude + '-value', '');
+                    Nova.$emit(_this2.field.longitude + '-value', '');
                 });
             });
         },
@@ -4935,7 +5144,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField],
@@ -4988,7 +5197,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HandlesValidationErrors, _laravelNova.FormField],
@@ -5042,7 +5251,7 @@ var _extends2 = __webpack_require__("./node_modules/babel-runtime/helpers/extend
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5098,7 +5307,7 @@ var _extends2 = __webpack_require__("./node_modules/babel-runtime/helpers/extend
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5154,11 +5363,15 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends2 = __webpack_require__("./node_modules/babel-runtime/helpers/extends.js");
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _Trix = __webpack_require__("./resources/js/components/Trix.vue");
 
 var _Trix2 = _interopRequireDefault(_Trix);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5260,6 +5473,19 @@ exports.default = {
                 }).catch(function (error) {});
             }
         }
+    },
+
+    computed: {
+        defaultAttributes: function defaultAttributes() {
+            return {
+                placeholder: this.field.placeholder || this.field.name
+            };
+        },
+        extraAttributes: function extraAttributes() {
+            var attrs = this.field.extraAttributes;
+
+            return (0, _extends3.default)({}, this.defaultAttributes, attrs);
+        }
     }
 };
 
@@ -5294,12 +5520,18 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 var _vueClickaway = __webpack_require__("./node_modules/vue-clickaway/dist/vue-clickaway.common.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5674,6 +5906,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
     props: {
@@ -5843,13 +6076,17 @@ var _promise = __webpack_require__("./node_modules/babel-runtime/core-js/promise
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
     props: {
-        src: String
+        src: String,
+        maxWidth: {
+            type: Number,
+            default: 320
+        }
     },
 
     data: function data() {
@@ -5859,30 +6096,48 @@ exports.default = {
         };
     },
 
+    computed: {
+        cardClasses: function cardClasses() {
+            return {
+                'max-w-xs': !this.maxWidth || this.loading || this.missing
+            };
+        }
+    },
+
     mounted: function mounted() {
         var _this = this;
 
         (0, _laravelNova.Minimum)(new _promise2.default(function (resolve, reject) {
             var image = new Image();
+
             image.addEventListener('load', function () {
                 return resolve(image);
             });
             image.addEventListener('error', function () {
                 return reject();
             });
+
             image.src = _this.src;
         })).then(function (image) {
             image.className = 'block w-full';
             image.draggable = false;
+
+            if (_this.maxWidth) {
+                _this.$refs.card.$el.style.maxWidth = _this.maxWidth + 'px';
+            }
+
             _this.$refs.card.$el.appendChild(image);
-            _this.loading = false;
         }).catch(function () {
             _this.missing = true;
+
             _this.$emit('missing', true);
+        }).finally(function () {
             _this.loading = false;
         });
     }
 }; //
+//
+//
 //
 //
 //
@@ -5929,6 +6184,8 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
 
 exports.default = {
     props: ['resourceName', 'field']
@@ -5945,6 +6202,7 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
 //
 //
 //
@@ -6099,7 +6357,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.InteractsWithDates],
@@ -6137,6 +6395,50 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     props: {
@@ -6164,9 +6466,34 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
 
 exports.default = {
     props: ['viaResource', 'viaResourceId', 'resourceName', 'field']
+};
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Index/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+
+exports.default = {
+    props: ['field', 'viaResource', 'viaResourceId', 'resourceName']
 };
 
 /***/ }),
@@ -6180,8 +6507,6 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
 //
 //
 //
@@ -6265,13 +6590,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 exports.default = {
     props: ['resourceName', 'field']
@@ -6288,6 +6606,17 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6518,10 +6847,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
-//
-//
 
 exports.default = {
     props: {
@@ -6677,6 +7002,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
     props: ['resourceName', 'lenses']
@@ -6691,8 +7017,11 @@ exports.default = {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
+//
+//
+//
 //
 //
 //
@@ -6705,83 +7034,83 @@ Object.defineProperty(exports, "__esModule", {
 
 // https://github.com/nuxt/nuxt.js/blob/master/lib/app/components/nuxt-loading.vue
 exports.default = {
-  data: function data() {
-    return {
-      percent: 0,
-      show: false,
-      canSuccess: true,
-      duration: 3000,
-      height: '3px',
-      color: 'var(--primary)',
-      failedColor: 'red'
-    };
-  },
+    data: function data() {
+        return {
+            percent: 0,
+            show: false,
+            canSuccess: true,
+            duration: 3000,
+            height: '3px',
+            color: 'var(--primary)',
+            failedColor: 'red'
+        };
+    },
 
-  methods: {
-    start: function start() {
-      var _this = this;
+    methods: {
+        start: function start() {
+            var _this = this;
 
-      this.show = true;
-      this.canSuccess = true;
-      if (this._timer) {
-        clearInterval(this._timer);
-        this.percent = 0;
-      }
-      this._cut = 10000 / Math.floor(this.duration);
-      this._timer = setInterval(function () {
-        _this.increase(_this._cut * Math.random());
-        if (_this.percent > 95) {
-          _this.finish();
+            this.show = true;
+            this.canSuccess = true;
+            if (this._timer) {
+                clearInterval(this._timer);
+                this.percent = 0;
+            }
+            this._cut = 10000 / Math.floor(this.duration);
+            this._timer = setInterval(function () {
+                _this.increase(_this._cut * Math.random());
+                if (_this.percent > 95) {
+                    _this.finish();
+                }
+            }, 100);
+            return this;
+        },
+        set: function set(num) {
+            this.show = true;
+            this.canSuccess = true;
+            this.percent = Math.floor(num);
+            return this;
+        },
+        get: function get() {
+            return Math.floor(this.percent);
+        },
+        increase: function increase(num) {
+            this.percent = this.percent + Math.floor(num);
+            return this;
+        },
+        decrease: function decrease(num) {
+            this.percent = this.percent - Math.floor(num);
+            return this;
+        },
+        finish: function finish() {
+            this.percent = 100;
+            this.hide();
+            return this;
+        },
+        pause: function pause() {
+            clearInterval(this._timer);
+            return this;
+        },
+        hide: function hide() {
+            var _this2 = this;
+
+            clearInterval(this._timer);
+            this._timer = null;
+            setTimeout(function () {
+                _this2.show = false;
+                _this2.$nextTick(function () {
+                    setTimeout(function () {
+                        _this2.percent = 0;
+                    }, 200);
+                });
+            }, 500);
+            return this;
+        },
+        fail: function fail() {
+            this.canSuccess = false;
+            return this;
         }
-      }, 100);
-      return this;
-    },
-    set: function set(num) {
-      this.show = true;
-      this.canSuccess = true;
-      this.percent = Math.floor(num);
-      return this;
-    },
-    get: function get() {
-      return Math.floor(this.percent);
-    },
-    increase: function increase(num) {
-      this.percent = this.percent + Math.floor(num);
-      return this;
-    },
-    decrease: function decrease(num) {
-      this.percent = this.percent - Math.floor(num);
-      return this;
-    },
-    finish: function finish() {
-      this.percent = 100;
-      this.hide();
-      return this;
-    },
-    pause: function pause() {
-      clearInterval(this._timer);
-      return this;
-    },
-    hide: function hide() {
-      var _this2 = this;
-
-      clearInterval(this._timer);
-      this._timer = null;
-      setTimeout(function () {
-        _this2.show = false;
-        _this2.$nextTick(function () {
-          setTimeout(function () {
-            _this2.percent = 0;
-          }, 200);
-        });
-      }, 500);
-      return this;
-    },
-    fail: function fail() {
-      this.canSuccess = false;
-      return this;
     }
-  }
 };
 
 /***/ }),
@@ -6857,6 +7186,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
     props: {
@@ -6887,6 +7217,11 @@ __webpack_require__("./node_modules/chartist/dist/chartist.min.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6944,25 +7279,40 @@ exports.default = {
             startAngle: 270,
             showLabel: false
         });
+
+        this.chartist.on('draw', function (context) {
+            if (context.type === 'slice') {
+                context.element.attr({ style: 'fill: ' + context.meta.color + ' !important' });
+            }
+        });
     },
 
 
     methods: {
         renderChart: function renderChart() {
             this.chartist.update(this.formattedChartData);
+        },
+        getItemColor: function getItemColor(item, index) {
+            return typeof item.color === 'string' ? item.color : colorForIndex(index);
         }
     },
 
     computed: {
+        chartClasses: function chartClasses() {
+            return ['vertical-center', 'rounded-b-lg', 'ct-chart', this.formattedTotal <= 0 ? 'invisible' : ''];
+        },
         formattedChartData: function formattedChartData() {
             return { labels: this.formattedLabels, series: this.formattedData };
         },
         formattedItems: function formattedItems() {
+            var _this = this;
+
             return _(this.chartData).map(function (item, index) {
                 return {
                     label: item.label,
                     value: item.value,
-                    color: colorForIndex(index)
+                    color: _this.getItemColor(item, index),
+                    percentage: _this.formattedTotal > 0 ? (item.value * 100 / _this.formattedTotal).toFixed(2) : '0'
                 };
             }).value();
         },
@@ -6972,8 +7322,13 @@ exports.default = {
             }).value();
         },
         formattedData: function formattedData() {
-            return _(this.chartData).map(function (item) {
-                return item.value;
+            var _this2 = this;
+
+            return _(this.chartData).map(function (item, index) {
+                return {
+                    value: item.value,
+                    meta: { color: _this2.getItemColor(item, index) }
+                };
             }).value();
         },
         formattedTotal: function formattedTotal() {
@@ -7010,7 +7365,7 @@ __webpack_require__("./node_modules/chartist-plugin-tooltips/dist/chartist-plugi
 
 __webpack_require__("./node_modules/chartist/dist/chartist.min.css");
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 __webpack_require__("./node_modules/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css");
 
@@ -7037,7 +7392,11 @@ exports.default = {
         ranges: { type: Array, default: function _default() {
                 return [];
             } },
-        selectedRangeKey: [String, Number]
+        selectedRangeKey: [String, Number],
+        format: {
+            type: String,
+            default: '(0.00a)'
+        }
     },
 
     data: function data() {
@@ -7121,7 +7480,7 @@ exports.default = {
             if (!this.isNullValue) {
                 var numeralValue = (0, _numeral2.default)(this.value);
 
-                return numeralValue.value() > 1000 ? this.prefix + numeralValue.format('(0.00a)') : this.prefix + this.value;
+                return numeralValue.value() > 1000 ? this.prefix + numeralValue.format(this.format) : this.prefix + this.value;
             }
 
             return '';
@@ -7131,10 +7490,6 @@ exports.default = {
         }
     }
 }; //
-//
-//
-//
-//
 //
 //
 //
@@ -7185,10 +7540,22 @@ var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
 
 var _numeral2 = _interopRequireDefault(_numeral);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7261,7 +7628,11 @@ exports.default = {
         selectedRangeKey: [String, Number],
         ranges: { type: Array, default: function _default() {
                 return [];
-            } }
+            } },
+        format: {
+            type: String,
+            default: '(0.00a)'
+        }
     },
 
     methods: {
@@ -7306,7 +7677,7 @@ exports.default = {
             if (!this.isNullValue) {
                 var numeralValue = (0, _numeral2.default)(this.value);
 
-                return numeralValue.value() > 1000 ? this.prefix + numeralValue.format('(0.00a)') : this.prefix + this.value;
+                return numeralValue.value() > 1000 ? this.prefix + numeralValue.format(this.format) : this.prefix + this.value;
             }
 
             return '';
@@ -7329,7 +7700,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 var _PartitionMetric = __webpack_require__("./resources/js/components/Metrics/Base/PartitionMetric.vue");
 
@@ -7337,10 +7708,6 @@ var _PartitionMetric2 = _interopRequireDefault(_PartitionMetric);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
-//
-//
-//
 //
 //
 //
@@ -7425,7 +7792,7 @@ var _lodash = __webpack_require__("./node_modules/lodash/lodash.js");
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 var _TrendMetric = __webpack_require__("./resources/js/components/Metrics/Base/TrendMetric.vue");
 
@@ -7462,6 +7829,7 @@ exports.default = {
             loading: true,
             value: '',
             data: [],
+            format: '(0.00a)',
             prefix: '',
             suffix: '',
             selectedRangeKey: null
@@ -7494,7 +7862,8 @@ exports.default = {
                     trend = _ref$data$value.trend,
                     value = _ref$data$value.value,
                     prefix = _ref$data$value.prefix,
-                    suffix = _ref$data$value.suffix;
+                    suffix = _ref$data$value.suffix,
+                    format = _ref$data$value.format;
 
                 _this.value = value;
                 _this.labels = (0, _keys2.default)(trend);
@@ -7507,8 +7876,9 @@ exports.default = {
                         };
                     })]
                 };
-                _this.prefix = prefix || '';
-                _this.suffix = suffix || '';
+                _this.format = format || _this.format;
+                _this.prefix = prefix || _this.prefix;
+                _this.suffix = suffix || _this.suffix;
                 _this.loading = false;
             });
         }
@@ -7556,6 +7926,7 @@ exports.default = {
 //
 //
 //
+//
 
 /***/ }),
 
@@ -7569,7 +7940,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 var _ValueMetric = __webpack_require__("./resources/js/components/Metrics/Base/ValueMetric.vue");
 
@@ -7577,6 +7948,7 @@ var _ValueMetric2 = _interopRequireDefault(_ValueMetric);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
 //
 //
 //
@@ -7617,6 +7989,7 @@ exports.default = {
     data: function data() {
         return {
             loading: true,
+            format: '(0.00a)',
             value: 0,
             previous: 0,
             prefix: '',
@@ -7650,11 +8023,13 @@ exports.default = {
                     value = _ref$data$value.value,
                     previous = _ref$data$value.previous,
                     prefix = _ref$data$value.prefix,
-                    suffix = _ref$data$value.suffix;
+                    suffix = _ref$data$value.suffix,
+                    format = _ref$data$value.format;
 
                 _this.value = value;
-                _this.prefix = prefix || '';
-                _this.suffix = suffix || '';
+                _this.format = format || _this.format;
+                _this.prefix = prefix || _this.prefix;
+                _this.suffix = suffix || _this.suffix;
                 _this.previous = previous;
                 _this.loading = false;
             });
@@ -7692,10 +8067,33 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _toConsumableArray2 = __webpack_require__("./node_modules/babel-runtime/helpers/toConsumableArray.js");
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _vueClickaway = __webpack_require__("./node_modules/vue-clickaway/dist/vue-clickaway.common.js");
+
+var _composedPath = __webpack_require__("./resources/js/polyfills/composedPath.js");
+
+var _composedPath2 = _interopRequireDefault(_composedPath);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     mixins: [_vueClickaway.mixin],
+
+    props: {
+        classWhitelist: [Array, String]
+    },
 
     created: function created() {
         document.addEventListener('keydown', this.handleEscape);
@@ -7727,20 +8125,28 @@ exports.default = {
                 this.close();
             }
         },
-        close: function close() {
-            this.$emit('modal-close');
+        close: function close(e) {
+            var classArray = Array.isArray(this.classWhitelist) ? this.classWhitelist : [this.classWhitelist];
+
+            if (_.filter(classArray, function (className) {
+                return pathIncludesClass(e, className);
+            }).length > 0) {
+                return;
+            }
+
+            this.$emit('modal-close', e);
         }
     }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
+
+
+function pathIncludesClass(event, className) {
+    return (0, _composedPath2.default)(event).filter(function (el) {
+        return el !== document && el !== window;
+    }).reduce(function (acc, e) {
+        return acc.concat([].concat((0, _toConsumableArray3.default)(e.classList)));
+    }, []).includes(className);
+}
 
 /***/ }),
 
@@ -7753,15 +8159,92 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     props: {
         working: Boolean,
-        resourceName: {},
-        selectedAction: {},
-        errors: { required: true }
+        resourceName: { type: String, required: true },
+        selectedAction: { type: Object, required: true },
+        selectedResources: { type: Array, required: true },
+        errors: { type: Object, required: true }
     },
 
     /**
@@ -7773,7 +8256,7 @@ exports.default = {
         if (document.querySelectorAll('.modal input').length) {
             document.querySelectorAll('.modal input')[0].focus();
         } else {
-            document.querySelectorAll('.modal button[type=submit]')[0].focus();
+            this.$refs.runButton.focus();
         }
     },
 
@@ -7794,7 +8277,7 @@ exports.default = {
         /**
          * Execute the selected action.
          */
-        handleConfirm: function handleConfirm(e) {
+        handleConfirm: function handleConfirm() {
             this.$emit('confirm');
         },
 
@@ -7806,77 +8289,7 @@ exports.default = {
             this.$emit('close');
         }
     }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -7889,6 +8302,19 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7966,6 +8392,24 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
     props: {
@@ -8013,6 +8457,23 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8172,8 +8633,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
 
 exports.default = {
     props: {
@@ -8205,6 +8664,41 @@ exports.default = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/ProgressButton.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+exports.default = {
+    props: {
+        processing: {
+            type: Boolean,
+            default: false
+        }
+    }
+};
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/ResourceTable.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8215,7 +8709,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.InteractsWithResourceInformation],
@@ -8384,7 +8878,6 @@ exports.default = {
 //
 //
 //
-//
 
 /***/ }),
 
@@ -8397,11 +8890,6 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
 //
 //
 //
@@ -8452,6 +8940,27 @@ var _vueClickaway = __webpack_require__("./node_modules/vue-clickaway/dist/vue-c
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8619,19 +9128,19 @@ exports.default = {
             return _lodash2.default.get(option, this.trackBy);
         },
         open: function open() {
-            // if (!this.disabled) {
-            this.show = true;
-            this.search = '';
-            // }
+            if (!this.disabled) {
+                this.show = true;
+                this.search = '';
+            }
         },
         close: function close() {
             this.show = false;
         },
         clear: function clear() {
-            // if (!this.disabled) {
-            this.selected = null;
-            this.$emit('clear', null);
-            // }
+            if (!this.disabled) {
+                this.selected = null;
+                this.$emit('clear', null);
+            }
         },
         move: function move(offset) {
             var newIndex = this.selected + offset;
@@ -8802,8 +9311,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
-//
 
 exports.default = {
     props: ['errors']
@@ -8829,7 +9336,7 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8865,6 +9372,8 @@ exports.default = {
     data: function data() {
         return {
             loading: true,
+            submittedViaAttachAndAttachAnother: false,
+            submittedViaAttachResource: false,
             field: null,
             softDeletes: false,
             fields: [],
@@ -8873,6 +9382,11 @@ exports.default = {
             selectedResourceId: null
         };
     },
+
+    created: function created() {
+        if (Nova.missingResource(this.resourceName)) return this.$router.push({ name: '404' });
+    },
+
 
     /**
      * Mount the component.
@@ -8982,11 +9496,15 @@ exports.default = {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                _context.prev = 0;
-                                _context.next = 3;
+                                this.submittedViaAttachResource = true;
+
+                                _context.prev = 1;
+                                _context.next = 4;
                                 return this.attachRequest();
 
-                            case 3:
+                            case 4:
+
+                                this.submittedViaAttachResource = false;
 
                                 this.$router.push({
                                     name: 'detail',
@@ -8995,23 +9513,25 @@ exports.default = {
                                         resourceId: this.resourceId
                                     }
                                 });
-                                _context.next = 9;
+                                _context.next = 12;
                                 break;
 
-                            case 6:
-                                _context.prev = 6;
-                                _context.t0 = _context['catch'](0);
+                            case 8:
+                                _context.prev = 8;
+                                _context.t0 = _context['catch'](1);
+
+                                this.submittedViaAttachResource = false;
 
                                 if (_context.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context.t0.response.data.errors);
                                 }
 
-                            case 9:
+                            case 12:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 6]]);
+                }, _callee, this, [[1, 8]]);
             }));
 
             function attachResource() {
@@ -9031,31 +9551,37 @@ exports.default = {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                _context2.prev = 0;
-                                _context2.next = 3;
+                                this.submittedViaAttachAndAttachAnother = true;
+
+                                _context2.prev = 1;
+                                _context2.next = 4;
                                 return this.attachRequest();
 
-                            case 3:
+                            case 4:
+
+                                this.submittedViaAttachAndAttachAnother = false;
 
                                 // Reset the form by refetching the fields
                                 this.initializeComponent();
-                                _context2.next = 9;
+                                _context2.next = 12;
                                 break;
 
-                            case 6:
-                                _context2.prev = 6;
-                                _context2.t0 = _context2['catch'](0);
+                            case 8:
+                                _context2.prev = 8;
+                                _context2.t0 = _context2['catch'](1);
+
+                                this.submittedViaAttachAndAttachAnother = false;
 
                                 if (_context2.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context2.t0.response.data.errors);
                                 }
 
-                            case 9:
+                            case 12:
                             case 'end':
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this, [[0, 6]]);
+                }, _callee2, this, [[1, 8]]);
             }));
 
             function attachAndAttachAnother() {
@@ -9155,9 +9681,21 @@ exports.default = {
          */
         isSearchable: function isSearchable() {
             return this.field.searchable;
+        },
+
+
+        /**
+         * Determine if the form is being processed
+         */
+        isWorking: function isWorking() {
+            return this.submittedViaAttachResource || this.submittedViaAttachAndAttachAnother;
         }
     }
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -9293,7 +9831,7 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9320,6 +9858,8 @@ exports.default = {
         return {
             relationResponse: null,
             loading: true,
+            submittedViaCreateAndAddAnother: false,
+            submittedViaCreateResource: false,
             fields: [],
             validationErrors: new _laravelNova.Errors()
         };
@@ -9333,25 +9873,33 @@ exports.default = {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            if (!this.isRelation) {
-                                _context.next = 6;
+                            if (!Nova.missingResource(this.resourceName)) {
+                                _context.next = 2;
                                 break;
                             }
 
-                            _context.next = 3;
+                            return _context.abrupt('return', this.$router.push({ name: '404' }));
+
+                        case 2:
+                            if (!this.isRelation) {
+                                _context.next = 8;
+                                break;
+                            }
+
+                            _context.next = 5;
                             return Nova.request('/nova-api/' + this.viaResource + '/field/' + this.viaRelationship);
 
-                        case 3:
+                        case 5:
                             _ref2 = _context.sent;
                             data = _ref2.data;
 
                             this.relationResponse = data;
 
-                        case 6:
+                        case 8:
 
                             this.getFields();
 
-                        case 7:
+                        case 9:
                         case 'end':
                             return _context.stop();
                     }
@@ -9382,7 +9930,13 @@ exports.default = {
                                 this.fields = [];
 
                                 _context2.next = 3;
-                                return Nova.request().get('/nova-api/' + this.resourceName + '/creation-fields');
+                                return Nova.request().get('/nova-api/' + this.resourceName + '/creation-fields', {
+                                    params: {
+                                        viaResource: this.viaResource,
+                                        viaResourceId: this.viaResourceId,
+                                        viaRelationship: this.viaRelationship
+                                    }
+                                });
 
                             case 3:
                                 _ref4 = _context2.sent;
@@ -9418,13 +9972,17 @@ exports.default = {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                _context3.prev = 0;
-                                _context3.next = 3;
+                                this.submittedViaCreateResource = true;
+
+                                _context3.prev = 1;
+                                _context3.next = 4;
                                 return this.createRequest();
 
-                            case 3:
+                            case 4:
                                 response = _context3.sent;
 
+
+                                this.submittedViaCreateResource = false;
 
                                 this.$toasted.show(this.__('The :resource was created!', {
                                     resource: this.resourceInformation.singularLabel.toLowerCase()
@@ -9437,23 +9995,25 @@ exports.default = {
                                         resourceId: response.data.id
                                     }
                                 });
-                                _context3.next = 11;
+                                _context3.next = 14;
                                 break;
 
-                            case 8:
-                                _context3.prev = 8;
-                                _context3.t0 = _context3['catch'](0);
+                            case 10:
+                                _context3.prev = 10;
+                                _context3.t0 = _context3['catch'](1);
+
+                                this.submittedViaCreateResource = false;
 
                                 if (_context3.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context3.t0.response.data.errors);
                                 }
 
-                            case 11:
+                            case 14:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 8]]);
+                }, _callee3, this, [[1, 10]]);
             }));
 
             function createResource() {
@@ -9474,13 +10034,17 @@ exports.default = {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                _context4.prev = 0;
-                                _context4.next = 3;
+                                this.submittedViaCreateAndAddAnother = true;
+
+                                _context4.prev = 1;
+                                _context4.next = 4;
                                 return this.createRequest();
 
-                            case 3:
+                            case 4:
                                 response = _context4.sent;
 
+
+                                this.submittedViaCreateAndAddAnother = false;
 
                                 this.$toasted.show(this.__('The :resource was created!', {
                                     resource: this.resourceInformation.singularLabel.toLowerCase()
@@ -9490,23 +10054,25 @@ exports.default = {
                                 this.getFields();
 
                                 this.validationErrors = new _laravelNova.Errors();
-                                _context4.next = 12;
+                                _context4.next = 15;
                                 break;
 
-                            case 9:
-                                _context4.prev = 9;
-                                _context4.t0 = _context4['catch'](0);
+                            case 11:
+                                _context4.prev = 11;
+                                _context4.t0 = _context4['catch'](1);
+
+                                this.submittedViaCreateAndAddAnother = false;
 
                                 if (_context4.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context4.t0.response.data.errors);
                                 }
 
-                            case 12:
+                            case 15:
                             case 'end':
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[0, 9]]);
+                }, _callee4, this, [[1, 11]]);
             }));
 
             function createAndAddAnother() {
@@ -9553,9 +10119,28 @@ exports.default = {
         },
         isRelation: function isRelation() {
             return Boolean(this.viaResourceId && this.viaRelationship);
+        },
+
+
+        /**
+         * Determine if the form is being processed
+         */
+        isWorking: function isWorking() {
+            return this.submittedViaCreateResource || this.submittedViaCreateAndAddAnother;
         }
     }
 }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -9605,7 +10190,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 exports.default = {
     mixins: [_laravelNova.HasCards],
@@ -9654,7 +10239,7 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9690,6 +10275,8 @@ exports.default = {
      * Bind the keydown even listener when the component is created
      */
     created: function created() {
+        if (Nova.missingResource(this.resourceName)) return this.$router.push({ name: '404' });
+
         document.addEventListener('keydown', this.handleKeydown);
     },
 
@@ -9807,8 +10394,14 @@ exports.default = {
 
             this.actions = [];
 
-            return Nova.request().get('/nova-api/' + this.resourceName + '/actions').then(function (response) {
-                _this2.actions = response.data.actions;
+            return Nova.request().get('/nova-api/' + this.resourceName + '/actions', {
+                params: {
+                    resourceId: this.resourceId
+                }
+            }).then(function (response) {
+                _this2.actions = _.filter(response.data.actions, function (action) {
+                    return !action.onlyOnIndex;
+                });
             });
         },
 
@@ -10286,11 +10879,10 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//
 //
 //
 //
@@ -10635,6 +11227,15 @@ exports.default = {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
+                            if (!Nova.missingResource(this.resourceName)) {
+                                _context.next = 2;
+                                break;
+                            }
+
+                            return _context.abrupt('return', this.$router.push({ name: '404' }));
+
+                        case 2:
+
                             // Bind the keydown even listener when the router is visited if this
                             // component is not a relation on a Detail page
                             if (!this.viaResource && !this.viaResourceId) {
@@ -10646,15 +11247,18 @@ exports.default = {
                             this.initializeTrashedFromQueryString();
                             this.initializeOrderingFromQueryString();
 
-                            this.initializeFilters();
-                            _context.next = 8;
+                            _context.next = 9;
+                            return this.initializeFilters();
+
+                        case 9:
+                            _context.next = 11;
                             return this.getResources();
 
-                        case 8:
-                            _context.next = 10;
+                        case 11:
+                            _context.next = 13;
                             return this.getAuthorizationToRelate();
 
-                        case 10:
+                        case 13:
 
                             this.getLenses();
                             this.getActions();
@@ -10683,7 +11287,7 @@ exports.default = {
                                 }, 15 * 1000);
                             }
 
-                        case 15:
+                        case 18:
                         case 'end':
                             return _context.stop();
                     }
@@ -10884,10 +11488,6 @@ exports.default = {
         getAllMatchingResourceCount: function getAllMatchingResourceCount() {
             var _this7 = this;
 
-            if (this.resourceName == 'action-events') {
-                return;
-            }
-
             Nova.request().get('/nova-api/' + this.resourceName + '/count', {
                 params: this.resourceRequestQueryString
             }).then(function (response) {
@@ -10958,7 +11558,7 @@ exports.default = {
          * Determine if the resource has any filters
          */
         hasFilters: function hasFilters() {
-            return this.$store.getters.hasFilters;
+            return this.$store.getters[this.resourceName + '/hasFilters'];
         },
 
 
@@ -11302,7 +11902,9 @@ exports.default = {
          * Return the resource count label
          */
         resourceCountLabel: function resourceCountLabel() {
-            return this.resources.length && this.resources.length + '/' + this.allMatchingResourceCount + ' ' + (0, _laravelNova.SingularOrPlural)(this.allMatchingResourceCount, this.__('resource'));
+            var label = this.resources.length > 1 ? this.__('resources') : this.__('resource');
+
+            return this.resources.length && this.resources.length + '/' + this.allMatchingResourceCount + ' ' + label;
         },
 
 
@@ -11310,7 +11912,7 @@ exports.default = {
          * Return the currently encoded filter string from the store
          */
         encodedFilters: function encodedFilters() {
-            return this.$store.getters.currentEncodedFilters;
+            return this.$store.getters[this.resourceName + '/currentEncodedFilters'];
         },
 
 
@@ -11339,7 +11941,15 @@ var _defineProperty2 = __webpack_require__("./node_modules/babel-runtime/helpers
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _regenerator = __webpack_require__("./node_modules/babel-runtime/regenerator/index.js");
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11620,32 +12230,63 @@ exports.default = {
     /**
      * Mount the component and retrieve its initial data.
      */
-    created: function created() {
-        var _this = this;
+    created: function () {
+        var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+            var _this = this;
 
-        this.initializeSearchFromQueryString();
-        this.initializePerPageFromQueryString();
-        this.initializeTrashedFromQueryString();
-        this.initializeOrderingFromQueryString();
+            return _regenerator2.default.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            if (!Nova.missingResource(this.resourceName)) {
+                                _context.next = 2;
+                                break;
+                            }
 
-        this.initializeFilters(this.lens);
-        this.getResources();
-        // this.getAuthorizationToRelate()
-        this.getActions();
+                            return _context.abrupt('return', this.$router.push({ name: '404' }));
 
-        this.initialLoading = false;
+                        case 2:
 
-        this.$watch(function () {
-            return _this.lens + _this.resourceName + _this.encodedFilters + _this.currentSearch + _this.currentPage + _this.currentPerPage + _this.currentOrderBy + _this.currentOrderByDirection + _this.currentTrashed;
-        }, function () {
-            _this.getResources();
+                            this.initializeSearchFromQueryString();
+                            this.initializePerPageFromQueryString();
+                            this.initializeTrashedFromQueryString();
+                            this.initializeOrderingFromQueryString();
 
-            _this.initializeSearchFromQueryString();
-            _this.initializePerPageFromQueryString();
-            _this.initializeTrashedFromQueryString();
-            _this.initializeOrderingFromQueryString();
-        });
-    },
+                            _context.next = 8;
+                            return this.initializeFilters(this.lens);
+
+                        case 8:
+                            this.getResources();
+                            // this.getAuthorizationToRelate()
+                            this.getActions();
+
+                            this.initialLoading = false;
+
+                            this.$watch(function () {
+                                return _this.lens + _this.resourceName + _this.encodedFilters + _this.currentSearch + _this.currentPage + _this.currentPerPage + _this.currentOrderBy + _this.currentOrderByDirection + _this.currentTrashed;
+                            }, function () {
+                                _this.getResources();
+
+                                _this.initializeSearchFromQueryString();
+                                _this.initializePerPageFromQueryString();
+                                _this.initializeTrashedFromQueryString();
+                                _this.initializeOrderingFromQueryString();
+                            });
+
+                        case 12:
+                        case 'end':
+                            return _context.stop();
+                    }
+                }
+            }, _callee, this);
+        }));
+
+        function created() {
+            return _ref.apply(this, arguments);
+        }
+
+        return created;
+    }(),
 
 
     methods: {
@@ -11689,8 +12330,8 @@ exports.default = {
 
                 return (0, _laravelNova.Minimum)(Nova.request().get('/nova-api/' + _this2.resourceName + '/lens/' + _this2.lens, {
                     params: _this2.resourceRequestQueryString
-                })).then(function (_ref) {
-                    var data = _ref.data;
+                })).then(function (_ref2) {
+                    var data = _ref2.data;
 
                     _this2.resources = [];
 
@@ -12133,7 +12774,7 @@ exports.default = {
          * Return the currently encoded filter string from the store
          */
         encodedFilters: function encodedFilters() {
-            return this.$store.getters.currentEncodedFilters;
+            return this.$store.getters[this.resourceName + '/currentEncodedFilters'];
         },
 
 
@@ -12166,7 +12807,7 @@ var _asyncToGenerator2 = __webpack_require__("./node_modules/babel-runtime/helpe
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -12196,6 +12837,8 @@ exports.default = {
         return {
             relationResponse: null,
             loading: true,
+            submittedViaUpdateAndContinueEditing: false,
+            submittedViaUpdateResource: false,
             fields: [],
             validationErrors: new _laravelNova.Errors(),
             lastRetrievedAt: null
@@ -12210,27 +12853,35 @@ exports.default = {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            if (!this.isRelation) {
-                                _context.next = 6;
+                            if (!Nova.missingResource(this.resourceName)) {
+                                _context.next = 2;
                                 break;
                             }
 
-                            _context.next = 3;
+                            return _context.abrupt('return', this.$router.push({ name: '404' }));
+
+                        case 2:
+                            if (!this.isRelation) {
+                                _context.next = 8;
+                                break;
+                            }
+
+                            _context.next = 5;
                             return Nova.request('/nova-api/' + this.viaResource + '/field/' + this.viaRelationship);
 
-                        case 3:
+                        case 5:
                             _ref2 = _context.sent;
                             data = _ref2.data;
 
                             this.relationResponse = data;
 
-                        case 6:
+                        case 8:
 
                             this.getFields();
 
                             this.updateLastRetrievedAtTimestamp();
 
-                        case 8:
+                        case 10:
                         case 'end':
                             return _context.stop();
                     }
@@ -12307,13 +12958,17 @@ exports.default = {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                _context3.prev = 0;
-                                _context3.next = 3;
+                                this.submittedViaUpdateResource = true;
+
+                                _context3.prev = 1;
+                                _context3.next = 4;
                                 return this.updateRequest();
 
-                            case 3:
+                            case 4:
                                 response = _context3.sent;
 
+
+                                this.submittedViaUpdateResource = false;
 
                                 this.$toasted.show(this.__('The :resource was updated!', {
                                     resource: this.resourceInformation.singularLabel.toLowerCase()
@@ -12323,15 +12978,17 @@ exports.default = {
                                     name: 'detail',
                                     params: {
                                         resourceName: this.resourceName,
-                                        resourceId: this.resourceId
+                                        resourceId: response.data.id
                                     }
                                 });
-                                _context3.next = 12;
+                                _context3.next = 15;
                                 break;
 
-                            case 8:
-                                _context3.prev = 8;
-                                _context3.t0 = _context3['catch'](0);
+                            case 10:
+                                _context3.prev = 10;
+                                _context3.t0 = _context3['catch'](1);
+
+                                this.submittedViaUpdateResource = false;
 
                                 if (_context3.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context3.t0.response.data.errors);
@@ -12341,12 +12998,12 @@ exports.default = {
                                     this.$toasted.show(this.__('Another user has updated this resource since this page was loaded. Please refresh the page and try again.'), { type: 'error' });
                                 }
 
-                            case 12:
+                            case 15:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 8]]);
+                }, _callee3, this, [[1, 10]]);
             }));
 
             function updateResource() {
@@ -12367,13 +13024,17 @@ exports.default = {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                _context4.prev = 0;
-                                _context4.next = 3;
+                                this.submittedViaUpdateAndContinueEditing = true;
+
+                                _context4.prev = 1;
+                                _context4.next = 4;
                                 return this.updateRequest();
 
-                            case 3:
+                            case 4:
                                 response = _context4.sent;
 
+
+                                this.submittedViaUpdateAndContinueEditing = false;
 
                                 this.$toasted.show(this.__('The :resource was updated!', {
                                     resource: this.resourceInformation.singularLabel.toLowerCase()
@@ -12385,12 +13046,14 @@ exports.default = {
                                 this.validationErrors = new _laravelNova.Errors();
 
                                 this.updateLastRetrievedAtTimestamp();
-                                _context4.next = 14;
+                                _context4.next = 17;
                                 break;
 
-                            case 10:
-                                _context4.prev = 10;
-                                _context4.t0 = _context4['catch'](0);
+                            case 12:
+                                _context4.prev = 12;
+                                _context4.t0 = _context4['catch'](1);
+
+                                this.submittedViaUpdateAndContinueEditing = false;
 
                                 if (_context4.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context4.t0.response.data.errors);
@@ -12400,12 +13063,12 @@ exports.default = {
                                     this.$toasted.show(this.__('Another user has updated this resource since this page was loaded. Please refresh the page and try again.'), { type: 'error' });
                                 }
 
-                            case 14:
+                            case 17:
                             case 'end':
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[0, 10]]);
+                }, _callee4, this, [[1, 12]]);
             }));
 
             function updateAndContinueEditing() {
@@ -12457,9 +13120,28 @@ exports.default = {
         },
         isRelation: function isRelation() {
             return Boolean(this.viaResourceId && this.viaRelationship);
+        },
+
+
+        /**
+         * Determine if the form is being processed
+         */
+        isWorking: function isWorking() {
+            return this.submittedViaUpdateResource || this.submittedViaUpdateAndContinueEditing;
         }
     }
 }; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12520,10 +13202,23 @@ var _lodash = __webpack_require__("./node_modules/lodash/lodash.js");
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _laravelNova = __webpack_require__("../nova-js/dist/index.js");
+var _laravelNova = __webpack_require__("./node_modules/laravel-nova/dist/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12622,6 +13317,8 @@ exports.default = {
     data: function data() {
         return {
             loading: true,
+            submittedViaUpdateAndContinueEditing: false,
+            submittedViaUpdateAttachedResource: false,
             field: null,
             softDeletes: false,
             fields: [],
@@ -12631,6 +13328,11 @@ exports.default = {
             lastRetrievedAt: null
         };
     },
+
+    created: function created() {
+        if (Nova.missingResource(this.resourceName)) return this.$router.push({ name: '404' });
+    },
+
 
     /**
      * Mount the component.
@@ -12835,11 +13537,15 @@ exports.default = {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                _context4.prev = 0;
-                                _context4.next = 3;
+                                this.submittedViaUpdateAttachedResource = true;
+
+                                _context4.prev = 1;
+                                _context4.next = 4;
                                 return this.updateRequest();
 
-                            case 3:
+                            case 4:
+
+                                this.submittedViaUpdateAttachedResource = false;
 
                                 this.$toasted.show(this.__('The resource was updated!'), { type: 'success' });
 
@@ -12850,14 +13556,15 @@ exports.default = {
                                         resourceId: this.resourceId
                                     }
                                 });
-                                _context4.next = 12;
+                                _context4.next = 14;
                                 break;
 
-                            case 7:
-                                _context4.prev = 7;
-                                _context4.t0 = _context4['catch'](0);
+                            case 9:
+                                _context4.prev = 9;
+                                _context4.t0 = _context4['catch'](1);
 
-                                console.log(_context4.t0);
+                                this.submittedViaUpdateAttachedResource = false;
+
                                 if (_context4.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context4.t0.response.data.errors);
                                 }
@@ -12866,12 +13573,12 @@ exports.default = {
                                     this.$toasted.show(this.__('Another user has updated this resource since this page was loaded. Please refresh the page and try again.'), { type: 'error' });
                                 }
 
-                            case 12:
+                            case 14:
                             case 'end':
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[0, 7]]);
+                }, _callee4, this, [[1, 9]]);
             }));
 
             function updateAttachedResource() {
@@ -12891,24 +13598,29 @@ exports.default = {
                     while (1) {
                         switch (_context5.prev = _context5.next) {
                             case 0:
-                                _context5.prev = 0;
-                                _context5.next = 3;
+                                this.submittedViaUpdateAndContinueEditing = true;
+
+                                _context5.prev = 1;
+                                _context5.next = 4;
                                 return this.updateRequest();
 
-                            case 3:
+                            case 4:
+
+                                this.submittedViaUpdateAndContinueEditing = false;
 
                                 this.$toasted.show(this.__('The resource was updated!'), { type: 'success' });
 
                                 // Reset the form by refetching the fields
                                 this.initializeComponent();
-                                _context5.next = 12;
+                                _context5.next = 14;
                                 break;
 
-                            case 7:
-                                _context5.prev = 7;
-                                _context5.t0 = _context5['catch'](0);
+                            case 9:
+                                _context5.prev = 9;
+                                _context5.t0 = _context5['catch'](1);
 
-                                console.log(_context5.t0);
+                                this.submittedViaUpdateAndContinueEditing = false;
+
                                 if (_context5.t0.response.status == 422) {
                                     this.validationErrors = new _laravelNova.Errors(_context5.t0.response.data.errors);
                                 }
@@ -12917,12 +13629,12 @@ exports.default = {
                                     this.$toasted.show(this.__('Another user has updated this resource since this page was loaded. Please refresh the page and try again.'), { type: 'error' });
                                 }
 
-                            case 12:
+                            case 14:
                             case 'end':
                                 return _context5.stop();
                         }
                     }
-                }, _callee5, this, [[0, 7]]);
+                }, _callee5, this, [[1, 9]]);
             }));
 
             function updateAndContinueEditing() {
@@ -13033,6 +13745,14 @@ exports.default = {
          */
         isSearchable: function isSearchable() {
             return this.field.searchable;
+        },
+
+
+        /**
+         * Determine if the form is being processed
+         */
+        isWorking: function isWorking() {
+            return this.submittedViaUpdateAttachedResource || this.submittedViaUpdateAndContinueEditing;
         }
     }
 };
@@ -27656,6 +28376,154 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
 /***/ }),
 
+/***/ "./node_modules/codemirror/mode/twig/twig.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__("./node_modules/codemirror/lib/codemirror.js"),  __webpack_require__("./node_modules/codemirror/addon/mode/multiplex.js"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror", "../../addon/mode/multiplex"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  "use strict";
+
+  CodeMirror.defineMode("twig:inner", function() {
+    var keywords = ["and", "as", "autoescape", "endautoescape", "block", "do", "endblock", "else", "elseif", "extends", "for", "endfor", "embed", "endembed", "filter", "endfilter", "flush", "from", "if", "endif", "in", "is", "include", "import", "not", "or", "set", "spaceless", "endspaceless", "with", "endwith", "trans", "endtrans", "blocktrans", "endblocktrans", "macro", "endmacro", "use", "verbatim", "endverbatim"],
+        operator = /^[+\-*&%=<>!?|~^]/,
+        sign = /^[:\[\(\{]/,
+        atom = ["true", "false", "null", "empty", "defined", "divisibleby", "divisible by", "even", "odd", "iterable", "sameas", "same as"],
+        number = /^(\d[+\-\*\/])?\d+(\.\d+)?/;
+
+    keywords = new RegExp("((" + keywords.join(")|(") + "))\\b");
+    atom = new RegExp("((" + atom.join(")|(") + "))\\b");
+
+    function tokenBase (stream, state) {
+      var ch = stream.peek();
+
+      //Comment
+      if (state.incomment) {
+        if (!stream.skipTo("#}")) {
+          stream.skipToEnd();
+        } else {
+          stream.eatWhile(/\#|}/);
+          state.incomment = false;
+        }
+        return "comment";
+      //Tag
+      } else if (state.intag) {
+        //After operator
+        if (state.operator) {
+          state.operator = false;
+          if (stream.match(atom)) {
+            return "atom";
+          }
+          if (stream.match(number)) {
+            return "number";
+          }
+        }
+        //After sign
+        if (state.sign) {
+          state.sign = false;
+          if (stream.match(atom)) {
+            return "atom";
+          }
+          if (stream.match(number)) {
+            return "number";
+          }
+        }
+
+        if (state.instring) {
+          if (ch == state.instring) {
+            state.instring = false;
+          }
+          stream.next();
+          return "string";
+        } else if (ch == "'" || ch == '"') {
+          state.instring = ch;
+          stream.next();
+          return "string";
+        } else if (stream.match(state.intag + "}") || stream.eat("-") && stream.match(state.intag + "}")) {
+          state.intag = false;
+          return "tag";
+        } else if (stream.match(operator)) {
+          state.operator = true;
+          return "operator";
+        } else if (stream.match(sign)) {
+          state.sign = true;
+        } else {
+          if (stream.eat(" ") || stream.sol()) {
+            if (stream.match(keywords)) {
+              return "keyword";
+            }
+            if (stream.match(atom)) {
+              return "atom";
+            }
+            if (stream.match(number)) {
+              return "number";
+            }
+            if (stream.sol()) {
+              stream.next();
+            }
+          } else {
+            stream.next();
+          }
+
+        }
+        return "variable";
+      } else if (stream.eat("{")) {
+        if (stream.eat("#")) {
+          state.incomment = true;
+          if (!stream.skipTo("#}")) {
+            stream.skipToEnd();
+          } else {
+            stream.eatWhile(/\#|}/);
+            state.incomment = false;
+          }
+          return "comment";
+        //Open tag
+        } else if (ch = stream.eat(/\{|%/)) {
+          //Cache close tag
+          state.intag = ch;
+          if (ch == "{") {
+            state.intag = "}";
+          }
+          stream.eat("-");
+          return "tag";
+        }
+      }
+      stream.next();
+    };
+
+    return {
+      startState: function () {
+        return {};
+      },
+      token: function (stream, state) {
+        return tokenBase(stream, state);
+      }
+    };
+  });
+
+  CodeMirror.defineMode("twig", function(config, parserConfig) {
+    var twigInner = CodeMirror.getMode(config, "twig:inner");
+    if (!parserConfig || !parserConfig.base) return twigInner;
+    return CodeMirror.multiplexingMode(
+      CodeMirror.getMode(config, parserConfig.base), {
+        open: /\{[{#%]/, close: /[}#%]\}/, mode: twigInner, parseDelimiters: true
+      }
+    );
+  });
+  CodeMirror.defineMIME("text/x-twig", "twig");
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/codemirror/mode/vue/vue.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30438,6 +31306,21 @@ exports.push([module.i, "@charset \"UTF-8\";\n/*\nTrix 1.0.0\nCopyright © 2018 
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/components/Trix.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\ntrix-editor:empty:not(:focus)::before {\n    color: var(--70);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-05d064cb\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/codemirror/lib/codemirror.css":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30506,7 +31389,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.progress[data-v-6ca9e6be] {\n  position: fixed;\n  top: 0px;\n  left: 0px;\n  right: 0px;\n  height: 2px;\n  width: 0%;\n  transition: width 0.2s, opacity 0.4s;\n  opacity: 1;\n  background-color: #efc14e;\n  z-index: 999999;\n}\n", ""]);
+exports.push([module.i, "\n.progress[data-v-6ca9e6be] {\n    position: fixed;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    height: 2px;\n    width: 0%;\n    transition: width 0.2s, opacity 0.4s;\n    opacity: 1;\n    background-color: #efc14e;\n    z-index: 999999;\n}\n", ""]);
 
 // exports
 
@@ -33346,15 +34229,15 @@ function addStyle (obj, options) {
 	    result = options.transform(obj.css);
 
 	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
+		// If transform returns a value, use that instead of the original css.
+		// This allows running runtime transformations on the css.
+		obj.css = result;
 	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
+		// If the transform function returns a falsy value, don't add this css.
+		// This allows conditional loading of css
+		return function() {
+			// noop
+		};
 	    }
 	}
 
@@ -33564,7 +34447,7 @@ module.exports = function (css) {
 		var newUrl;
 
 		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
+			//TODO: should we add protocol?
 			newUrl = unquotedOrigUrl;
 		} else if (unquotedOrigUrl.indexOf("/") === 0) {
 			// path should be relative to the base url
@@ -33873,12 +34756,12 @@ var render = function() {
                   "data-testid": "action-confirm",
                   dusk: "run-action-button",
                   disabled: !_vm.selectedAction,
-                  title: "Run Action"
+                  title: _vm.__("Run Action")
                 },
                 on: {
                   click: function($event) {
                     $event.preventDefault()
-                    return _vm.openConfirmationModal($event)
+                    return _vm.determineActionStrategy($event)
                   }
                 }
               },
@@ -33902,6 +34785,7 @@ var render = function() {
             ? _c("confirm-action-modal", {
                 attrs: {
                   working: _vm.working,
+                  "selected-resources": _vm.selectedResources,
                   "resource-name": _vm.resourceName,
                   "selected-action": _vm.selectedAction,
                   errors: _vm.errors
@@ -34050,7 +34934,13 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v(_vm._s(_vm.__("Write")))]
+                      [
+                        _vm._v(
+                          "\n                        " +
+                            _vm._s(_vm.__("Write")) +
+                            "\n                    "
+                        )
+                      ]
                     ),
                     _vm._v(" "),
                     _c(
@@ -34067,7 +34957,13 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v(_vm._s(_vm.__("Preview")))]
+                      [
+                        _vm._v(
+                          "\n                        " +
+                            _vm._s(_vm.__("Preview")) +
+                            "\n                    "
+                        )
+                      ]
                     )
                   ]
                 ),
@@ -34196,43 +35092,57 @@ var render = function() {
                   )
                 }),
                 _vm._v(" "),
-                _c("div", { staticClass: "bg-30 flex px-8 py-4" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "ml-auto btn btn-default btn-primary mr-3",
-                      attrs: {
-                        dusk: "create-and-add-another-button",
-                        type: "button"
+                _c(
+                  "div",
+                  { staticClass: "bg-30 flex px-8 py-4" },
+                  [
+                    _c(
+                      "progress-button",
+                      {
+                        staticClass: "ml-auto mr-3",
+                        attrs: {
+                          dusk: "create-and-add-another-button",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaCreateAndAddAnother
+                        },
+                        nativeOn: {
+                          click: function($event) {
+                            return _vm.createAndAddAnother($event)
+                          }
+                        }
                       },
-                      on: { click: _vm.createAndAddAnother }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Create & Add Another")) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-default btn-primary",
-                      attrs: { dusk: "create-button" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Create")) +
-                          " " +
-                          _vm._s(_vm.singularName) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                ])
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Create & Add Another")) +
+                            "\n                "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "progress-button",
+                      {
+                        attrs: {
+                          dusk: "create-button",
+                          type: "submit",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaCreateResource
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Create")) +
+                            " " +
+                            _vm._s(_vm.singularName) +
+                            "\n                "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
               ],
               2
             )
@@ -34298,6 +35208,7 @@ var render = function() {
                         "M0 185a19.4 19.4 0 0 1 19.4-19.4h37.33a19.4 19.4 0 0 0 0-38.8H45.08a19.4 19.4 0 1 1 0-38.8h170.84a19.4 19.4 0 0 1 0 38.8h-6.87a19.4 19.4 0 0 0 0 38.8h42.55a19.4 19.4 0 0 1 0 38.8H19.4A19.4 19.4 0 0 1 0 185z"
                     }
                   }),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34318,6 +35229,7 @@ var render = function() {
                           rx: "4.6"
                         }
                       }),
+                      _vm._v(" "),
                       _c("rect", {
                         attrs: {
                           width: "32.4",
@@ -34329,6 +35241,7 @@ var render = function() {
                           rx: "7.39"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         staticStyle: { "mix-blend-mode": "multiply" },
                         attrs: {
@@ -34341,6 +35254,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#E0EEFF",
@@ -34349,6 +35263,7 @@ var render = function() {
                       opacity: ".58"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#0D2B3E",
@@ -34358,6 +35273,7 @@ var render = function() {
                       d: "M88 188l9 7-9-7zm-15-11l5 3-5-3z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#4A90E2",
@@ -34366,6 +35282,7 @@ var render = function() {
                         "M92.82 198.36l20.65 15.44 10.71-6.16-20.65-15.44-10.71 6.16zM119 211l-22-17 22 17zm-72.18-46.64l20.65 15.44 10.71-6.16-20.65-15.44-10.71 6.16zM73 178l-22-17 22 17z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#8DDCFF",
@@ -34374,6 +35291,7 @@ var render = function() {
                       d: "M117 176a14 14 0 0 0-14-14m10 15a10 10 0 0 0-10-10"
                     }
                   }),
+                  _vm._v(" "),
                   _c("ellipse", {
                     attrs: {
                       cx: "258",
@@ -34383,6 +35301,7 @@ var render = function() {
                       ry: "90"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -34393,6 +35312,7 @@ var render = function() {
                         "M195.95992276 433.88207738c-.7613033-1.55811337-1.97677352-5.39619.01107483-6.1324365 1.97685786-.72734656 2.77032762 2.34241006 4.31210683 4.22387675 2.92231431 3.57504952 6.28818967 5.22592295 11.14145652 5.73602185 1.77024897.18606067 3.51532102.0376574 5.19229942-.41955529a3.17 3.17 0 0 1 3.89461497 2.16898002 3.12 3.12 0 0 1-2.19463454 3.85169823c-2.43329264.66931826-4.97971626.88432232-7.54558275.61463889-7.06110546-.7421521-11.79595772-3.81390631-14.81133528-10.04322395z"
                     }
                   }),
+                  _vm._v(" "),
                   _c(
                     "g",
                     { attrs: { stroke: "#0D2B3E", "stroke-width": "2" } },
@@ -34405,6 +35325,7 @@ var render = function() {
                             "M228.66635404 453.35751889l3.48444585 6.7411525a11.71 11.71 0 0 0-3.36066168 18.19840799l3.157266 3.1573203-8.52104352 8.55618006-.29468882-6.6673277a19.31 19.31 0 0 1 5.53468217-29.98573315z"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d: "M221.75370493 481.33823157l5.9097851-4.56727928"
@@ -34412,6 +35333,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c(
                     "g",
                     { attrs: { stroke: "#0D2B3E", "stroke-width": "2" } },
@@ -34424,6 +35346,7 @@ var render = function() {
                             "M217.43675157 454.38903415l-.38056208 7.58726384a10.25 10.25 0 0 0-10.62036709 8.5642456l.04580558 4.00318647-11.36366293-.10613565 3.84834642-5.16425501a17.82 17.82 0 0 1 18.46098491-14.88104957z"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d: "M199.40986905 468.0735658l7.07551171 1.72015522"
@@ -34431,6 +35354,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#E5F7FF",
@@ -34438,6 +35362,7 @@ var render = function() {
                         "M233.41788355 435.98904264l3.14268919.33030994-3.01041974 28.64223059-3.1426892-.33030995z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -34446,6 +35371,7 @@ var render = function() {
                         "M218.1633805 433.70198413l13.07796292 1.37454929 1.09127716-10.38280859a6.575 6.575 0 0 0-13.07796293-1.37454929l-1.09127715 10.38280859z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -34455,6 +35381,7 @@ var render = function() {
                         "M221.02136188 434.25374714l.64389533-6.12625487a3.59 3.59 0 1 1 7.130722.74946908l-.64389534 6.12625488"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#0D2B3E",
@@ -34463,6 +35390,7 @@ var render = function() {
                         "M235.80327328 436.92350283l-20.28824667-2.13238065-2.86721575 27.27973559 20.28824667 2.13238065 2.86721575-27.2797356z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -34472,6 +35400,7 @@ var render = function() {
                         "M215.51502661 434.79112218l-2.86721575 27.27973559 17.1555027 1.80311599 2.86721575-27.2797356-17.1555027-1.80311598z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -34481,6 +35410,7 @@ var render = function() {
                         "M214.36589556 440.07997818l-1.09905036.88999343-1.17489993 11.1784261 11.15853567 1.17280937 1.09905036-.88999344 1.17385464-11.16848088-11.16848088-1.17385464z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -34491,6 +35421,7 @@ var render = function() {
                         "M245.62684398 462.24908175c-.41742893 1.6755456-1.95466376 5.39523768-3.94116941 4.68369338-1.99645087-.71258958-.63076284-3.56546466-.5955535-6.00514913.06313174-4.61870267-1.45795198-8.03642184-4.8492445-11.55015704-1.23234204-1.2858589-2.67505657-2.29217634-4.24858182-3.01059006a3.17 3.17 0 0 1-1.5730205-4.16725407 3.12 3.12 0 0 1 4.14422777-1.54527542c2.29328456 1.04544055 4.3804078 2.52169139 6.1770892 4.36961887 4.93145874 5.12354512 6.58580412 10.52606688 4.87526226 17.2340134z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#233242",
@@ -34499,9 +35430,11 @@ var render = function() {
                         "M518 372.93A1509.66 1509.66 0 0 0 261 351c-87.62 0-173.5 7.51-257 21.93"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "51", cy: "107", r: "6", fill: "#9AC2F0" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#031836",
@@ -34510,9 +35443,11 @@ var render = function() {
                       d: "M48 116a6 6 0 1 0-6-6"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "501", cy: "97", r: "6", fill: "#9AC2F0" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#031836",
@@ -34521,6 +35456,7 @@ var render = function() {
                       d: "M498 106a6 6 0 1 0-6-6"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#031836",
@@ -34528,6 +35464,7 @@ var render = function() {
                         "M305.75 0h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-.5a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zM321 14.75v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zM306.25 30h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1zM291 15.25v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#DDE4EB",
@@ -34535,12 +35472,15 @@ var render = function() {
                         "M446 107.5a16.5 16.5 0 0 0 16.5 16.5h44a16.5 16.5 0 0 1 0 33h-143a16.5 16.5 0 0 1 0-33 16.5 16.5 0 0 0 0-33h-66a16.5 16.5 0 0 1 0-33h165a16.5 16.5 0 0 1 0 33 16.5 16.5 0 0 0-16.5 16.5z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "458", cy: "186", r: "4", fill: "#031836" }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "138", cy: "16", r: "4", fill: "#031836" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#233242",
@@ -34549,6 +35489,7 @@ var render = function() {
                         "M58 364.86l67.93-67.93a10 10 0 0 1 14.14 0L196 352.86m139-18l36.93-36.93a10 10 0 0 1 14.14 0L451 362.86"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#233242",
@@ -34557,6 +35498,7 @@ var render = function() {
                         "M176 332.86l70.93-71.84a10 10 0 0 1 14.19-.05L345 344.86"
                     }
                   }),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34576,6 +35518,7 @@ var render = function() {
                           ry: "19.26"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           fill: "#FFF",
@@ -34584,6 +35527,7 @@ var render = function() {
                             "M25.66 54.03c-7.52 0-13.62-12.1-13.62-27.02S18.14 0 25.66 0H96.1c7.22 0 14.15 2.85 19.26 7.91l19.26 19.1-19.26 19.1a27.35 27.35 0 0 1-19.26 7.92H25.66z"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           fill: "#FFF",
@@ -34592,6 +35536,7 @@ var render = function() {
                             "M98.09 54.22c-7.52 0-13.62-12.1-13.62-27.02s6.1-27 13.62-27"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "59.59",
@@ -34601,6 +35546,7 @@ var render = function() {
                           ry: "16.21"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "59.59",
@@ -34613,6 +35559,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34626,6 +35573,7 @@ var render = function() {
                       _c("ellipse", {
                         attrs: { cx: "30", cy: "10", rx: "20", ry: "10" }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d:
@@ -34634,6 +35582,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34647,6 +35596,7 @@ var render = function() {
                       _c("ellipse", {
                         attrs: { cx: "20", cy: "6.67", rx: "13.33", ry: "6.67" }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d:
@@ -34655,6 +35605,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34668,6 +35619,7 @@ var render = function() {
                       _c("ellipse", {
                         attrs: { cx: "15", cy: "5", rx: "10", ry: "5" }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d:
@@ -34676,6 +35628,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("ellipse", {
                     attrs: {
                       cx: "58",
@@ -34685,6 +35638,7 @@ var render = function() {
                       ry: "2"
                     }
                   }),
+                  _vm._v(" "),
                   _c("ellipse", {
                     attrs: {
                       cx: "468",
@@ -34694,6 +35648,7 @@ var render = function() {
                       ry: "2"
                     }
                   }),
+                  _vm._v(" "),
                   _c("ellipse", {
                     attrs: {
                       cx: "388",
@@ -34703,6 +35658,7 @@ var render = function() {
                       ry: "2"
                     }
                   }),
+                  _vm._v(" "),
                   _c("ellipse", {
                     attrs: {
                       cx: "338",
@@ -34712,6 +35668,7 @@ var render = function() {
                       ry: "2"
                     }
                   }),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -34730,6 +35687,7 @@ var render = function() {
                           ry: "13.33"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           d:
@@ -34738,6 +35696,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c(
                     "g",
                     { attrs: { stroke: "#0D2B3E", "stroke-width": "2" } },
@@ -34750,6 +35709,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: {
                       cx: "341",
@@ -34759,9 +35719,11 @@ var render = function() {
                       "stroke-width": "2"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "342", cy: "156", r: "20", fill: "#FFF" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#233242",
@@ -34789,11 +35751,13 @@ var render = function() {
             _vm._v(" "),
             _c("p", { staticClass: "text-error-message mb-8 leading-normal" }, [
               _vm._v(
-                _vm._s(
-                  _vm.__(
-                    "The government won't let us show you what's behind these doors"
-                  )
-                ) + "…"
+                "\n                " +
+                  _vm._s(
+                    _vm.__(
+                      "The government won't let us show you what's behind these doors"
+                    )
+                  ) +
+                  "…\n            "
               )
             ]),
             _vm._v(" "),
@@ -34885,6 +35849,7 @@ var render = function() {
                             "M26.03 0h76.9c7.9 0 15.46 3.16 21.04 8.79L145 30l-21.03 21.21A29.62 29.62 0 0 1 102.94 60H26.03V0z"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           fill: "#FFF",
@@ -34893,6 +35858,7 @@ var render = function() {
                             "M102.62 60c8.2 0 14.87-13.43 14.87-30s-6.66-30-14.87-30"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           stroke: "#4A90E2",
@@ -34900,6 +35866,7 @@ var render = function() {
                             "M33.46 60c8.22 0 14.87-13.43 14.87-30S41.68 0 33.46 0"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "26.03",
@@ -34910,6 +35877,7 @@ var render = function() {
                           ry: "30"
                         }
                       }),
+                      _vm._v(" "),
                       _c("path", {
                         attrs: {
                           fill: "#FFF",
@@ -34918,6 +35886,7 @@ var render = function() {
                             "M12.15 8.92v42.16c6.35-2.3 10.75-4.58 13.2-6.82l1.53-1.4C30.94 39 32.46 36 32.46 30c0-6.42-1.69-9.3-6.8-13.98l-.31-.28c-2.44-2.24-6.84-4.52-13.2-6.82z"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "11.15",
@@ -34928,6 +35897,7 @@ var render = function() {
                           ry: "21.5"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "79.56",
@@ -34937,6 +35907,7 @@ var render = function() {
                           ry: "18"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         attrs: {
                           cx: "79.56",
@@ -34949,6 +35920,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#DDE4EB",
@@ -34956,6 +35928,7 @@ var render = function() {
                         "M425 74.5A16.5 16.5 0 0 0 441.5 91h44a16.5 16.5 0 0 1 0 33h-143a16.5 16.5 0 0 1 0-33 16.5 16.5 0 0 0 0-33h-66a16.5 16.5 0 0 1 0-33h165a16.5 16.5 0 0 1 0 33A16.5 16.5 0 0 0 425 74.5z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("g", { attrs: { transform: "translate(424 130)" } }, [
                     _c("circle", {
                       attrs: {
@@ -34966,6 +35939,7 @@ var render = function() {
                         "stroke-width": "2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "45.83",
@@ -34974,6 +35948,7 @@ var render = function() {
                         fill: "#FFF"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "47.5",
@@ -34983,6 +35958,7 @@ var render = function() {
                         "stroke-width": "2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("path", {
                       attrs: {
                         stroke: "#4A90E2",
@@ -34991,6 +35967,7 @@ var render = function() {
                         d: "M48.33 25c4.6 0 8.34-3.73 8.34-8.33"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "70",
@@ -35000,6 +35977,7 @@ var render = function() {
                         "stroke-width": "2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "19.17",
@@ -35009,6 +35987,7 @@ var render = function() {
                         "stroke-width": "2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("path", {
                       attrs: {
                         stroke: "#4A90E2",
@@ -35018,6 +35997,7 @@ var render = function() {
                           "M26.67 42.5a7.5 7.5 0 0 0-7.5-7.5m-7.5 7.5a7.5 7.5 0 0 0 7.5 7.5"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "53.33",
@@ -35027,6 +36007,7 @@ var render = function() {
                         "stroke-width": "2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("path", {
                       attrs: {
                         stroke: "#4A90E2",
@@ -35035,6 +36016,7 @@ var render = function() {
                         d: "M45 66.67c0 4.6 3.73 8.33 8.33 8.33"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "19.17",
@@ -35043,6 +36025,7 @@ var render = function() {
                         fill: "#4A90E2"
                       }
                     }),
+                    _vm._v(" "),
                     _c("circle", {
                       attrs: {
                         cx: "32.5",
@@ -35052,6 +36035,7 @@ var render = function() {
                       }
                     })
                   ]),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#DDE4EB",
@@ -35059,6 +36043,7 @@ var render = function() {
                         "M309.1 302.8a19.4 19.4 0 0 0-19.4-19.4H177.14a19.4 19.4 0 0 0 0 38.8h11.65a19.4 19.4 0 1 1 0 38.8H63.63a19.4 19.4 0 0 1-19.4-19.4v-.48a18.92 18.92 0 0 1 18.92-18.92 18.92 18.92 0 0 0 18.91-18.92v-.48a19.4 19.4 0 0 0-19.4-19.4H38.4a19.4 19.4 0 0 1 0-38.8h87.33a19.4 19.4 0 0 0 0-38.8h-11.65a19.4 19.4 0 1 1 0-38.8h200.84a19.4 19.4 0 0 1 0 38.8h-36.87a19.4 19.4 0 0 0 0 38.8H390.6a19.4 19.4 0 0 1 0 38.8h-11.65a19.4 19.4 0 0 0-19.4 19.4v.48a18.92 18.92 0 0 0 18.92 18.92 18.92 18.92 0 0 1 18.92 18.92v.48a19.4 19.4 0 0 1-19.4 19.4h-99.94a19.4 19.4 0 0 1 0-38.8h11.65a19.4 19.4 0 0 0 19.4-19.4z"
                     }
                   }),
+                  _vm._v(" "),
                   _c(
                     "g",
                     {
@@ -35079,6 +36064,7 @@ var render = function() {
                           rx: "11.18"
                         }
                       }),
+                      _vm._v(" "),
                       _c("rect", {
                         attrs: {
                           width: "72.05",
@@ -35090,6 +36076,7 @@ var render = function() {
                           rx: "17.27"
                         }
                       }),
+                      _vm._v(" "),
                       _c("ellipse", {
                         staticStyle: { "mix-blend-mode": "multiply" },
                         attrs: {
@@ -35102,6 +36089,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#E0EEFF",
@@ -35110,6 +36098,7 @@ var render = function() {
                       opacity: ".58"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#0D2B3E",
@@ -35120,6 +36109,7 @@ var render = function() {
                         "M107.4 354.78l20.25 15.12-20.25-15.12zM75.76 332.1l10.12 7.56-10.12-7.56z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#4A90E2",
@@ -35128,6 +36118,7 @@ var render = function() {
                         "M115.52 377.19l46.88 35.6 25.48-14.9-46.89-35.6-25.47 14.9zm58.96 27.99l-46.83-36.54 46.83 36.54zM16.8 304.11l46.88 35.6 25.47-14.9-46.88-35.6L16.8 304.1zm58.96 29.25l-46.84-36.54 46.84 36.54z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#8DDCFF",
@@ -35137,6 +36128,7 @@ var render = function() {
                         "M169.42 329.58a30.3 30.3 0 0 0-30.38-30.24m21.52 31.5a21.47 21.47 0 0 0-21.52-21.42"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35147,6 +36139,7 @@ var render = function() {
                         "M363.8119003 126.44094699c2.51661541-6.60148066 6.09613872-22.6187686-2.2109135-24.895539-8.3168685-2.2748623-10.42540197 10.4614671-16.03584328 18.70341761-10.59995244 15.53804391-23.66683084 23.41606326-43.2306606 27.21888653-7.11679709 1.38336522-14.27332024 1.40937203-21.21489804.130389-6.98465907-1.29098322-13.7264579 3.27938314-15.03870592 10.20705267a12.7 12.7 0 0 0 10.24523714 14.86828894 82.91 82.91 0 0 0 30.8739962-.17423743c28.42792323-5.5258285 46.57886712-19.68941689 56.611788-46.05825832z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35154,6 +36147,7 @@ var render = function() {
                       d: "M361.7030833 130.52842676l-17.8049339-7.7449551"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35164,6 +36158,7 @@ var render = function() {
                         "M266.54686983 241.69757868l16.77256314 26.0176618a41.79 41.79 0 0 1 54.9786567 8.5873516l8.01291943 14.232555 39.8983953-23.55575834-24.11546673-10.38943521a72.65 72.65 0 0 0-95.54897593-14.90219112z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35174,6 +36169,7 @@ var render = function() {
                         "M237.8794903 217.16687444l-11.75143341 28.63844816a47.76 47.76 0 0 1 29.336647 40.02772592 47.59 47.59 0 0 1-9.23738334 32.6626813l-11.68590493 13.9867518 37.64817267 31.6885988-1.18280452-27.15319085a78.6 78.6 0 0 0 15.2180959-53.88374576 78.74 78.74 0 0 0-48.34538937-65.96726937z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#E5F7FF",
@@ -35181,6 +36177,7 @@ var render = function() {
                         "M212.38792337 148.28534705l-12.63354185 2.45571177 22.40860842 115.28229643 12.63354185-2.45571177z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35189,6 +36186,7 @@ var render = function() {
                         "M277.14421373 136.00361432l-58.67185675 11.40465366-8.69325783-44.72293448a29.885 29.885 0 1 1 58.67185675-11.40465366l8.69325783 44.72293448z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35198,6 +36196,7 @@ var render = function() {
                         "M266.45521183 136.46158627l-5.90935459-30.40099387c-1.90427377-9.79663929-11.36964991-16.19817461-21.13684039-14.2996251s-16.13355271 11.38765018-14.23118703 21.1744732l5.90935459 30.40099388"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#0D2B3E",
@@ -35206,6 +36205,7 @@ var render = function() {
                         "M199.41437503 150.51172155l87.71820511-17.05069183 22.52118573 115.86145646-87.71820512 17.05069183-22.52118572-115.86145646z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35215,6 +36215,7 @@ var render = function() {
                         "M287.13258014 133.46102972l22.52118573 115.86145646-75.09447954 14.59688815-22.52118572-115.86145646 75.09447953-14.59688815z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35224,6 +36225,7 @@ var render = function() {
                         "M291.89999763 154.8951691l6.86065974 4.63610266 9.58051965 49.28750088-49.1402568 9.55189831-6.86065974-4.63610267-9.58242774-49.29731715 49.1402568-9.55189831z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35233,6 +36235,7 @@ var render = function() {
                         "M298.87323467 160.1104318l-48.56109676 9.439321 9.46794235 48.70834085 48.56109676-9.439321z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35240,6 +36243,7 @@ var render = function() {
                       d: "M280.23508038 323.43753826l-27.22702477-17.43517197"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#FFF",
@@ -35250,6 +36254,7 @@ var render = function() {
                         "M172.12419639 259.31801112c2.31538206 6.67076501 9.8636495 21.23813123 17.69252677 17.64835676 7.83678545-3.60149884 1.26419427-14.7216987.27446604-24.63498464-1.87754554-18.72579298 3.06823431-33.16477708 15.6036019-48.65116657a56.95 56.95 0 0 1 16.17568934-13.73888912 12.91 12.91 0 0 0 4.954421-17.48662668 12.7 12.7 0 0 0-17.40510779-4.79708482 82.91 82.91 0 0 0-23.5305555 19.97687308c-18.2294437 22.51194976-23.0325701 45.02200255-13.76504176 71.68352199z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35257,6 +36262,7 @@ var render = function() {
                       d: "M189.24009043 249.42029566l-19.63254367 3.8161799"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#0D2B3E",
@@ -35265,6 +36271,7 @@ var render = function() {
                         "M275.89003883 328.33662123l-25.60278694-16.41637296m107.79044764-58.64485824l-21.48773566 20.47625982"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35272,6 +36279,7 @@ var render = function() {
                       d: "M352.8061952 248.16739216l-21.48773565 20.47625982"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#4A90E2",
@@ -35280,6 +36288,7 @@ var render = function() {
                         "M293.81436735 168.98883038l-10.79789902 2.09889895 2.09889895 10.79789902 10.79789901-2.09889895z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#7ED7FF",
@@ -35288,9 +36297,11 @@ var render = function() {
                         "M297.24892926 186.65811968l-4.90813592.95404498.95404498 4.90813592 4.90813592-.95404498zM285.46940306 188.94782763l-4.90813592.95404498.95404498 4.90813591 4.90813592-.95404497zM265.34717903 174.52229125l-4.90813592.95404498 6.48750584 33.37532423 4.90813592-.95404497zM276.14507804 172.4233923l-3.92650873.76323598.38161799 1.96325437 3.92650873-.76323598z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "401", cy: "44", r: "6", fill: "#9AC2F0" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#031836",
@@ -35299,9 +36310,11 @@ var render = function() {
                       d: "M398 53a6 6 0 1 0-6-6"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "90", cy: "164", r: "6", fill: "#9AC2F0" }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       stroke: "#031836",
@@ -35310,6 +36323,7 @@ var render = function() {
                       d: "M87 173a6 6 0 1 0-6-6"
                     }
                   }),
+                  _vm._v(" "),
                   _c("path", {
                     attrs: {
                       fill: "#031836",
@@ -35317,9 +36331,11 @@ var render = function() {
                         "M400.75 335h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM416 349.75v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zM401.25 365h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1zM386 350.25v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1zM14.75 202h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM30 216.75v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zM15.25 232h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1zM0 217.25v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zM224.75 7h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM240 21.75v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zM225.25 37h-.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h.5a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1zM210 22.25v-.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1z"
                     }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "377", cy: "173", r: "4", fill: "#031836" }
                   }),
+                  _vm._v(" "),
                   _c("circle", {
                     attrs: { cx: "255", cy: "403", r: "4", fill: "#031836" }
                   })
@@ -35342,11 +36358,13 @@ var render = function() {
             _vm._v(" "),
             _c("p", { staticClass: "text-error-message mb-8 leading-normal" }, [
               _vm._v(
-                _vm._s(
-                  _vm.__(
-                    "We're lost in space. The page your were trying to view does not exist."
-                  )
-                )
+                "\n                " +
+                  _vm._s(
+                    _vm.__(
+                      "We're lost in space. The page you were trying to view does not exist."
+                    )
+                  ) +
+                  "\n            "
               )
             ]),
             _vm._v(" "),
@@ -35564,7 +36582,7 @@ var render = function() {
             "form-label",
             {
               class: { "mb-2": _vm.field.helpText && _vm.showHelpText },
-              attrs: { for: _vm.field.attribute }
+              attrs: { "label-for": _vm.field.attribute }
             },
             [
               _vm._v(
@@ -35652,8 +36670,7 @@ var render = function() {
                 _vm.shouldShowLoader
                   ? [
                       _c("ImageLoader", {
-                        staticClass: "max-w-xs",
-                        attrs: { src: _vm.field.thumbnailUrl },
+                        attrs: { src: _vm.imageUrl, maxWidth: _vm.maxWidth },
                         on: {
                           missing: function(value) {
                             return (_vm.missing = value)
@@ -35663,7 +36680,7 @@ var render = function() {
                     ]
                   : _vm._e(),
                 _vm._v(" "),
-                _vm.field.value && !_vm.field.thumbnailUrl
+                _vm.field.value && !_vm.imageUrl
                   ? [
                       _c(
                         "card",
@@ -35694,7 +36711,7 @@ var render = function() {
                     ]
                   : _vm._e(),
                 _vm._v(" "),
-                _vm.field.thumbnailUrl
+                _vm.imageUrl
                   ? _c(
                       "p",
                       { staticClass: "mt-3 flex items-center text-sm" },
@@ -35710,11 +36727,7 @@ var render = function() {
                               },
                               [
                                 _c("span", { staticClass: "class ml-2 mt-1" }, [
-                                  _vm._v(
-                                    "\n                        " +
-                                      _vm._s(_vm.__("Delete")) +
-                                      "\n                    "
-                                  )
+                                  _vm._v(" " + _vm._s(_vm.__("Delete")) + " ")
                                 ])
                               ]
                             )
@@ -35781,12 +36794,12 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("span", { staticClass: "text-gray-50" }, [
-          _vm._v("\n            " + _vm._s(_vm.currentLabel) + "\n        ")
+          _vm._v(" " + _vm._s(_vm.currentLabel) + " ")
         ]),
         _vm._v(" "),
         _vm.hasError
           ? _c("p", { staticClass: "text-xs mt-2 text-danger" }, [
-              _vm._v("\n            " + _vm._s(_vm.firstError) + "\n        ")
+              _vm._v(_vm._s(_vm.firstError))
             ])
           : _vm._e()
       ])
@@ -35909,11 +36922,14 @@ var render = function() {
           [
             _c("date-time-picker", {
               staticClass: "w-full form-control form-input form-input-bordered",
+              class: _vm.errorClasses,
               attrs: {
                 dusk: _vm.field.attribute,
                 name: _vm.field.name,
+                placeholder: _vm.placeholder,
                 value: _vm.localizedValue,
-                "twelve-hour-time": _vm.usesTwelveHourTime
+                "twelve-hour-time": _vm.usesTwelveHourTime,
+                "first-day-of-week": _vm.firstDayOfWeek
               },
               on: { change: _vm.handleChange }
             }),
@@ -35982,7 +36998,7 @@ var render = function() {
                   " (" +
                   _vm._s(item.value) +
                   " - " +
-                  _vm._s(((item.value * 100) / _vm.formattedTotal).toFixed(2)) +
+                  _vm._s(item.percentage) +
                   "%)\n            "
               )
             ])
@@ -35992,7 +37008,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", {
         ref: "chart",
-        staticClass: "z-40 vertical-center rounded-b-lg ct-chart",
+        class: _vm.chartClasses,
         staticStyle: {
           width: "90px",
           height: "90px",
@@ -36311,7 +37327,7 @@ var render = function() {
                       },
                       [
                         _vm._v(
-                          "\n                        " +
+                          "\n                    " +
                             _vm._s(
                               _vm.__(
                                 _vm.viaManyToMany
@@ -36439,11 +37455,13 @@ var render = function() {
                                 { staticClass: "text-80 leading-normal" },
                                 [
                                   _vm._v(
-                                    _vm._s(
-                                      _vm.__(
-                                        "Are you sure you want to force delete the selected resources?"
-                                      )
-                                    )
+                                    "\n                        " +
+                                      _vm._s(
+                                        _vm.__(
+                                          "Are you sure you want to force delete the selected resources?"
+                                        )
+                                      ) +
+                                      "\n                    "
                                   )
                                 ]
                               )
@@ -36753,26 +37771,18 @@ var render = function() {
                         "\n                    " +
                           _vm._s(_vm.growthPercentage) +
                           "% " +
-                          _vm._s(_vm.increaseOrDecreaseLabel) +
+                          _vm._s(_vm.__(_vm.increaseOrDecreaseLabel)) +
                           "\n                "
                       )
                     ])
                   : _c("span", [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("No Increase")) +
-                          "\n                "
-                      )
+                      _vm._v(" " + _vm._s(_vm.__("No Increase")) + " ")
                     ])
               ])
             : _c("span", [
                 _vm.previous == "0" && _vm.value != "0"
                   ? _c("span", [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("No Prior Data")) +
-                          "\n                "
-                      )
+                      _vm._v(" " + _vm._s(_vm.__("No Prior Data")) + " ")
                     ])
                   : _vm._e(),
                 _vm._v(" "),
@@ -36787,13 +37797,7 @@ var render = function() {
                   : _vm._e(),
                 _vm._v(" "),
                 _vm.value == "0" && _vm.previous == "0"
-                  ? _c("span", [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("No Data")) +
-                          "\n                "
-                      )
-                    ])
+                  ? _c("span", [_vm._v(" " + _vm._s(_vm.__("No Data")) + " ")])
                   : _vm._e()
               ])
         ])
@@ -36965,9 +37969,7 @@ var render = function() {
       [
         _vm._t("default", [
           _c("h4", { staticClass: "font-normal text-80" }, [
-            _vm._v(
-              "\n                " + _vm._s(_vm.field.name) + "\n            "
-            )
+            _vm._v(_vm._s(_vm.field.name))
           ])
         ])
       ],
@@ -37000,7 +38002,13 @@ var render = function() {
                       )
                     }
                   },
-                  [_vm._v(_vm._s(_vm.field.value))]
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.field.value) +
+                        "\n                "
+                    )
+                  ]
                 )
               : _c("p", [_vm._v("—")])
           ])
@@ -37313,11 +38321,13 @@ var render = function() {
                     _vm._v(" "),
                     _c("p", { staticClass: "text-80 leading-normal" }, [
                       _vm._v(
-                        _vm._s(
-                          _vm.__(
-                            "Are you sure you want to restore the selected resources?"
-                          )
-                        )
+                        "\n                    " +
+                          _vm._s(
+                            _vm.__(
+                              "Are you sure you want to restore the selected resources?"
+                            )
+                          ) +
+                          "\n                "
                       )
                     ])
                   ],
@@ -37340,7 +38350,13 @@ var render = function() {
                         }
                       }
                     },
-                    [_vm._v(_vm._s(_vm.__("Cancel")))]
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.__("Cancel")) +
+                          "\n                "
+                      )
+                    ]
                   ),
                   _vm._v(" "),
                   _c(
@@ -37354,7 +38370,13 @@ var render = function() {
                         type: "submit"
                       }
                     },
-                    [_vm._v(_vm._s(_vm.__("Restore")))]
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.__("Restore")) +
+                          "\n                "
+                      )
+                    ]
                   )
                 ])
               ])
@@ -37423,13 +38445,15 @@ var render = function() {
                       _vm._v(" "),
                       _c("p", { staticClass: "text-80 leading-normal" }, [
                         _vm._v(
-                          _vm._s(
-                            _vm.__(
-                              "Are you sure you want to " +
-                                _vm.mode +
-                                " the selected resources?"
-                            )
-                          )
+                          "\n                    " +
+                            _vm._s(
+                              _vm.__(
+                                "Are you sure you want to " +
+                                  _vm.mode +
+                                  " the selected resources?"
+                              )
+                            ) +
+                            "\n                "
                         )
                       ])
                     ],
@@ -37458,7 +38482,13 @@ var render = function() {
                         }
                       }
                     },
-                    [_vm._v(_vm._s(_vm.__("Cancel")))]
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.__("Cancel")) +
+                          "\n                "
+                      )
+                    ]
                   ),
                   _vm._v(" "),
                   _c(
@@ -37472,7 +38502,13 @@ var render = function() {
                         type: "submit"
                       }
                     },
-                    [_vm._v(_vm._s(_vm.__(_vm.uppercaseMode)))]
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.__(_vm.uppercaseMode)) +
+                          "\n                "
+                      )
+                    ]
                   )
                 ])
               ])
@@ -37553,7 +38589,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", {
         ref: "chart",
-        staticClass: "z-40 absolute pin rounded-b-lg ct-chart",
+        staticClass: "absolute pin rounded-b-lg ct-chart",
         staticStyle: { top: "60%" }
       })
     ]
@@ -37953,7 +38989,8 @@ var render = function() {
             dateFormat: "Y-m-d",
             placeholder: _vm.placeholder,
             "enable-time": false,
-            "enable-seconds": false
+            "enable-seconds": false,
+            "first-day-of-week": _vm.firstDayOfWeek
           },
           on: {
             input: function($event) {
@@ -38008,7 +39045,12 @@ var render = function() {
             ref: "input",
             staticClass:
               "flex items-center form-control form-input form-input-bordered pr-6",
-            class: { focus: _vm.show, "border-danger": _vm.error },
+            class: {
+              focus: _vm.show,
+              "border-danger": _vm.error,
+              "form-select": _vm.shouldShowDropdownArrow,
+              disabled: _vm.disabled
+            },
             attrs: { tabindex: _vm.show ? -1 : 0 },
             on: {
               click: _vm.open,
@@ -38044,7 +39086,7 @@ var render = function() {
             }
           },
           [
-            _vm.shouldShowDropdownArrow
+            _vm.shouldShowDropdownArrow && !_vm.disabled
               ? _c("div", {
                   staticClass: "search-input-trigger absolute pin select-box"
                 })
@@ -38059,7 +39101,7 @@ var render = function() {
           2
         ),
         _vm._v(" "),
-        _vm.value
+        _vm.value && !_vm.disabled
           ? _c(
               "button",
               {
@@ -38521,43 +39563,57 @@ var render = function() {
                   )
                 }),
                 _vm._v(" "),
-                _c("div", { staticClass: "bg-30 flex px-8 py-4" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "ml-auto btn btn-default btn-primary mr-3",
-                      attrs: {
-                        dusk: "attach-and-attach-another-button",
-                        type: "button"
+                _c(
+                  "div",
+                  { staticClass: "bg-30 flex px-8 py-4" },
+                  [
+                    _c(
+                      "progress-button",
+                      {
+                        staticClass: "ml-auto mr-3",
+                        attrs: {
+                          dusk: "attach-and-attach-another-button",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaAttachAndAttachAnother
+                        },
+                        nativeOn: {
+                          click: function($event) {
+                            return _vm.attachAndAttachAnother($event)
+                          }
+                        }
                       },
-                      on: { click: _vm.attachAndAttachAnother }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Attach & Attach Another")) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-default btn-primary",
-                      attrs: { dusk: "attach-button" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Attach")) +
-                          " " +
-                          _vm._s(_vm.relatedResourceLabel) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                ])
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Attach & Attach Another")) +
+                            "\n                "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "progress-button",
+                      {
+                        attrs: {
+                          dusk: "attach-button",
+                          type: "submit",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaAttachResource
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Attach")) +
+                            " " +
+                            _vm._s(_vm.relatedResourceLabel) +
+                            "\n                "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
               ],
               2
             )
@@ -38574,6 +39630,36 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-4168fda4", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-42283f48\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Form/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("field-wrapper", [
+    _vm.shouldDisplayAsHtml
+      ? _c("div", {
+          class: _vm.classes,
+          domProps: { innerHTML: _vm._s(_vm.field.value) }
+        })
+      : _c("div", { class: _vm.classes }, [
+          _c("p", [_vm._v(_vm._s(_vm.field.value))])
+        ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-42283f48", module.exports)
   }
 }
 
@@ -38873,6 +39959,8 @@ var render = function() {
                                           "checkbox-with-label",
                                           {
                                             attrs: {
+                                              dusk:
+                                                "select-all-matching-button",
                                               checked:
                                                 _vm.selectAllMatchingChecked
                                             },
@@ -39019,7 +40107,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("filter-menu", {
                     attrs: {
-                      resourceName: _vm.resourceName,
+                      "resource-name": _vm.resourceName,
                       "soft-deletes": _vm.softDeletes,
                       "via-resource": _vm.viaResource,
                       "via-has-one": _vm.viaHasOne,
@@ -39155,7 +40243,8 @@ var render = function() {
                       _vm._v(" "),
                       _c("create-resource-button", {
                         attrs: {
-                          classes: "btn btn-sm btn-outline",
+                          classes:
+                            "btn btn-sm btn-outline inline-flex items-center",
                           "singular-name": _vm.singularName,
                           "resource-name": _vm.resourceName,
                           "via-resource": _vm.viaResource,
@@ -39396,7 +40485,10 @@ var render = function() {
                   _c(
                     "checkbox-with-label",
                     {
-                      attrs: { checked: _vm.withTrashed },
+                      attrs: {
+                        dusk: _vm.field.resourceName + "-with-trashed-checkbox",
+                        checked: _vm.withTrashed
+                      },
                       on: { change: _vm.toggleWithTrashed }
                     },
                     [
@@ -39443,7 +40535,8 @@ var render = function() {
       attrs: {
         "data-testid": "confirm-action-modal",
         tabindex: "-1",
-        role: "dialog"
+        role: "dialog",
+        "class-whitelist": "flatpickr-calendar"
       },
       on: { "modal-close": _vm.handleClose }
     },
@@ -39470,9 +40563,14 @@ var render = function() {
           _c(
             "div",
             [
-              _c("heading", { staticClass: "pt-8 px-8", attrs: { level: 2 } }, [
-                _vm._v(_vm._s(_vm.selectedAction.name))
-              ]),
+              _c(
+                "heading",
+                {
+                  staticClass: "border-b border-40 py-8 px-8",
+                  attrs: { level: 2 }
+                },
+                [_vm._v(_vm._s(_vm.selectedAction.name))]
+              ),
               _vm._v(" "),
               _vm.selectedAction.fields.length == 0
                 ? _c("p", { staticClass: "text-80 px-8 my-8" }, [
@@ -39541,6 +40639,7 @@ var render = function() {
               _c(
                 "button",
                 {
+                  ref: "runButton",
                   staticClass: "btn btn-default",
                   class: {
                     "btn-primary": !_vm.selectedAction.destructive,
@@ -39615,6 +40714,7 @@ var render = function() {
       previous: _vm.previous,
       value: _vm.value,
       ranges: _vm.card.ranges,
+      format: _vm.format,
       prefix: _vm.prefix,
       suffix: _vm.suffix,
       "selected-range-key": _vm.selectedRangeKey,
@@ -40101,6 +41201,7 @@ var render = function() {
                       staticClass: "mb-3",
                       attrs: {
                         "data-testid": _vm.field.attribute + "-search-input",
+                        disabled: !_vm.resourceType || _vm.isLocked,
                         value: _vm.selectedResource,
                         data: _vm.availableResources,
                         trackBy: "value",
@@ -40289,6 +41390,7 @@ var render = function() {
       value: _vm.value,
       "chart-data": _vm.data,
       ranges: _vm.card.ranges,
+      format: _vm.format,
       prefix: _vm.prefix,
       suffix: _vm.suffix,
       "selected-range-key": _vm.selectedRangeKey,
@@ -40547,7 +41649,13 @@ var render = function() {
                                   ? _c(
                                       "p",
                                       { staticClass: "text-xs mt-1 text-80" },
-                                      [_vm._v(_vm._s(item.subTitle))]
+                                      [
+                                        _vm._v(
+                                          "\n                                    " +
+                                            _vm._s(item.subTitle) +
+                                            "\n                                "
+                                        )
+                                      ]
                                     )
                                   : _vm._e()
                               ])
@@ -40680,7 +41788,10 @@ var render = function() {
                     return _c(filter.component, {
                       key: filter.name,
                       tag: "component",
-                      attrs: { "filter-key": filter.class },
+                      attrs: {
+                        "resource-name": _vm.resourceName,
+                        "filter-key": filter.class
+                      },
                       on: {
                         input: function($event) {
                           _vm.$emit("filter-changed")
@@ -40706,7 +41817,7 @@ var render = function() {
                             _vm._v(
                               "\n                    " +
                                 _vm._s(_vm.__("Trashed")) +
-                                ":\n                "
+                                "\n                "
                             )
                           ]
                         ),
@@ -40918,7 +42029,7 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "scroll-wrap overflow-x-hidden overflow-y-scroll",
+      staticClass: "scroll-wrap overflow-x-hidden overflow-y-auto",
       style: _vm.style
     },
     [_vm._t("default")],
@@ -41383,7 +42494,7 @@ var render = function() {
     _c(
       "h3",
       { staticClass: "text-sm uppercase tracking-wide text-80 bg-30 p-3" },
-      [_vm._v("\n        " + _vm._s(_vm.filter.name) + "\n    ")]
+      [_vm._v(_vm._s(_vm.filter.name))]
     ),
     _vm._v(" "),
     _c("div", { staticClass: "p-2" }, [
@@ -41476,7 +42587,7 @@ var render = function() {
         _vm._v(" "),
         _c("p", { staticClass: "text-90 leading-tight mb-8" }, [
           _vm._v(
-            "Welcome to Nova! Get familiar with Nova and explore it's features in the documentation:"
+            "\n            Welcome to Nova! Get familiar with Nova and explore it's features in the\n            documentation:\n        "
           )
         ]),
         _vm._v(" "),
@@ -41568,7 +42679,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Nova's resource manager allows you to quickly view and manage your Eloquent model records directly from Nova's intuitive interface."
+                                "\n                                    Nova's resource manager allows you to quickly view and\n                                    manage your Eloquent model records directly from Nova's\n                                    intuitive interface.\n                                "
                               )
                             ])
                           ],
@@ -41655,7 +42766,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Actions perform tasks on a single record or an entire batch of records. Have an action that takes a while? No problem. Nova can queue them using Laravel's powerful queue system."
+                                "\n                                    Actions perform tasks on a single record or an entire batch\n                                    of records. Have an action that takes a while? No problem.\n                                    Nova can queue them using Laravel's powerful queue system.\n                                "
                               )
                             ])
                           ],
@@ -41746,7 +42857,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Write custom filters for your resource indexes to offer your users quick glances at different segments of your data."
+                                "\n                                    Write custom filters for your resource indexes to offer your\n                                    users quick glances at different segments of your data.\n                                "
                               )
                             ])
                           ],
@@ -41833,7 +42944,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Need to customize a resource list a little more than a filter can provider? No problem. Add lenses to your resource to take full control over the entire Eloquent query."
+                                "\n                                    Need to customize a resource list a little more than a\n                                    filter can provider? No problem. Add lenses to your resource\n                                    to take full control over the entire Eloquent query.\n                                "
                               )
                             ])
                           ],
@@ -41924,7 +43035,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Nova makes it painless to quickly display custom metrics for your application. To put the cherry on top, we’ve included query helpers to make it all easy as pie."
+                                "\n                                    Nova makes it painless to quickly display custom metrics for\n                                    your application. To put the cherry on top, we’ve included\n                                    query helpers to make it all easy as pie.\n                                "
                               )
                             ])
                           ],
@@ -42011,7 +43122,7 @@ var render = function() {
                             _vm._v(" "),
                             _c("p", { staticClass: "text-90 leading-normal" }, [
                               _vm._v(
-                                "Nova offers CLI generators for scaffolding your own custom cards. We’ll give you a Vue component and infinite possibilities."
+                                "\n                                    Nova offers CLI generators for scaffolding your own custom\n                                    cards. We’ll give you a Vue component and infinite\n                                    possibilities.\n                                "
                               )
                             ])
                           ],
@@ -42092,7 +43203,13 @@ var render = function() {
                   }
                 }
               },
-              [_vm._v(_vm._s(_vm.__("Cancel")))]
+              [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(_vm.__("Cancel")) +
+                    "\n                "
+                )
+              ]
             ),
             _vm._v(" "),
             _c(
@@ -42111,7 +43228,13 @@ var render = function() {
                   }
                 }
               },
-              [_vm._v(_vm._s(_vm.__("Delete")))]
+              [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(_vm.__("Delete")) +
+                    "\n                "
+                )
+              ]
             )
           ])
         ])
@@ -42155,6 +43278,44 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-6ca9e6be", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6dba9fca\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Detail/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "bg-20 flex border-b border-40" }, [
+    _c(
+      "div",
+      { staticClass: "w-full py-4 px-4" },
+      [
+        _vm._t("value", [
+          _vm.fieldValue && !_vm.shouldDisplayAsHtml
+            ? _c("p", { staticClass: "text-90" }, [
+                _vm._v(_vm._s(_vm.fieldValue))
+              ])
+            : _vm.fieldValue && _vm.shouldDisplayAsHtml
+              ? _c("div", { domProps: { innerHTML: _vm._s(_vm.field.value) } })
+              : _c("p", [_vm._v("—")])
+        ])
+      ],
+      2
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-6dba9fca", module.exports)
   }
 }
 
@@ -42335,7 +43496,11 @@ var render = function() {
       _vm._l(_vm.options, function(option) {
         return _c("BooleanOption", {
           key: option.value,
-          attrs: { filter: _vm.filter, option: option },
+          attrs: {
+            "resource-name": _vm.resourceName,
+            filter: _vm.filter,
+            option: option
+          },
           on: { change: _vm.handleChange }
         })
       })
@@ -42434,13 +43599,7 @@ var render = function() {
               "ul",
               { staticStyle: { "margin-bottom": "0" } },
               _vm._l(_vm.errors, function(error) {
-                return _c("li", [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(error) +
-                      "\n                "
-                  )
-                ])
+                return _c("li", [_vm._v(_vm._s(error))])
               })
             )
           ])
@@ -42660,7 +43819,7 @@ var render = function() {
                             attrs: {
                               resource: _vm.resource,
                               "resource-name": _vm.resourceName,
-                              "resource-id": _vm.resourceName
+                              "resource-id": _vm.resourceId
                             }
                           }),
                           _vm._v(" "),
@@ -42695,7 +43854,7 @@ var render = function() {
                                   attrs: {
                                     "data-testid": "open-delete-modal",
                                     dusk: "open-delete-modal-button",
-                                    title: "Delete"
+                                    title: _vm.__("Delete")
                                   },
                                   on: { click: _vm.openDeleteModal }
                                 },
@@ -42719,7 +43878,7 @@ var render = function() {
                                   attrs: {
                                     "data-testid": "open-restore-modal",
                                     dusk: "open-restore-modal-button",
-                                    title: "Restore"
+                                    title: _vm.__("Restore")
                                   },
                                   on: { click: _vm.openRestoreModal }
                                 },
@@ -42742,7 +43901,7 @@ var render = function() {
                                   attrs: {
                                     "data-testid": "open-force-delete-modal",
                                     dusk: "open-force-delete-modal-button",
-                                    title: "Force Delete"
+                                    title: _vm.__("Force Delete")
                                   },
                                   on: { click: _vm.openForceDeleteModal }
                                 },
@@ -42840,7 +43999,7 @@ var render = function() {
                                       name: "edit",
                                       params: { id: _vm.resource.id }
                                     },
-                                    title: "Edit"
+                                    title: _vm.__("Edit")
                                   }
                                 },
                                 [
@@ -42943,6 +44102,7 @@ var render = function() {
     ? _c("div", [
         _c("div", {
           staticClass: "markdown leading-normal",
+          class: { "whitespace-pre-wrap": _vm.plainText },
           domProps: { innerHTML: _vm._s(_vm.content) }
         })
       ])
@@ -42951,6 +44111,7 @@ var render = function() {
           _vm.expanded
             ? _c("div", {
                 staticClass: "markdown leading-normal",
+                class: { "whitespace-pre-wrap": _vm.plainText },
                 domProps: { innerHTML: _vm._s(_vm.content) }
               })
             : _vm._e(),
@@ -42969,7 +44130,7 @@ var render = function() {
               )
             : _vm._e()
         ])
-      : _c("div", [_vm._v("\n    —\n")])
+      : _c("div", [_vm._v("—")])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -43027,8 +44188,7 @@ var render = function() {
         _vm.shouldShowLoader
           ? [
               _c("ImageLoader", {
-                staticClass: "max-w-xs",
-                attrs: { src: _vm.field.thumbnailUrl },
+                attrs: { src: _vm.imageUrl, maxWidth: _vm.maxWidth },
                 on: {
                   missing: function(value) {
                     return (_vm.missing = value)
@@ -43038,38 +44198,13 @@ var render = function() {
             ]
           : _vm._e(),
         _vm._v(" "),
-        _vm.field.value && !_vm.field.thumbnailUrl
+        _vm.field.value && !_vm.imageUrl
           ? [_vm._v("\n            " + _vm._s(_vm.field.value) + "\n        ")]
           : _vm._e(),
         _vm._v(" "),
-        !_vm.field.value && !_vm.field.thumbnailUrl
+        !_vm.field.value && !_vm.imageUrl
           ? _c("span", [_vm._v("—")])
           : _vm._e(),
-        _vm._v(" "),
-        _vm.deleted ? _c("span", [_vm._v("—")]) : _vm._e(),
-        _vm._v(" "),
-        _c(
-          "portal",
-          { attrs: { to: "modals" } },
-          [
-            _c(
-              "transition",
-              { attrs: { name: "fade" } },
-              [
-                _vm.removeModalOpen
-                  ? _c("confirm-upload-removal-modal", {
-                      on: {
-                        confirm: _vm.removeFile,
-                        close: _vm.closeRemoveModal
-                      }
-                    })
-                  : _vm._e()
-              ],
-              1
-            )
-          ],
-          1
-        ),
         _vm._v(" "),
         _vm.shouldShowToolbar
           ? _c("p", { staticClass: "flex items-center text-sm mt-3" }, [
@@ -43401,13 +44536,15 @@ var render = function() {
                                     { staticClass: "text-80 leading-normal" },
                                     [
                                       _vm._v(
-                                        _vm._s(
-                                          _vm.__(
-                                            "Are you sure you want to " +
-                                              mode +
-                                              " this resource?"
-                                          )
-                                        )
+                                        "\n                            " +
+                                          _vm._s(
+                                            _vm.__(
+                                              "Are you sure you want to " +
+                                                mode +
+                                                " this resource?"
+                                            )
+                                          ) +
+                                          "\n                        "
                                       )
                                     ]
                                   )
@@ -43452,11 +44589,13 @@ var render = function() {
                                 { staticClass: "text-80 leading-normal" },
                                 [
                                   _vm._v(
-                                    _vm._s(
-                                      _vm.__(
-                                        "Are you sure you want to restore this resource?"
-                                      )
-                                    )
+                                    "\n                            " +
+                                      _vm._s(
+                                        _vm.__(
+                                          "Are you sure you want to restore this resource?"
+                                        )
+                                      ) +
+                                      "\n                        "
                                   )
                                 ]
                               )
@@ -43562,7 +44701,6 @@ var render = function() {
                   class: _vm.classes,
                   attrs: {
                     dusk: "attach-button",
-                    tag: "button",
                     to: {
                       name: "attach",
                       params: {
@@ -43581,11 +44719,11 @@ var render = function() {
                 [
                   _vm._t("default", [
                     _vm._v(
-                      "\n            " +
+                      " " +
                         _vm._s(_vm.__("Attach")) +
                         " " +
                         _vm._s(_vm.singularName) +
-                        "\n        "
+                        " "
                     )
                   ])
                 ],
@@ -43597,7 +44735,6 @@ var render = function() {
                   {
                     class: _vm.classes,
                     attrs: {
-                      tag: "button",
                       dusk: "create-button",
                       to: {
                         name: "create",
@@ -43653,6 +44790,7 @@ var render = function() {
       ref: "card",
       staticClass:
         "card relative border border-lg border-50 overflow-hidden px-0 py-0",
+      class: _vm.cardClasses,
       attrs: { loading: _vm.loading }
     },
     [
@@ -43669,7 +44807,11 @@ var render = function() {
                 },
                 [_vm._v(_vm._s(_vm.__("This image")))]
               ),
-              _vm._v(" " + _vm._s(_vm.__("could not be found.")) + "\n        ")
+              _vm._v(
+                "\n            " +
+                  _vm._s(_vm.__("could not be found.")) +
+                  "\n        "
+              )
             ])
           ])
         : _vm._e()
@@ -43932,43 +45074,57 @@ var render = function() {
                   )
                 }),
                 _vm._v(" "),
-                _c("div", { staticClass: "bg-30 flex px-8 py-4" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "ml-auto btn btn-default btn-primary mr-3",
-                      attrs: {
-                        dusk: "update-and-continue-editing-button",
-                        type: "button"
+                _c(
+                  "div",
+                  { staticClass: "bg-30 flex px-8 py-4" },
+                  [
+                    _c(
+                      "progress-button",
+                      {
+                        staticClass: "ml-auto mr-3",
+                        attrs: {
+                          dusk: "update-and-continue-editing-button",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaUpdateAndContinueEditing
+                        },
+                        nativeOn: {
+                          click: function($event) {
+                            return _vm.updateAndContinueEditing($event)
+                          }
+                        }
                       },
-                      on: { click: _vm.updateAndContinueEditing }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Update & Continue Editing")) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-default btn-primary",
-                      attrs: { dusk: "update-button" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.__("Update")) +
-                          " " +
-                          _vm._s(_vm.relatedResourceLabel) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                ])
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Update & Continue Editing")) +
+                            "\n                "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "progress-button",
+                      {
+                        attrs: {
+                          dusk: "update-button",
+                          type: "submit",
+                          disabled: _vm.isWorking,
+                          processing: _vm.submittedViaUpdateAttachedResource
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.__("Update")) +
+                            " " +
+                            _vm._s(_vm.relatedResourceLabel) +
+                            "\n                "
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
               ],
               2
             )
@@ -44011,20 +45167,27 @@ var render = function() {
         "template",
         { slot: "field" },
         [
-          _c("trix", {
-            class: { "border-danger": _vm.hasError },
-            attrs: {
-              name: "trixman",
-              value: _vm.field.value,
-              placeholder: "",
-              "with-files": _vm.field.withFiles
-            },
-            on: {
-              change: _vm.handleChange,
-              "file-add": _vm.handleFileAdd,
-              "file-remove": _vm.handleFileRemove
-            }
-          })
+          _c(
+            "trix",
+            _vm._b(
+              {
+                class: { "border-danger": _vm.hasError },
+                attrs: {
+                  name: "trixman",
+                  value: _vm.field.value,
+                  "with-files": _vm.field.withFiles
+                },
+                on: {
+                  change: _vm.handleChange,
+                  "file-add": _vm.handleFileAdd,
+                  "file-remove": _vm.handleFileRemove
+                }
+              },
+              "trix",
+              _vm.extraAttributes,
+              false
+            )
+          )
         ],
         1
       )
@@ -44137,44 +45300,58 @@ var render = function() {
                       )
                     }),
                     _vm._v(" "),
-                    _c("div", { staticClass: "bg-30 flex px-8 py-4" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "ml-auto btn btn-default btn-primary mr-3",
-                          attrs: {
-                            type: "button",
-                            dusk: "update-and-continue-editing-button"
+                    _c(
+                      "div",
+                      { staticClass: "bg-30 flex px-8 py-4" },
+                      [
+                        _c(
+                          "progress-button",
+                          {
+                            staticClass: "ml-auto mr-3",
+                            attrs: {
+                              dusk: "update-and-continue-editing-button",
+                              disabled: _vm.isWorking,
+                              processing:
+                                _vm.submittedViaUpdateAndContinueEditing
+                            },
+                            nativeOn: {
+                              click: function($event) {
+                                return _vm.updateAndContinueEditing($event)
+                              }
+                            }
                           },
-                          on: { click: _vm.updateAndContinueEditing }
-                        },
-                        [
-                          _vm._v(
-                            "\n                    " +
-                              _vm._s(_vm.__("Update & Continue Editing")) +
-                              "\n                "
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-default btn-primary",
-                          attrs: { dusk: "update-button" }
-                        },
-                        [
-                          _vm._v(
-                            "\n                    " +
-                              _vm._s(_vm.__("Update")) +
-                              " " +
-                              _vm._s(_vm.singularName) +
-                              "\n                "
-                          )
-                        ]
-                      )
-                    ])
+                          [
+                            _vm._v(
+                              "\n                    " +
+                                _vm._s(_vm.__("Update & Continue Editing")) +
+                                "\n                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "progress-button",
+                          {
+                            attrs: {
+                              dusk: "update-button",
+                              type: "submit",
+                              disabled: _vm.isWorking,
+                              processing: _vm.submittedViaUpdateResource
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                    " +
+                                _vm._s(_vm.__("Update")) +
+                                " " +
+                                _vm._s(_vm.singularName) +
+                                "\n                "
+                            )
+                          ]
+                        )
+                      ],
+                      1
+                    )
                   ],
                   2
                 )
@@ -44263,7 +45440,7 @@ var render = function() {
       [
         _vm._t("default", [
           _c("h4", { staticClass: "font-normal text-80" }, [
-            _vm._v("\n                " + _vm._s(_vm.label) + "\n            ")
+            _vm._v(_vm._s(_vm.label))
           ])
         ])
       ],
@@ -44416,6 +45593,7 @@ var render = function() {
                         })
                       ]
                     ),
+                    _vm._v(" "),
                     _c("path", {
                       attrs: {
                         id: "Shape",
@@ -44462,6 +45640,7 @@ var render = function() {
                       })
                     ]
                   ),
+                  _vm._v(" "),
                   _c("rect", {
                     attrs: {
                       id: "Rectangle-path",
@@ -44513,6 +45692,63 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-cc61992c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/ProgressButton.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "button",
+    {
+      staticClass:
+        "btn btn-default btn-primary inline-flex items-center relative",
+      attrs: { type: "button" }
+    },
+    [
+      _c(
+        "span",
+        { class: { invisible: _vm.processing } },
+        [_vm._t("default")],
+        2
+      ),
+      _vm._v(" "),
+      _vm.processing
+        ? _c(
+            "span",
+            {
+              staticClass: "absolute",
+              staticStyle: {
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)"
+              }
+            },
+            [
+              _c("loader", {
+                staticClass: "text-white",
+                attrs: { width: "32" }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-cc61992c", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-ccd41850\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Index/MorphToActionTargetField.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -44545,7 +45781,7 @@ var render = function() {
           )
         ]
       )
-    : _c("span", [_vm._v("\n    -\n")])
+    : _c("span", [_vm._v(" - ")])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -44681,7 +45917,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("span", { staticClass: "font-bold" }, [
-    _vm._v("\n    ·\n    ·\n    ·\n    ·\n    ·\n    ·\n    ·\n    ·\n")
+    _vm._v("\n    · · · · · · · ·\n")
   ])
 }
 var staticRenderFns = []
@@ -44740,6 +45976,7 @@ var render = function() {
           _c("excerpt", {
             attrs: {
               content: _vm.field.value,
+              "plain-text": true,
               "should-show": _vm.field.shouldShow
             }
           })
@@ -44873,7 +46110,7 @@ var render = function() {
                       "w-8": !_vm.shouldShowCheckboxes
                     }
                   },
-                  [_vm._v(" ")]
+                  [_vm._v("\n                 \n            ")]
                 ),
                 _vm._v(" "),
                 _vm._l(_vm.fields, function(field) {
@@ -44904,11 +46141,7 @@ var render = function() {
                             ]
                           )
                         : _c("span", [
-                            _vm._v(
-                              "\n                    " +
-                                _vm._s(field.indexName) +
-                                "\n                "
-                            )
+                            _vm._v(" " + _vm._s(field.indexName) + " ")
                           ])
                     ],
                     1
@@ -44957,6 +46190,27 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-e62a67f6", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-e7ebc500\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Index/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("span")
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-e7ebc500", module.exports)
   }
 }
 
@@ -45163,6 +46417,7 @@ var render = function() {
         [
           _c("date-time-picker", {
             staticClass: "w-full form-control form-input form-input-bordered",
+            class: _vm.errorClasses,
             attrs: {
               dusk: _vm.field.attribute,
               name: _vm.field.name,
@@ -45170,7 +46425,8 @@ var render = function() {
               dateFormat: "Y-m-d",
               placeholder: _vm.placeholder,
               "enable-time": false,
-              "enable-seconds": false
+              "enable-seconds": false,
+              "first-day-of-week": _vm.firstDayOfWeek
             },
             on: { change: _vm.handleChange }
           })
@@ -45189,6 +46445,33 @@ if (false) {
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-ffd6e628", module.exports)
   }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/components/Trix.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/components/Trix.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("90cb3fe8", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Trix.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Trix.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
@@ -49700,6 +50983,10 @@ var _vueAsyncComputed = __webpack_require__("./node_modules/vue-async-computed/d
 
 var _vueAsyncComputed2 = _interopRequireDefault(_vueAsyncComputed);
 
+var _resources = __webpack_require__("./resources/js/store/resources.js");
+
+var _resources2 = _interopRequireDefault(_resources);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(_portalVue2.default);
@@ -49741,10 +51028,21 @@ var Nova = function () {
         key: 'boot',
         value: function boot() {
             this.bootingCallbacks.forEach(function (callback) {
-                return callback(_vue2.default, _router2.default);
+                return callback(_vue2.default, _router2.default, _store2.default);
             });
-
             this.bootingCallbacks = [];
+        }
+
+        /**
+         * Register the built-in Vuex modules for each resource
+         */
+
+    }, {
+        key: 'registerStoreModules',
+        value: function registerStoreModules() {
+            this.config.resources.forEach(function (resource) {
+                _store2.default.registerModule(resource.uriKey, _resources2.default);
+            });
         }
 
         /**
@@ -49758,6 +51056,7 @@ var Nova = function () {
             var _this = this;
 
             this.boot();
+            this.registerStoreModules();
 
             this.app = new _vue2.default({
                 el: '#nova',
@@ -49771,6 +51070,19 @@ var Nova = function () {
 
                     _this.$on('error', function (message) {
                         _this2.$toasted.show(message, { type: 'error' });
+                    });
+
+                    _this.$on('token-expired', function () {
+                        _this2.$toasted.show(_this2.__('Sorry, your session has expired.'), {
+                            action: {
+                                onClick: function onClick() {
+                                    return location.reload();
+                                },
+                                text: _this2.__('Reload')
+                            },
+                            duration: null,
+                            type: 'error'
+                        });
                     });
                 }
             });
@@ -49837,6 +51149,18 @@ var Nova = function () {
             var _bus4;
 
             (_bus4 = this.bus).$emit.apply(_bus4, arguments);
+        }
+
+        /**
+         * Determine if Nova is missing the requested resource with the given uri key
+         */
+
+    }, {
+        key: 'missingResource',
+        value: function missingResource(uriKey) {
+            return _.find(this.config.resources, function (r) {
+                return r.uriKey == uriKey;
+            }) == undefined;
         }
     }]);
     return Nova;
@@ -50137,6 +51461,10 @@ var _Play = __webpack_require__("./resources/js/components/Icons/Play.vue");
 
 var _Play2 = _interopRequireDefault(_Play);
 
+var _ProgressButton = __webpack_require__("./resources/js/components/ProgressButton.vue");
+
+var _ProgressButton2 = _interopRequireDefault(_ProgressButton);
+
 var _Refresh = __webpack_require__("./resources/js/components/Icons/Refresh.vue");
 
 var _Refresh2 = _interopRequireDefault(_Refresh);
@@ -50262,6 +51590,7 @@ _vue2.default.component('modal', _Modal2.default);
 _vue2.default.component('pagination-links', _PaginationLinks2.default);
 _vue2.default.component('panel-item', _PanelItem2.default);
 _vue2.default.component('partition-metric', _PartitionMetric4.default);
+_vue2.default.component('progress-button', _ProgressButton2.default);
 _vue2.default.component('resource-index', _Index2.default);
 _vue2.default.component('resource-table', _ResourceTable2.default);
 _vue2.default.component('resource-table-row', _ResourceTableRow2.default);
@@ -51487,6 +52816,54 @@ if (false) {(function () {
     hotAPI.createRecord("data-v-f537488a", Component.options)
   } else {
     hotAPI.reload("data-v-f537488a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Detail/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Detail/HeadingField.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6dba9fca\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Detail/HeadingField.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Detail/HeadingField.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6dba9fca", Component.options)
+  } else {
+    hotAPI.reload("data-v-6dba9fca", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -52843,6 +54220,54 @@ if (false) {(function () {
     hotAPI.createRecord("data-v-18fba244", Component.options)
   } else {
     hotAPI.reload("data-v-18fba244", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Form/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Form/HeadingField.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-42283f48\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Form/HeadingField.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Form/HeadingField.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-42283f48", Component.options)
+  } else {
+    hotAPI.reload("data-v-42283f48", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -54687,6 +56112,54 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/js/components/Index/HeadingField.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Index/HeadingField.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-e7ebc500\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/Index/HeadingField.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Index/HeadingField.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e7ebc500", Component.options)
+  } else {
+    hotAPI.reload("data-v-e7ebc500", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Index/MorphToActionTargetField.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55843,6 +57316,54 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/js/components/ProgressButton.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/ProgressButton.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-cc61992c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/components/ProgressButton.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/ProgressButton.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-cc61992c", Component.options)
+  } else {
+    hotAPI.reload("data-v-cc61992c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/js/components/ResourceTable.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55991,6 +57512,10 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-03c3e6d0\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/components/Trix.vue")
+}
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}],[\"env\"]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}],\"transform-runtime\",\"transform-vue-jsx\",\"syntax-jsx\",\"transform-object-rest-spread\"],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/components/Trix.vue")
@@ -55999,7 +57524,7 @@ var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/templa
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -56101,6 +57626,11 @@ _vue2.default.component('field-wrapper', __webpack_require__("./resources/js/com
 // Panels...
 _vue2.default.component('panel', __webpack_require__("./resources/js/components/Detail/Panel.vue"));
 _vue2.default.component('relationship-panel', __webpack_require__("./resources/js/components/Detail/RelationshipPanel.vue"));
+
+// Info Field...
+_vue2.default.component('index-heading-field', __webpack_require__("./resources/js/components/Index/HeadingField.vue"));
+_vue2.default.component('detail-heading-field', __webpack_require__("./resources/js/components/Detail/HeadingField.vue"));
+_vue2.default.component('form-heading-field', __webpack_require__("./resources/js/components/Form/HeadingField.vue"));
 
 // Text Field...
 _vue2.default.component('index-text-field', __webpack_require__("./resources/js/components/Index/TextField.vue"));
@@ -56730,7 +58260,7 @@ exports.default = {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _vue = __webpack_require__("./node_modules/vue/dist/vue.common.js");
@@ -56741,19 +58271,11 @@ var _vuex = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _resources = __webpack_require__("./resources/js/store/resources.js");
-
-var _resources2 = _interopRequireDefault(_resources);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(_vuex2.default);
 
-exports.default = new _vuex2.default.Store({
-    modules: {
-        resources: _resources2.default
-    }
-});
+exports.default = new _vuex2.default.Store();
 
 /***/ }),
 
@@ -56785,298 +58307,278 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * State
- */
-var state = {
-    filters: [],
-    originalFilters: []
+exports.default = {
+    namespaced: true,
 
-    /**
-     * Getters
-     */
-};var getters = {
-    /**
-     * Determine if there are any filters for the resource.
-     */
-    hasFilters: function hasFilters(state) {
-        return Boolean(state.filters.length > 0);
+    state: function state() {
+        return {
+            filters: [],
+            originalFilters: []
+        };
     },
 
-    /**
-     * The current unencoded filter value payload
-     */
-    currentFilters: function currentFilters(state, getters) {
-        return _lodash2.default.map(state.filters, function (f) {
-            return {
-                class: f.class,
-                value: f.currentValue
+    getters: {
+        /**
+         * The filters for the resource
+         */
+        filters: function filters(state) {
+            return state.filters;
+        },
+
+        /**
+         * The original filters for the resource
+         */
+        originalFilters: function originalFilters(state) {
+            return state.originalFilters;
+        },
+
+        /**
+         * Determine if there are any filters for the resource.
+         */
+        hasFilters: function hasFilters(state) {
+            return Boolean(state.filters.length > 0);
+        },
+
+        /**
+         * The current unencoded filter value payload
+         */
+        currentFilters: function currentFilters(state, getters) {
+            return _lodash2.default.map(state.filters, function (f) {
+                return {
+                    class: f.class,
+                    value: f.currentValue
+                };
+            });
+        },
+
+        /**
+         * Return the current filters encoded to a string.
+         */
+        currentEncodedFilters: function currentEncodedFilters(state, getters) {
+            return btoa((0, _stringify2.default)(getters.currentFilters));
+        },
+
+        /**
+         * Determine whether any filters are applied
+         */
+        filtersAreApplied: function filtersAreApplied(state, getters) {
+            return getters.activeFilterCount > 0;
+        },
+
+        /**
+         * Return the number of filters that are non-default
+         */
+        activeFilterCount: function activeFilterCount(state, getters) {
+            return _lodash2.default.reduce(state.filters, function (result, f) {
+                var originalFilter = getters.getOriginalFilter(f.class);
+                var originalFilterCloneValue = (0, _stringify2.default)(originalFilter.currentValue);
+                var currentFilterCloneValue = (0, _stringify2.default)(f.currentValue);
+                return currentFilterCloneValue == originalFilterCloneValue ? result : result + 1;
+            }, 0);
+        },
+
+        /**
+         * Get a single filter from the list of filters.
+         */
+        getFilter: function getFilter(state) {
+            return function (filterKey) {
+                return _lodash2.default.find(state.filters, function (filter) {
+                    return filter.class == filterKey;
+                });
             };
-        });
-    },
+        },
 
-    /**
-     * Return the current filters encoded to a string.
-     */
-    currentEncodedFilters: function currentEncodedFilters(state, getters) {
-        return btoa((0, _stringify2.default)(getters.currentFilters));
-    },
+        getOriginalFilter: function getOriginalFilter(state) {
+            return function (filterKey) {
+                return _lodash2.default.find(state.originalFilters, function (filter) {
+                    return filter.class == filterKey;
+                });
+            };
+        },
 
-    /**
-     * Determine whether any filters are applied
-     */
-    filtersAreApplied: function filtersAreApplied(state, getters) {
-        return getters.activeFilterCount > 0;
-    },
+        /**
+         * Get the options for a single filter.
+         */
+        getOptionsForFilter: function getOptionsForFilter(state, getters) {
+            return function (filterKey) {
+                var filter = getters.getFilter(filterKey);
+                return filter ? filter.options : [];
+            };
+        },
 
-    /**
-     * Return the number of filters that are non-default
-     */
-    activeFilterCount: function activeFilterCount(state, getters) {
-        return _lodash2.default.reduce(state.filters, function (result, f) {
-            var originalFilter = getters.getOriginalFilter(f.class);
-            var originalFilterCloneValue = (0, _stringify2.default)(originalFilter.currentValue);
-            var currentFilterCloneValue = (0, _stringify2.default)(f.currentValue);
-            return currentFilterCloneValue == originalFilterCloneValue ? result : result + 1;
-        }, 0);
-    },
+        /**
+         * Get the current value for a given filter at the provided key.
+         */
+        filterOptionValue: function filterOptionValue(state, getters) {
+            return function (filterKey, optionKey) {
+                var filter = getters.getFilter(filterKey);
 
-    /**
-     * Get a single filter from the list of filters.
-     */
-    getFilter: function getFilter(state) {
-        return function (filterKey) {
-            return _lodash2.default.find(state.filters, function (filter) {
-                return filter.class == filterKey;
-            });
-        };
-    },
-
-    getOriginalFilter: function getOriginalFilter(state) {
-        return function (filterKey) {
-            return _lodash2.default.find(state.originalFilters, function (filter) {
-                return filter.class == filterKey;
-            });
-        };
-    },
-
-    /**
-     * Get the options for a single filter.
-     */
-    getOptionsForFilter: function getOptionsForFilter(state, getters) {
-        return function (filterKey) {
-            var filter = getters.getFilter(filterKey);
-            return filter ? filter.options : [];
-        };
-    },
-
-    /**
-     * Get the current value for a given filter at the provided key.
-     */
-    filterOptionValue: function filterOptionValue(state, getters) {
-        return function (filterKey, optionKey) {
-            var filter = getters.getFilter(filterKey);
-
-            return _lodash2.default.find(filter.currentValue, function (value, key) {
-                return key == optionKey;
-            });
-        };
-    }
-
-    /**
-     * Actions
-     */
-};var actions = {
-    /**
-     * Fetch the current filters for the given resource name.
-     */
-    fetchFilters: function () {
-        var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref, options) {
-            var commit = _ref.commit;
-
-            var resourceName, _options$lens, lens, _ref3, data;
-
-            return _regenerator2.default.wrap(function _callee$(_context) {
-                while (1) {
-                    switch (_context.prev = _context.next) {
-                        case 0:
-                            resourceName = options.resourceName, _options$lens = options.lens, lens = _options$lens === undefined ? false : _options$lens;
-
-                            if (!lens) {
-                                _context.next = 7;
-                                break;
-                            }
-
-                            _context.next = 4;
-                            return Nova.request().get('/nova-api/' + resourceName + '/lens/' + lens + '/filters');
-
-                        case 4:
-                            _context.t0 = _context.sent;
-                            _context.next = 10;
-                            break;
-
-                        case 7:
-                            _context.next = 9;
-                            return Nova.request().get('/nova-api/' + resourceName + '/filters');
-
-                        case 9:
-                            _context.t0 = _context.sent;
-
-                        case 10:
-                            _ref3 = _context.t0;
-                            data = _ref3.data;
-
-
-                            commit('storeFilters', data);
-
-                        case 13:
-                        case 'end':
-                            return _context.stop();
-                    }
-                }
-            }, _callee, this);
-        }));
-
-        function fetchFilters(_x, _x2) {
-            return _ref2.apply(this, arguments);
+                return _lodash2.default.find(filter.currentValue, function (value, key) {
+                    return key == optionKey;
+                });
+            };
         }
+    },
+    actions: {
+        /**
+         * Fetch the current filters for the given resource name.
+         */
+        fetchFilters: function () {
+            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref, options) {
+                var commit = _ref.commit,
+                    state = _ref.state;
 
-        return fetchFilters;
-    }(),
+                var resourceName, _options$lens, lens, _ref3, data;
 
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                resourceName = options.resourceName, _options$lens = options.lens, lens = _options$lens === undefined ? false : _options$lens;
 
-    /**
-     * Reset the default filter state to the original filter settings.
-     */
-    resetFilterState: function () {
-        var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref4, options) {
-            var commit = _ref4.commit,
-                state = _ref4.state,
-                getters = _ref4.getters;
+                                if (!lens) {
+                                    _context.next = 7;
+                                    break;
+                                }
 
-            var resourceName, _options$lens2, lens, _ref6, data;
+                                _context.next = 4;
+                                return Nova.request().get('/nova-api/' + resourceName + '/lens/' + lens + '/filters');
 
-            return _regenerator2.default.wrap(function _callee2$(_context2) {
-                while (1) {
-                    switch (_context2.prev = _context2.next) {
-                        case 0:
-                            resourceName = options.resourceName, _options$lens2 = options.lens, lens = _options$lens2 === undefined ? false : _options$lens2;
-
-                            if (!lens) {
-                                _context2.next = 7;
+                            case 4:
+                                _context.t0 = _context.sent;
+                                _context.next = 10;
                                 break;
-                            }
 
-                            _context2.next = 4;
-                            return Nova.request().get('/nova-api/' + resourceName + '/lens/' + lens + '/filters');
+                            case 7:
+                                _context.next = 9;
+                                return Nova.request().get('/nova-api/' + resourceName + '/filters');
 
-                        case 4:
-                            _context2.t0 = _context2.sent;
-                            _context2.next = 10;
-                            break;
+                            case 9:
+                                _context.t0 = _context.sent;
 
-                        case 7:
-                            _context2.next = 9;
-                            return Nova.request().get('/nova-api/' + resourceName + '/filters');
+                            case 10:
+                                _ref3 = _context.t0;
+                                data = _ref3.data;
 
-                        case 9:
-                            _context2.t0 = _context2.sent;
 
-                        case 10:
-                            _ref6 = _context2.t0;
-                            data = _ref6.data;
+                                commit('storeFilters', data);
 
-                            if (data) {
-                                _lodash2.default.each(data, function (filter) {
-                                    return commit('updateFilterState', {
+                            case 13:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function fetchFilters(_x, _x2) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return fetchFilters;
+        }(),
+
+
+        /**
+         * Reset the default filter state to the original filter settings.
+         */
+        resetFilterState: function () {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref4) {
+                var commit = _ref4.commit,
+                    getters = _ref4.getters;
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _lodash2.default.each(getters.originalFilters, function (filter) {
+                                    commit('updateFilterState', {
                                         filterClass: filter.class,
                                         value: filter.currentValue
                                     });
                                 });
-                            }
 
-                        case 13:
-                        case 'end':
-                            return _context2.stop();
+                            case 1:
+                            case 'end':
+                                return _context2.stop();
+                        }
                     }
-                }
-            }, _callee2, this);
-        }));
+                }, _callee2, this);
+            }));
 
-        function resetFilterState(_x3, _x4) {
-            return _ref5.apply(this, arguments);
-        }
+            function resetFilterState(_x3) {
+                return _ref5.apply(this, arguments);
+            }
 
-        return resetFilterState;
-    }(),
-
-
-    /**
-     * Initialize the current filter values from the decoded query string.
-     */
-    initializeCurrentFilterValuesFromQueryString: function () {
-        var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(_ref7, encodedFilters) {
-            var commit = _ref7.commit,
-                getters = _ref7.getters;
-            var initialFilters;
-            return _regenerator2.default.wrap(function _callee3$(_context3) {
-                while (1) {
-                    switch (_context3.prev = _context3.next) {
-                        case 0:
-                            if (encodedFilters) {
-                                initialFilters = JSON.parse(atob(encodedFilters));
+            return resetFilterState;
+        }(),
 
 
-                                _lodash2.default.each(initialFilters, function (f) {
-                                    commit('updateFilterState', { filterClass: f.class, value: f.value });
-                                });
-                            }
+        /**
+         * Initialize the current filter values from the decoded query string.
+         */
+        initializeCurrentFilterValuesFromQueryString: function () {
+            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(_ref6, encodedFilters) {
+                var commit = _ref6.commit,
+                    getters = _ref6.getters;
+                var initialFilters;
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                if (encodedFilters) {
+                                    initialFilters = JSON.parse(atob(encodedFilters));
 
-                        case 1:
-                        case 'end':
-                            return _context3.stop();
+                                    _lodash2.default.each(initialFilters, function (f) {
+                                        commit('updateFilterState', { filterClass: f.class, value: f.value });
+                                    });
+                                }
+
+                            case 1:
+                            case 'end':
+                                return _context3.stop();
+                        }
                     }
-                }
-            }, _callee3, this);
-        }));
+                }, _callee3, this);
+            }));
 
-        function initializeCurrentFilterValuesFromQueryString(_x5, _x6) {
-            return _ref8.apply(this, arguments);
-        }
+            function initializeCurrentFilterValuesFromQueryString(_x4, _x5) {
+                return _ref7.apply(this, arguments);
+            }
 
-        return initializeCurrentFilterValuesFromQueryString;
-    }()
-};
-
-/**
- * Mutations
- */
-var mutations = {
-    updateFilterState: function updateFilterState(state, _ref9) {
-        var filterClass = _ref9.filterClass,
-            value = _ref9.value;
-
-        var filter = (0, _lodash2.default)(state.filters).find(function (f) {
-            return f.class == filterClass;
-        });
-        filter.currentValue = value;
+            return initializeCurrentFilterValuesFromQueryString;
+        }()
     },
 
+    mutations: {
+        updateFilterState: function updateFilterState(state, _ref8) {
+            var filterClass = _ref8.filterClass,
+                value = _ref8.value;
 
-    /**
-     * Store the mutable filter settings
-     */
-    storeFilters: function storeFilters(state, data) {
-        state.filters = data;
-        state.originalFilters = _lodash2.default.cloneDeep(data);
+            var filter = (0, _lodash2.default)(state.filters).find(function (f) {
+                return f.class == filterClass;
+            });
+
+            filter.currentValue = value;
+        },
+
+
+        /**
+         * Store the mutable filter settings
+         */
+        storeFilters: function storeFilters(state, data) {
+            state.filters = data;
+            state.originalFilters = _lodash2.default.cloneDeep(data);
+        },
+
+
+        /**
+         * Clear the filters for this resource
+         */
+        clearFilters: function clearFilters(state) {
+            state.filters = [];
+            state.originalFilters = [];
+        }
     }
-};
-
-exports.default = {
-    state: state,
-    getters: getters,
-    actions: actions,
-    mutations: mutations
 };
 
 /***/ }),
@@ -57129,6 +58631,11 @@ instance.interceptors.response.use(function (response) {
     // Handle Forbidden
     if (status === 403) {
         _router2.default.push({ name: '403' });
+    }
+
+    // Handle Token Timeouts
+    if (status === 419) {
+        Nova.$emit('token-expired');
     }
 
     return _promise2.default.reject(error);

@@ -3,6 +3,7 @@
 namespace App\ResultHandlers;
 
 use App\Models\Result;
+use App\Models\Sample;
 use Illuminate\Http\File;
 use App\Models\Experiment;
 use Illuminate\Support\Collection;
@@ -27,7 +28,7 @@ abstract class ResultHandler
 
         $this->path = $path;
 
-        $this->inputParameters = $experiment->inputParameters;
+        $this->inputParameters = $experiment->assay->parameters;
     }
 
     abstract public function handle();
@@ -59,7 +60,7 @@ abstract class ResultHandler
      */
     public function diffExperimentSamples($sampleIds)
     {
-        $existingSampleIds = $this->experimentSamples();
+        $existingSampleIds = $this->experiment->samples->pluck('sample_id');
 
         $sampleIds = is_array($sampleIds) ? collect($sampleIds) : $sampleIds;
 
@@ -77,16 +78,8 @@ abstract class ResultHandler
 
     public function getDatabaseIdBySampleIds($sampleIds)
     {
-        return DB::table('sample_informations')->whereIn(
-            'sample_id',
-            $sampleIds
-        )->join(
-            'samples',
-            ['sample_informations.id' => 'sample_information_id']
-        )->pluck(
-            'samples.id',
-            'sample_informations.sample_id'
-        );
+        return Sample::whereIn('sample_id', $sampleIds)
+            ->pluck('id', 'sample_id');
     }
 
     public function error($message)
@@ -104,17 +97,6 @@ abstract class ResultHandler
     public static function removeSampleData($experimentId)
     {
         DB::table('result_data')->where('experiment_id', $experimentId)->delete();
-    }
-
-    public function experimentSamples()
-    {
-        return DB::table('requested_experiments')
-            ->join('samples', 'requested_experiments.sample_id', '=', 'samples.id')
-            ->join('sample_informations', 'sample_informations.id', '=', 'samples.sample_information_id')
-            ->where('requested_experiments.experiment_id', $this->experiment->id)
-            ->select('sample_informations.sample_id')
-            ->distinct()
-            ->pluck('sample_id');
     }
 
     abstract public static function determineResultValue(Result $result);

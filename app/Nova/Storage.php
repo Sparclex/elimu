@@ -2,25 +2,22 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
+use App\Support\Position;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use App\Fields\CustomBelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Storage extends Resource
 {
+    public static $globallySearchable = false;
+
     public static $model = 'App\Models\Storage';
 
     public static $title = 'id';
 
-    public static $with = ['sample.sampleInformation'];
-
-    public static $search = [
-        'box',
-        'position',
-    ];
+    public static $with = ['sample'];
 
     public static function label()
     {
@@ -33,17 +30,21 @@ class Storage extends Resource
             ID::make()
                 ->onlyOnForms(),
             BelongsToField::make('Sample'),
-            Number::make('Box'),
-            Number::make('Position'),
-        ];
-    }
+            Number::make('Position')->resolveUsing(function () {
+                return $this->position;
+                $boxSize = auth()
+                    ->user()
+                    ->study
+                    ->sampleTypes()
+                    ->wherePivot('sample_type_id', $this->sample_type_id)
+                    ->first()->pivot;
 
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        $query->getQuery()->orders = [];
-        return $query
-            ->orderBy('sample_type_id')
-            ->orderby('box')
-            ->orderBy('position');
+                return Position::fromPosition($this->position)
+                    ->withColumns($boxSize->columns)
+                    ->withRows($boxSize->rows)
+                    ->showPlates()
+                    ->toLabel();
+            })->sortable(),
+        ];
     }
 }

@@ -1,0 +1,629 @@
+<rdml version="1.1" xmlns="http://www.rdml.org">
+    <dateMade>2018-03-29T20:50:39.563+00:00</dateMade>
+    <dateUpdated>2018-04-08T15:19:39.760+00:00</dateUpdated>
+    <id>
+        <publisher>Bio-Rad Laboratories, Inc.</publisher>
+        <serialNumber>4.1.2433.1219</serialNumber>
+        <MD5Hash></MD5Hash>
+    </id>
+    <experimenter id="admin">
+        <firstName></firstName>
+        <lastName></lastName>
+        <email></email>
+        <labName>BIO-RAD LABORATORIES</labName>
+        <labAddress></labAddress>
+    </experimenter>
+    <dye id="FAM">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <dye id="Cy5">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <dye id="VIC">
+        <description>BioRad.PCR.Data.PlateSetups.Fluorophor</description>
+    </dye>
+    <sample id="6179592">
+        <type>unkn</type>
+    </sample>
+    <sample id="7179593">
+        <type>unkn</type>
+    </sample>
+    <sample id="8179594">
+        <type>unkn</type>
+    </sample>
+    <sample id="9179595">
+        <type>unkn</type>
+    </sample>
+    <sample id="1179596">
+        <type>unkn</type>
+    </sample>
+    <sample id="5176792">
+        <type>unkn</type>
+    </sample>
+    <sample id="5176801">
+        <type>unkn</type>
+    </sample>
+    <sample id="9176805">
+        <type>unkn</type>
+    </sample>
+    <sample id="1179588">
+        <type>unkn</type>
+    </sample>
+    <sample id="pos">
+        <type>pos</type>
+    </sample>
+    <sample id="ntc">
+        <type>ntc</type>
+    </sample>
+    <sample id="neg">
+        <type>unkn</type>
+    </sample>
+    <target id="PfvarATS">
+        <type>toi</type>
+        <dyeId id="FAM"/>
+    </target>
+    <target id="Pspp18S">
+        <type>toi</type>
+        <dyeId id="Cy5"/>
+    </target>
+    <target id="HsRNaseP">
+        <type>toi</type>
+        <dyeId id="VIC"/>
+    </target>
+    <thermalCyclingConditions id="etienne_PCR.pcrd.prcl">
+        <description></description>
+        <lidTemperature>105</lidTemperature>
+        <step>
+            <nr>1</nr>
+            <temperature>
+                <temperature>95</temperature>
+                <duration>60</duration>
+            </temperature>
+        </step>
+        <step>
+            <nr>2</nr>
+            <temperature>
+                <temperature>95</temperature>
+                <duration>15</duration>
+            </temperature>
+        </step>
+        <step>
+            <nr>3</nr>
+            <description>plateread</description>
+            <temperature>
+                <temperature>57</temperature>
+                <duration>45</duration>
+                <measure>real time</measure>
+            </temperature>
+        </step>
+        <step>
+            <nr>4</nr>
+            <loop>
+                <goto>2</goto>
+                <repeat>44</repeat>
+            </loop>
+        </step>
+    </thermalCyclingConditions>
+    <experiment id="All Wells">
+        <description>A1-H12</description>
+        <run id="GeneEx FAM">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="15">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="27">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="16">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="28">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="17">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="29">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="18">
+                <sample id="1179596"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="19">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="31">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="20">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="32">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="21">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="33">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="30">
+                <sample id="1179588"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="38">
+                <sample id="pos"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>19.1956703402354</cq>
+                </data>
+            </react>
+            <react id="50">
+                <sample id="pos"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>19.1878578796363</cq>
+                </data>
+            </react>
+            <react id="39">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="51">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="40">
+                <sample id="neg"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="52">
+                <sample id="neg"/>
+                <data>
+                    <tar id="PfvarATS"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+        </run>
+        <run id="GeneEx Cy5">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="15">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="27">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="16">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="28">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="17">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="29">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="18">
+                <sample id="1179596"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="19">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="31">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="20">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="32">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="21">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="33">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="30">
+                <sample id="1179588"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="38">
+                <sample id="pos"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>21.1513291496153</cq>
+                </data>
+            </react>
+            <react id="50">
+                <sample id="pos"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>21.2289683066649</cq>
+                </data>
+            </react>
+            <react id="39">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="51">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="40">
+                <sample id="neg"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="52">
+                <sample id="neg"/>
+                <data>
+                    <tar id="Pspp18S"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+        </run>
+        <run id="GeneEx VIC">
+            <description></description>
+            <instrument>Block Type "96FX", Cycler SN: BR100190, PXA270 Processor Firmware: 3.3.155.524, HC12 Thermal
+                Control Firmware: 1.0.176.0, FX2 Controller Firmware: 1.35.0.0, Dsp Firmware Version: 1.124.0.0, 8051
+                Motorized Lid: 54, Shuttle SN: SG7265,Optical Head SN: 787BR00190
+            </instrument>
+            <dataCollectionSoftware>
+                <name>BioRadCFXManager.exe</name>
+                <version>3.1.1517.0823. (OS-Microsoft Windows NT 6.2.9200.0.Service Pack 1, CLR-4.0.30319.42000,
+                    Culture-en-GB).
+                </version>
+            </dataCollectionSoftware>
+            <pcrFormat>
+                <rows>8</rows>
+                <columns>12</columns>
+                <rowLabel>ABC</rowLabel>
+                <columnLabel>123</columnLabel>
+            </pcrFormat>
+            <react id="14">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.1588633693236</cq>
+                </data>
+            </react>
+            <react id="26">
+                <sample id="6179592"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.2882421489067</cq>
+                </data>
+            </react>
+            <react id="15">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.6423727803798</cq>
+                </data>
+            </react>
+            <react id="27">
+                <sample id="7179593"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.7366471936388</cq>
+                </data>
+            </react>
+            <react id="16">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.2135266205167</cq>
+                </data>
+            </react>
+            <react id="28">
+                <sample id="8179594"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.1658029091379</cq>
+                </data>
+            </react>
+            <react id="17">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.062338303299</cq>
+                </data>
+            </react>
+            <react id="29">
+                <sample id="9179595"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>23.9025860109758</cq>
+                </data>
+            </react>
+            <react id="18">
+                <sample id="1179596"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.6573884521083</cq>
+                </data>
+            </react>
+            <react id="19">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.0051906918081</cq>
+                </data>
+            </react>
+            <react id="31">
+                <sample id="5176792"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.0340333140637</cq>
+                </data>
+            </react>
+            <react id="20">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>23.274584292838</cq>
+                </data>
+            </react>
+            <react id="32">
+                <sample id="5176801"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>23.3930070134094</cq>
+                </data>
+            </react>
+            <react id="21">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.6367746708377</cq>
+                </data>
+            </react>
+            <react id="33">
+                <sample id="9176805"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.8710321143588</cq>
+                </data>
+            </react>
+            <react id="30">
+                <sample id="1179588"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.8405777363367</cq>
+                </data>
+            </react>
+            <react id="38">
+                <sample id="pos"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="50">
+                <sample id="pos"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="39">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="51">
+                <sample id="ntc"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>NaN</cq>
+                </data>
+            </react>
+            <react id="40">
+                <sample id="neg"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.5925773416574</cq>
+                </data>
+            </react>
+            <react id="52">
+                <sample id="neg"/>
+                <data>
+                    <tar id="HsRNaseP"/>
+                    <cq>24.6736553173941</cq>
+                </data>
+            </react>
+        </run>
+    </experiment>
+</rdml>

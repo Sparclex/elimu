@@ -2,13 +2,15 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Laravel\Nova\Fields\HasOne;
-use Laravel\Nova\Fields\HasMany;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class Assay extends Resource
 {
@@ -20,27 +22,24 @@ class Assay extends Resource
         'name',
     ];
 
-    public static $globallySearchable = false;
+    public static $globallySearchable = true;
 
     public function fields(Request $request)
     {
-        $resultTypes = array_keys(config('lims.result_types'));
         return [
             ID::make()
                 ->hideFromIndex(),
             Text::make('Name')
                 ->sortable()
-                ->creationRules('required', 'unique:assays,name')
-                ->updateRules('required', 'unique:assays,name,{{resourceId}}'),
-            Text::make('SOP')
-                ->rules('required')
-                ->sortable(),
-            Select::make('Result Type')
-                ->hideFromIndex()
-                ->options(array_combine($resultTypes, $resultTypes))
-                ->rules('required', 'in:' . implode(',', $resultTypes)),
+                ->rules(
+                    'required',
+                    (new StudyUnique('assays', 'name'))->ignore($request->resourceId)
+                ),
+            BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
+            BelongsToField::make('Instrument'),
+            BelongsToField::make('Protocol'),
+            BelongsToField::make('Primer Mix', 'primerMix', PrimerMix::class),
             Trix::make('Description'),
-            HasOne::make('Input Parameters', 'inputParameter', InputParameter::class),
             HasMany::make('Results')
         ];
     }

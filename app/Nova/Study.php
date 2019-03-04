@@ -2,13 +2,13 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
+use App\Fields\StorageSizeField;
+use App\Fields\StudyUserFields;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use App\Fields\StorageSizeField;
-use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\BelongsToMany;
 
 class Study extends Resource
 {
@@ -22,9 +22,11 @@ class Study extends Resource
         'id',
     ];
 
-    public function title()
+    public static $title = 'study_id';
+
+    public function subtitle()
     {
-        return $this->study_id . ": " . str_limit($this->name, 20);
+        return $this->name;
     }
 
 
@@ -43,10 +45,11 @@ class Study extends Resource
                 ->updateRules('required', 'unique:studies,name,{{resourceId}}'),
             Trix::make('Description'),
 
-            HasMany::make('SampleInformations'),
             BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)
-                ->fields(new StorageSizeField),
-            BelongsToMany::make('Users'),
+                ->fields(new StorageSizeField)
+                ->searchable(),
+            BelongsToMany::make('Users')
+                ->fields(new StudyUserFields)
         ];
     }
 }

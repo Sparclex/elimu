@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\Sample;
+use App\Policies\Traits\OnlyAvailableForChosenStudy;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -9,25 +11,49 @@ class SamplePolicy extends Policy
 {
     use HandlesAuthorization, OnlyAvailableForChosenStudy;
 
-    public function view(User $user, $model)
+    public function view(User $user, Sample $sample)
     {
-        return $user->study_id == $model->study_id;
+        return $user->study_id == $sample->study_id;
     }
 
     public function create(User $user)
     {
-        return Authorization::isScientist($user);
+        return $user->isScientist();
     }
 
-    public function update(User $user, $model)
+    public function update(User $user, Sample $sample)
     {
-        return $user->study_id == $model->study_id
-            && Authorization::isScientist();
+        return $sample->study_id == $user->study_id &&  $user->isScientist();
     }
 
-    public function delete(User $user, $model)
+    public function delete(User $user, Sample $sample)
     {
-        return $user->study_id == $model->study_id
-            && $this->createdFiveMinutesAgo($user, $model);
+        return $sample->study_id == $user->study_id &&  $user->isScientist();
+    }
+
+    /**
+     * Determine whether the user can attach a tag to a podcast.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Podcast  $podcast
+     * @param  \App\Tag  $tag
+     * @return mixed
+     */
+    public function attachSampleType()
+    {
+        return false;
+    }
+
+    /**
+     * Determine whether the user can detach a tag from a podcast.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Podcast  $podcast
+     * @param  \App\Tag  $tag
+     * @return mixed
+     */
+    public function detachSampleType()
+    {
+        return false;
     }
 }

@@ -163,12 +163,12 @@ class DevelopmentSeeder extends Seeder
         ];
         foreach($sampleIdsInRdml as $experimentNumber => $experimentSamples) {
             factory(SampleType::class)->create();
-             $samples = factory(\App\Models\Sample::class, count($experimentSamples))
+             $samples = factory(\App\Models\SampleMutation::class, count($experimentSamples))
             ->make([
                 'sample_type_id' => 1
             ])
             ->each(function ($sample, $key) use ($experimentSamples, $study_id) {
-                $sample->sample_information_id = factory(\App\Models\SampleInformation::class)
+                $sample->sample_information_id = factory(\App\Models\Sample::class)
                     ->create([
                         'study_id' => $study_id,
                         'sample_id' => $experimentSamples[$key]

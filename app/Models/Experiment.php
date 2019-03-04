@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OnlyCurrentStudy;
+use App\Models\Traits\SetUserStudyOnSave;
+use App\Observers\ResultExtractor;
 use App\User;
-use OwenIt\Auditing\Auditable;
-use App\Scopes\OnlyCurrentStudy;
-use App\Observers\ExtractSampleData;
-use Illuminate\Support\Facades\Auth;
-use App\ResultHandlers\ResultHandler;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Experiment extends Model implements AuditableContract
 {
-    use DependsOnStudy, Auditable;
+    use SetUserStudyOnSave, Auditable;
 
     protected $dates = [
         'created_at',
@@ -23,31 +22,32 @@ class Experiment extends Model implements AuditableContract
     ];
 
     protected $dispatchesEvents = [
-        'saved' => ExtractSampleData::class,
+        'saved' => ResultExtractor::class,
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::addGlobalScope(new OnlyCurrentStudy);
-
-        static::saving(function ($model) {
+        static::creating(function ($model) {
             $model->requested_at = now();
-            $model->requester_id = Auth::user()->id;
         });
     }
 
-    public function reagent()
+    public function assay()
     {
-        return $this->belongsTo(Reagent::class);
+        return $this->belongsTo(Assay::class);
     }
 
     public function samples()
     {
         return $this
-            ->belongsToMany(Sample::class, 'requested_experiments')
-            ->withTimestamps();
+            ->belongsToMany(Sample::class, 'requested_experiments');
+    }
+
+    public function sampleType()
+    {
+        return $this->belongsTo(SampleType::class);
     }
 
     public function resultData()
@@ -65,27 +65,8 @@ class Experiment extends Model implements AuditableContract
         return $this->belongsTo(Study::class);
     }
 
-    public function getInputParametersAttribute()
-    {
-        return InputParameter::getByExperiment($this->id);
-    }
-
     public function getResultHandlerAttribute()
     {
-        return $this->reagent->assay->result_handler;
-    }
-
-    public function scopeWithAssayName($query)
-    {
-        return $query->addSubSelect('assay_id', Reagent::select('assay_id')
-            ->whereColumn('id', 'reagent_id'))
-            ->addSubSelect('assay_name', Assay::select('name')
-                ->whereColumn('id', 'assay_id'));
-    }
-
-    public function scopeWithRequesterName($query)
-    {
-        return $query->addSubSelect('requester_name', User::select('name')
-            ->whereColumn('id', 'requester_id'));
+        return $this->assay->result_handler;
     }
 }

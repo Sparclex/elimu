@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Auth;
 
 class Authorization
 {
-    public const ADMINISTRATOR = 'Administrator';
-    public const LABMANAGER = 'Lab Manager';
-    public const MONITOR = 'Monitor';
-    public const SCIENTIST = 'Scientist';
+    public const ADMINISTRATOR = 1000;
+    public const LABMANAGER = 100;
+    public const MONITOR = 5;
+    public const SCIENTIST = 10;
 
     public static function isAdministrator(User $user = null)
     {

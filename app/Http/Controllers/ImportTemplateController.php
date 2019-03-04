@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Storage;
 class ImportTemplateController extends Controller
 {
     private $importTemplates = [
-        'sample-informations'
+        'samples',
+        'oligos',
+        'reagents',
     ];
 
     public function show($resourceName, Request $request)

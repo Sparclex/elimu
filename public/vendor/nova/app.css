@@ -878,6 +878,7 @@ textarea.form-input:read-only,
 input.form-input:-moz-read-only,
 textarea.form-input:-moz-read-only,
 .form-input:disabled,
+.form-input.disabled,
 .form-select:disabled {
   background-color: var(--30);
   cursor: not-allowed;
@@ -886,6 +887,7 @@ textarea.form-input:-moz-read-only,
 input.form-input:read-only,
 textarea.form-input:read-only,
 .form-input:disabled,
+.form-input.disabled,
 .form-select:disabled {
   background-color: var(--30);
   cursor: not-allowed;
@@ -992,12 +994,18 @@ textarea.form-input:read-only,
   text-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
 
-.btn-disabled {
+.btn-disabled,
+.btn[disabled] {
+  cursor: not-allowed;
   opacity: .5;
 }
 
-.btn-default:focus,
-.btn-default:active {
+.btn-disabled:focus {
+  outline: none;
+}
+
+.btn-default:not([disabled]):not(.btn-disabled):focus,
+.btn-default:not([disabled]):not(.btn-disabled):active {
   outline: none;
   -webkit-box-shadow: 0 0 8px var(--primary);
           box-shadow: 0 0 8px var(--primary);
@@ -1036,7 +1044,7 @@ textarea.form-input:read-only,
   color: var(--white);
 }
 
-.btn-primary:hover {
+.btn-primary:not([disabled]):not(.btn-disabled):hover {
   background-color: var(--primary-dark);
 }
 
@@ -1113,6 +1121,10 @@ textarea.form-input:read-only,
 .dropdown-menu-right {
   top: 2.5rem;
   right: 0rem;
+}
+
+.dropdown-right {
+  right: 20px;
 }
 
 .dropdown-alt .dropdown-trigger {
@@ -1246,6 +1258,10 @@ textarea.form-input:read-only,
 /* Markdown Field
 ---------------------------------------------------------------------------- */
 
+.remove-last-margin-bottom :last-child {
+  margin-bottom: 0;
+}
+
 .markdown h1,
 .markdown h2,
 .markdown h3,
@@ -1253,13 +1269,13 @@ textarea.form-input:read-only,
 .markdown h5,
 .markdown h6 {
   font-weight: 600;
-  color: #333;
+  color: var(--90);
   margin-bottom: 20px;
 }
 
 .markdown h1 {
   font-size: 1.5rem;
-  color: #666;
+  color: var(--80);
 }
 
 .markdown h2 {

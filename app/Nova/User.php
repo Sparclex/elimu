@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Fields\StudyUserFields;
 use App\Policies\Authorization;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -62,6 +63,7 @@ class User extends Resource
             DateTime::make('Created at')->onlyOnDetail(),
 
             BelongsToMany::make('Studies')
+                ->fields(new StudyUserFields)
         ];
     }
 

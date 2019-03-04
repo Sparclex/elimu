@@ -12,60 +12,73 @@
                             </div>
                             <div class="w-1/2">
                                 <multiselect :options="boxSizes"
-                                         :customLabel="boxSizeLabel"
-                                         trackBy="id"
-                                         :value="selectedBoxSize"
-                                         @input="selectBoxSize"
+                                             :customLabel="boxSizeLabel"
+                                             trackBy="id"
+                                             :value="selectedSampleType"
+                                             @input="selectSampleType"
+                                             :allowEmpty="false"
                                 />
                             </div>
                         </div>
-                        <div class="flex w-1/2 p-4" v-show="selectedBoxSize">
-                            <div class="w-1/2">
-                                <label class="inline-block text-80 pt-2 leading-tight">Number of Columns</label>
-                            </div>
-                            <div class="w-1/2">
-                                <input type="number" class="w-full form-control form-input form-input-bordered"
-                                :value="numberOfColumns" @input="changeNumberOfColumns">
-                            </div>
-                        </div>
                     </div>
 
-                    <div v-if="numberOfRows > 0">
+
+                    <div v-if="selectedSampleType">
                         <div class="py-8" v-if="loadingStorage">
-                            <loader />
+                            <loader/>
                         </div>
-
-                        <div v-else class="max-w-full overflow-x-auto">
-                            <table class="min-w-full">
-                                <tr>
-                                    <th class="td-fit p-2 bg-30 text-80"></th>
-                                    <th v-for="column in numberOfColumns" class="p-2 bg-30 text-80">{{columnLabel(column)}}</th>
-                                </tr>
-                                <tr v-for="row in numberOfRows" class="border-b-2 border-40">
-                                    <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
-                                    <td v-for="column in numberOfColumns"
-                                        class="p-2 border-40"
-                                        :class="{
-                                            'border-r-2': column != numberOfColumns
+                        <div v-else>
+                            <h2 class="p-4 font-normal">Plate P{{formattedPlate}}</h2>
+                            <div class="max-w-full overflow-x-auto">
+                                <table class="min-w-full">
+                                    <tr>
+                                        <th class="td-fit p-2 bg-30 text-80"></th>
+                                        <th v-for="column in columns" class="p-2 bg-30 text-80">
+                                            {{columnLabel(column)}}
+                                        </th>
+                                    </tr>
+                                    <tr v-for="row in rows" class="border-b-2 border-40">
+                                        <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
+                                        <td v-for="column in columns"
+                                            class="p-2 border-40 text-center relative"
+                                            :class="{
+                                            'border-r-2': column != columns,
+                                            'bg-40': samples[row - 1][column - 1].shipped
                                         }">
-                                        {{currentSample(row, column).fields[1].value}}
-                                    </td>
-                                </tr>
-                            </table>
+                                            <router-link :to="{name:'detail', params: {
+                                                resourceName: 'samples',
+                                                resourceId: samples[row - 1][column - 1].id
+                                            }}"
+                                            class="no-underline font-bold dim text-primary"
+                                            >
+                                                {{samples[row - 1][column - 1].sample_id}}
+                                            </router-link>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
-                        <pagination-links
-                            resource-name="storages"
-                            :resources="samples"
-                            :resource-response="resourceResponse"
-                            @previous="selectPreviousPage"
-                            @next="selectNextPage"
-                        >
-                        </pagination-links>
-                    </div>
 
+                        <div class="bg-20 rounded-b">
+                            <nav class="flex justify-between items-center">
+                                <button :disabled="currentPlate === 1"
+                                        rel="prev"
+                                        class="btn btn-link py-3 px-4"
+                                        :class="{
+                                            'text-80 opacity-50': currentPlate === 1,
+                                            'text-primary dim': currentPlate > 1
+                                        }"
+                                        @click.prevent="selectPreviousPlate">
+                                    Previous
+                                </button>
+                                <button rel="next"
+                                        class="btn btn-link py-3 px-4 text-primary dim"
+                                        @click.prevent="selectNextPlate">
+                                    Next
+                                </button>
+                            </nav>
+                        </div>
 
-                    <div v-if="numberOfRows === -1" class="py-8 px-4">
-                        <p>Invalid number of columns. {{boxSize}} can not be divided by {{numberOfColumns}}.</p>
                     </div>
 
                 </div>
@@ -81,11 +94,8 @@
             sampleType: {
                 default: -1
             },
-            page: {
+            plate: {
                 default: 1
-            },
-            columns: {
-                default: 0,
             }
         },
 
@@ -93,19 +103,19 @@
             return {
                 loading: true,
                 boxSizes: [],
-                selectedBoxSize: null,
-                numberOfColumns: this.columns,
+                selectedSampleType: null,
                 samples: [],
+                rows: 0,
+                columns: 0,
                 loadingStorage: true,
-                resourceResponse: null,
-                currentPage: this.page,
+                currentPlate: this.plate,
             }
         },
         async mounted() {
             await this.fetchBoxSizes();
-            for(let boxSize of this.boxSizes) {
-                if(boxSize.id.value == this.sampleType) {
-                    this.selectBoxSize(boxSize);
+            for (let boxSize of this.boxSizes) {
+                if (boxSize.id.value == this.sampleType) {
+                    this.selectSampleType(boxSize);
                 }
             }
             this.loading = false;
@@ -126,142 +136,59 @@
             },
 
             async fetchSamples() {
-                return axios.get('/nova-api/storages', {
+                return axios.get('/nova-vendor/lims/storage/' + this.selectedSampleType.id.value, {
                     params: {
-                        perPage: this.boxSize,
-                        viaResourceId: this.selectedBoxSize.id.value,
-                        viaRelationship: 'storages',
-                        relationshipType: 'hasMany',
-                        page: this.currentPage,
+                        plate: this.currentPlate
                     }
-                }).then(({data}) => {
-                    this.resourceResponse = data;
-                    this.samples = data.resources;
-                    this.loadingStorage = false;
-                    this.updateRoute();
-                });
+                })
+                    .then(({data}) => {
+                        this.samples = data.data;
+                        this.columns = data.size.columns;
+                        this.rows = data.size.rows;
+                        this.loadingStorage = false;
+                        this.updateRoute();
+                    });
             },
 
             boxSizeLabel(boxSizeResource) {
                 return boxSizeResource.fields[1].value;
             },
 
-            selectBoxSize(boxSize) {
-                this.selectedBoxSize = boxSize;
-
-                this.setDefaultNumberOfColumns();
+            selectSampleType(sampleType) {
+                this.selectedSampleType = sampleType;
+                this.fetchSamples();
             },
 
-            setDefaultNumberOfColumns() {
-                let numberOfColumns = 0;
-
-                switch (this.boxSize) {
-                    case 81:
-                        numberOfColumns = 9;
-                        break;
-                    case 96:
-                        numberOfColumns = 12;
-                        break;
-                }
-
-                this.changeNumberOfColumns(numberOfColumns);
-            },
-
-            changeNumberOfColumns(value) {
-                this.loadingStorage = true;
-
-                if(value.target !== undefined) {
-                    this.numberOfColumns = parseInt(value.target.value);
-                } else {
-                    this.numberOfColumns = parseInt(value);
-                }
-
-                if(this.numberOfRows <= 0) {
+            selectPreviousPlate() {
+                if (parseInt(this.currentPlate) === 1) {
                     return;
                 }
-
+                this.currentPlate = parseInt(this.currentPlate) - 1;
                 this.fetchSamples();
             },
 
-            currentSample(row, column) {
-                let position = (row - 1) * this.numberOfColumns + column;
-
-                let sample = {
-                    fields: [
-                        {},
-                        {},
-                        {},
-                        {},
-                        {},
-                        {},
-                    ]
-                };
-
-                if(this.sortedSamples[this.currentPage] && this.sortedSamples[this.currentPage][position]) {
-                    sample = this.sortedSamples[this.currentPage][position];
-                }
-                return sample;
-            },
-
-            selectPreviousPage() {
-                this.currentPage = parseInt(this.currentPage) - 1;
-                this.fetchSamples();
-            },
-
-            selectNextPage() {
-                this.currentPage = parseInt(this.currentPage) + 1;
+            selectNextPlate() {
+                this.currentPlate = parseInt(this.currentPlate) + 1;
                 this.fetchSamples();
             },
 
             updateRoute() {
-                this.$router.replace({path: '/storage-overview', query: {
-                        sampleType: this.selectedBoxSize ? this.selectedBoxSize.id.value : '',
-                        page: this.currentPage,
-                        columns: this.numberOfColumns,
-                    }}
+                this.$router.replace({
+                        path: '/storage-overview', query: {
+                            sampleType: this.selectedSampleType ? this.selectedSampleType.id.value : '',
+                            plate: this.currentPlate,
+                        }
+                    }
                 );
             },
 
             columnLabel(column) {
-                return String.fromCharCode(97 + column).toUpperCase();
+                return String.fromCharCode(97 + column - 1).toUpperCase();
             }
         },
-
         computed: {
-            boxSize() {
-                if(!this.selectedBoxSize) {
-                    return 0;
-                }
-
-                return this.selectedBoxSize.fields[3].value;
-            },
-
-            numberOfRows() {
-                if(!this.selectedBoxSize) {
-                    return 0;
-                }
-
-                if(!this.numberOfColumns) {
-                    return 0;
-                }
-
-                if(this.boxSize % this.numberOfColumns !== 0) {
-                    return -1;
-                }
-
-                return this.boxSize / this.numberOfColumns;
-            },
-
-            sortedSamples() {
-                let sortedSamples = {};
-                this.samples.forEach((sample) => {
-                    if(!sortedSamples[sample.fields[2].value]) {
-                        sortedSamples[sample.fields[2].value] = {};
-                    }
-                    sortedSamples[sample.fields[2].value][sample.fields[3].value] = sample;
-                });
-
-                return sortedSamples;
+            formattedPlate() {
+                return this.currentPlate.toString().padStart(3, 0);
             }
         }
     }

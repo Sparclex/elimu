@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Result extends Model
 {
-    use DependsOnStudy;
+    use SetUserStudyOnSave;
 
     protected $fillable = ['sample_id', 'target', 'assay_id'];
 
     protected $output = null;
-
-    public function sample()
-    {
-        return $this->belongsTo(Sample::class);
-    }
 
     public function assay()
     {
@@ -28,20 +24,9 @@ class Result extends Model
         return $this->hasMany(ResultData::class);
     }
 
-    public function getStatusAttribute()
+    public function sample()
     {
-        return $this->assay->result_handler::getStatus($this);
-    }
-
-    public function getValueAttribute()
-    {
-        return $this->assay->result_handler::determineResultValue($this);
-    }
-
-    public function getInputParameterAttribute()
-    {
-        return collect($this->assay->inputParameter->parameters)
-            ->firstWhere('target', $this->target);
+        return $this->belongsTo(Sample::class);
     }
 
     public function scopeCalculatedResult($query)
@@ -49,13 +34,13 @@ class Result extends Model
         $query->addSubSelect(
             'result_value',
             ResultData::select(
-                DB::raw('POW(10, '.$this->inputParameter['slope'].' 
+                DB::raw('POW(10, ' . $this->inputParameter['slope'] . '
                 * AVG(primary_value) 
-                + '.$this->inputParameter['intercept'].')')
+                + ' . $this->inputParameter['intercept'] . ')')
             )
-            ->whereColumn('result_id', 'results.id')
-            ->where('status', 1)
-            ->groupBy('result_id')
+                ->whereColumn('result_id', 'results.id')
+                ->where('status', 1)
+                ->groupBy('result_id')
         );
     }
 }

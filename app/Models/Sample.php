@@ -2,57 +2,46 @@
 
 namespace App\Models;
 
-use App\Scopes\OnlyCurrentStudy;
+use App\Models\Scopes\OnlyCurrentStudy;
+use App\Models\Traits\SetUserStudyOnSave;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Sample extends Model implements AuditableContract
 {
-    use DependsOnStudy, Auditable;
+    use SetUserStudyOnSave, Auditable;
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'collected_at',
+        'birthdate'
+    ];
 
     protected $fillable = [
-        'sample_type_id',
-        'sample_information_id',
-        'study_id',
-        'quantity'
+        'sample_id',
+        'subject_id',
+        'collected_at',
+        'visit_id',
+        'study_id'
     ];
 
     protected $casts = [
-        'extra' => 'array'
+        'extra' => 'collection'
     ];
 
-    public static function boot()
+    public function sampleTypes()
     {
-        parent::boot();
-
-        static::addGlobalScope(new OnlyCurrentStudy);
+        return $this->belongsToMany(SampleType::class, 'sample_mutations')
+            ->withPivot('quantity');
     }
 
-    public function study()
+    public function storagePositions()
     {
-        return $this->belongsTo(Study::class);
-    }
-
-    public function sampleType()
-    {
-        return $this->belongsTo(SampleType::class);
-    }
-
-    public function sampleInformation()
-    {
-        return $this->belongsTo(SampleInformation::class);
-    }
-
-    public function storages()
-    {
-        return $this->hasMany(Storage::class);
-    }
-
-    public function experiments()
-    {
-        return $this
-            ->belongsToMany(Experiment::class, 'requested_experiments')
+        return $this->belongsToMany(SampleType::class, 'storage')
+            ->withPivot(['position', 'study_id'])
             ->withTimestamps();
     }
 
@@ -61,15 +50,23 @@ class Sample extends Model implements AuditableContract
         return $this->hasMany(Result::class);
     }
 
-    public function scopeWithType($query)
+    public function experiments()
     {
-        $query->addSubSelect('sample_type_name', SampleType::select('name')
-                            ->whereColumn('id', 'sample_type_id'));
+        return $this->belongsToMany(Experiment::class, 'requested_experiments');
     }
 
-    public function scopeWithSampleId($query)
+    public function scopeTested(Builder $query, $assay)
     {
-        $query->addSubSelect('sample_id', SampleInformation::select('sample_id')
-        ->whereColumn('id', 'sample_information_id'));
+        $assayId = $assay instanceof Assay ? $assay->id : $assay;
+        return $query->whereHas('results', function ($query) use ($assayId) {
+            return $query->where('assay_id', $assayId);
+        });
+    }
+
+    public function shipments()
+    {
+        return $this->belongsToMany(Shipment::class, 'shipped_samples')
+            ->withPivot('quantity')
+            ->orderBy('shipment_date');
     }
 }

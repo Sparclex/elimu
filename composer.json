@@ -27,8 +27,10 @@
         "owen-it/laravel-auditing": "^8.0",
         "predis/predis": "^1.1",
         "reinink/advanced-eloquent": "^0.2.0",
+        "sparclex/nova-creatable-belongs-to": "^0.0.1",
         "sparclex/nova-import-card": "^1.0",
         "spatie/laravel-backup": "^6.0",
+        "spatie/laravel-collection-macros": "^4.2",
         "titasgailius/search-relations": "^1.0",
         "treestoneit/belongs-to-field": "^0.1.0"
     },
@@ -36,7 +38,6 @@
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",
         "laracasts/generators": "^1.1",
-        "laravel/dusk": "^4.0",
         "lorisleiva/laravel-deployer": "^0.2.5",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^2.0",
@@ -84,10 +85,6 @@
         {
             "type": "composer",
             "url": "https://nova.laravel.com"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/LimsIntroductionCard"
         }
     ]
 }
