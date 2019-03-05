@@ -1,4 +1,10 @@
 image: registry.gitlab.com/sparclex/ihi-lims:latest
+services:
+  - mysql:latest
+
+variables:
+  MYSQL_DATABASE: homestead
+  MYSQL_ROOT_PASSWORD: secret
 
 stages:
   - build
@@ -61,12 +67,12 @@ codestyle:
   script:
   - phpcs --standard=PSR2 --extensions=php --ignore=app/Support/helpers.php app
 
-#phpunit:
-#  stage: test
-#  dependencies:
-#  - composer
-#  script:
-#  - phpunit --coverage-text --colors=never
+phpunit:
+  stage: test
+  dependencies:
+  - composer
+  script:
+  - phpunit --coverage-text --colors=never
 
 staging:
   stage: deploy
