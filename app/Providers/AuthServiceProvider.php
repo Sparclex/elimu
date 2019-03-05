@@ -5,11 +5,14 @@ namespace App\Providers;
 use App\Models\Assay;
 use App\Models\Experiment;
 use App\Models\InputParameter;
+use App\Models\Institution;
+use App\Models\Laboratory;
+use App\Models\Person;
 use App\Models\Result;
 use App\Models\ResultData;
-use App\Models\SampleMutation;
-use App\Models\SampleData;
 use App\Models\Sample;
+use App\Models\SampleData;
+use App\Models\SampleMutation;
 use App\Models\SampleType;
 use App\Models\Storage;
 use App\Models\Study;
@@ -17,10 +20,11 @@ use App\Policies\AssayPolicy;
 use App\Policies\AuditPolicy;
 use App\Policies\Authorization;
 use App\Policies\ExperimentPolicy;
-use App\Policies\InputParameterPolicy;
+use App\Policies\InstitutionPolicy;
+use App\Policies\LaboratoryPolicy;
+use App\Policies\PersonPolicy;
 use App\Policies\ResultDataPolicy;
 use App\Policies\ResultPolicy;
-use App\Policies\SampleDataPolicy;
 use App\Policies\SampleMutationPolicy;
 use App\Policies\SamplePolicy;
 use App\Policies\SampleTypePolicy;
@@ -44,7 +48,7 @@ class AuthServiceProvider extends ServiceProvider
         Assay::class => AssayPolicy::class,
         Experiment::class => ExperimentPolicy::class,
         Sample::class => SamplePolicy::class,
-        SampleMutation::class => SampleMutationPolicy::class,
+        Institution::class => InstitutionPolicy::class,
         SampleType::class => SampleTypePolicy::class,
         Study::class => StudyPolicy::class,
         User::class => UserPolicy::class,
@@ -52,6 +56,8 @@ class AuthServiceProvider extends ServiceProvider
         Result::class => ResultPolicy::class,
         ResultData::class => ResultDataPolicy::class,
         Audit::class => AuditPolicy::class,
+        Person::class => PersonPolicy::class,
+        Laboratory::class => LaboratoryPolicy::class,
     ];
 
     /**
