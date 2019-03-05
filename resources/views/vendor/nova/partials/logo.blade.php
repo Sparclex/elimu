@@ -1,7 +1,6 @@
-<div class="flex items-center">
+<div class="flex items-center justify-center">
     <svg
     class="fill-current"
-    width="{{ $width ?? '30' }}"
     height="{{ $height ?? '30' }}"
     viewBox="0 0 296.999 296.999"
     xmlns="http://www.w3.org/2000/svg"
