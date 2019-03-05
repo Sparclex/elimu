@@ -87,7 +87,7 @@ class User extends Authenticatable
 
     public function hasPower($power, $study = null)
     {
-        $studyId = $study->id || $this->study_id;
+        $studyId = $study ? $study->id : $this->study_id;
         return $this->studies()
             ->wherePivot('power', '>=', $power)
             ->wherePivot('study_id', $studyId)
