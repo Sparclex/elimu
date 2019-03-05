@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Laboratory extends Resource
@@ -20,7 +21,7 @@ class Laboratory extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'namem';
 
     /**
      * The columns that should be searched.
@@ -28,7 +29,7 @@ class Laboratory extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'name',
     ];
 
     /**
@@ -41,6 +42,7 @@ class Laboratory extends Resource
     {
         return [
             ID::make()->sortable(),
+            Text::make('Name')
         ];
     }
 
