@@ -3,7 +3,7 @@ services:
   - mysql:latest
 
 variables:
-  MYSQL_DATABASE: homestead
+  MYSQL_DATABASE: nova_test
   MYSQL_ROOT_PASSWORD: secret
   DB_HOST: mysql
   DB_USERNAME: root
