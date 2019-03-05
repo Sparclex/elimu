@@ -23,7 +23,7 @@ class UserPolicy extends Policy
 
     public function update(User $auth, User $user)
     {
-        return $auth->is($user) || $user->is_admin;
+        return $auth->is($user) || $auth->is_admin;
     }
 
     public function delete(User $auth, User $user)
@@ -43,11 +43,11 @@ class UserPolicy extends Policy
 
     public function attachStudy(User $auth, User $user, Study $study)
     {
-        return $auth->is_admin || $user->isManager($study);
+        return $auth->is_admin || $auth->isManager($study);
     }
 
     public function detachStudy(User $auth, User $user, Study $study)
     {
-        return $auth->is_admin || $user->isManager($study);
+        return $auth->is_admin || $auth->isManager($study);
     }
 }

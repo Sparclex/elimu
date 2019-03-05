@@ -6,6 +6,7 @@ use App\Fields\StudyUserFields;
 use App\Policies\Authorization;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
@@ -50,12 +51,10 @@ class User extends Resource
                 ->creationRules('required', 'string', 'min:6')
                 ->updateRules('nullable', 'string', 'min:6'),
 
-            Select::make('Role')
-                ->options($this->getRoles())
-                ->sortable()
-                ->rules('required', 'in:' . implode(',', $this->getRoles()))
+            Boolean::make('Is Admin', 'is_admin')
+                ->rules('required')
                 ->canSee(function () {
-                    return Authorization::isLabManager();
+                    return auth()->user()->is_admin;
                 }),
 
             Timezone::make('Timezone')->rules('required')->sortable(),
