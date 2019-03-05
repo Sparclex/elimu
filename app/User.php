@@ -75,19 +75,19 @@ class User extends Authenticatable
         );
     }
 
-    public function isScientist()
+    public function isScientist($study = null)
     {
-        return $this->hasPower(Authorization::SCIENTIST);
+        return $this->hasPower(Authorization::SCIENTIST, $study);
     }
 
-    public function isManager()
+    public function isManager($study = null)
     {
-        return $this->hasPower(Authorization::LABMANAGER);
+        return $this->hasPower(Authorization::LABMANAGER, $study);
     }
 
-    public function hasPower($power)
+    public function hasPower($power, $study = null)
     {
-        $studyId = $this->study_id;
+        $studyId = $study->id || $this->study_id;
         return $this->studies()
             ->wherePivot('power', '>=', $power)
             ->wherePivot('study_id', $studyId)

@@ -18,36 +18,36 @@ class UserPolicy extends Policy
 
     public function create(User $auth)
     {
-        return Authorization::isLabManager($auth);
+        return $auth->is_admin;
     }
 
     public function update(User $auth, User $user)
     {
-        return $auth->is($user) || Authorization::isLabManager($auth);
+        return $auth->is($user) || $user->is_admin;
     }
 
     public function delete(User $auth, User $user)
     {
-        return Authorization::isAdministrator($auth);
+        return $auth->is_admin;
     }
 
     public function restore(User $auth, User $user)
     {
-        return true;
+        return $auth->is_admin;
     }
 
     public function forceDelete(User $auth, User $user)
     {
-        return false;
+        return $auth->is_admin;
     }
 
     public function attachStudy(User $auth, User $user, Study $study)
     {
-        return Authorization::isAdministrator($auth);
+        return $auth->is_admin || $user->isManager($study);
     }
 
     public function detachStudy(User $auth, User $user, Study $study)
     {
-        return Authorization::isAdministrator($auth);
+        return $auth->is_admin || $user->isManager($study);
     }
 }
