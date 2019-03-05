@@ -7,6 +7,6 @@ return [
         'qPcr Rdml' => QPCR::class,
         'Excel' => \App\ResultHandlers\CsvResultHandler::class,
     ],
-    'version' => '0.0.1',
-    'name' => 'IHI Lims'
+    'version' => '1.0.0',
+    'name' => 'Elimu'
 ];

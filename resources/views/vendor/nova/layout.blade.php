@@ -53,13 +53,7 @@
             <div data-testid="content" class="px-view py-view mx-auto">
                 @yield('content')
 
-                <p class="mt-8 text-center text-xs text-80">
-                    <a href="https://lims.sparclex.com" class="text-primary dim no-underline">{{config('lims.name')}}</a>
-                    <span class="px-1">&middot;</span>
-                    &copy; {{ date('Y') }} IHI
-                    <span class="px-1">&middot;</span>
-                    v{{ config('lims.version') }}
-                </p>
+                @include('nova::partials.footer')
             </div>
         </div>
     </div>
