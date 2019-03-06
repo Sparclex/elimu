@@ -21,7 +21,7 @@ class Laboratory extends Resource
      *
      * @var string
      */
-    public static $title = 'namem';
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
