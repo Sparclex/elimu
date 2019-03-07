@@ -22,7 +22,7 @@ class PrimerMix extends Model implements AuditableContract
 
     public function getExpiresInAttribute()
     {
-        return now()->diffInDays($this->expires_at);
+        return now()->diffInDays($this->expires_at->endOfDay());
     }
 
     public function creator()
