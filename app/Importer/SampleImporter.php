@@ -68,9 +68,9 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
             $sampleTypes
         ) {
             foreach ($existingSampleMutation as $sampleMutation) {
-                if (isset($existingSamples[$sampleMutation['sample_id']])
-                    && $sample['id'] == $existingSamples[$sampleMutation['sample_id']]
-                    && $sampleTypes[$sample['type']]->id == $sampleMutation['sample_type_id']) {
+                if (isset($existingSamples[$sampleMutation->sample_id])
+                    && $sample['id'] == $existingSamples[$sampleMutation->sample_id]
+                    && $sampleTypes[$sample['type']]->id == $sampleMutation->sample_type_id) {
                     return true;
                 }
             }
