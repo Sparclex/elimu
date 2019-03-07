@@ -3,9 +3,6 @@
 use App\ResultHandlers\Rdml\Processor;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 
-Route::redirect('/', '/nova');
+Route::redirect('/', '/app');
 
-Route::get('/test', function () {
-    $experiment = \App\Models\Experiment::find(1);
-    return \PDF::loadView('pdfs.sample-report', compact('experiment'))->setPaper('a4', 'landscape')->stream('download.pdf');
-});
+Route::redirect('/nova', '/app');

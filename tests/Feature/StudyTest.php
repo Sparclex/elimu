@@ -125,7 +125,7 @@ class StudyTest extends TestCase
     {
         $this->signIn();
 
-        $this->get('nova')->assertSuccessful();
+        $this->get(config('nova.path'))->assertSuccessful();
 
         $this->get(self::RESOURCE_URI)
             ->assertForbidden();
