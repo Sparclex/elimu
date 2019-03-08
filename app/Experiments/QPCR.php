@@ -232,7 +232,7 @@ class QPCR extends ExperimentType
                 break;
 
             default:
-                $valid = $cqValue > $parameter;
+                $valid = $cqValue <= $parameter;
         }
 
         if (!$valid) {
