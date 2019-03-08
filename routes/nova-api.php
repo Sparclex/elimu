@@ -12,7 +12,7 @@ Route::get('assays/{assay}/reagents', 'AssayRelatedReagentController@handle');
 Route::get('import-template/{resource}', 'ImportTemplateController@show');
 Route::get('import-template/{resource}/download', 'ImportTemplateController@download');
 
-Route::get('storageable', 'storageController@storageable');
+Route::get('storageable', 'StorageController@storageable');
 Route::get('storage/{sampleType}', 'StorageController@index');
 
 
