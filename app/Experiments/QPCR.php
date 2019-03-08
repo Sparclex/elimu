@@ -366,7 +366,8 @@ class QPCR extends ExperimentType
             ->selectRaw('avg(primary_value) as avg_cq')
             ->selectRaw('count(*) as replicas')
             ->selectRaw('stddev(primary_value) as stddev')
-            ->selectRaw('count(case when primary_value <= ' . $parameters['cutoff'] . ' then 1 end) as positives')
+            ->selectRaw('count(case when primary_value <= ' . $parameters['cutoff'] . ' 
+            and primary_value <> 0 then 1 end) as positives')
             ->join('result_data', 'results.id', 'result_id')
             ->groupBy('result_id')
             ->where('included', true);
@@ -392,12 +393,12 @@ class QPCR extends ExperimentType
                     break;
                 case 'positive':
                     $query->havingRaw('positives = replicas')
-                        ->having('replicas', $parameters['minvalues'])
+                        ->having('replicas', '>=', $parameters['minvalues'])
                         ->having('stddev', '<=', $parameters['cuttoffstdev']);
                     break;
                 case 'negative':
                     $query->having('positives', 0)
-                        ->having('replicas', $parameters['minvalues'])
+                        ->having('replicas', '>=', $parameters['minvalues'])
                         ->havingRaw('(stddev <= ? or stddev is Null)', [$parameters['cuttoffstdev']]);
                     break;
                 case 'stdev':
