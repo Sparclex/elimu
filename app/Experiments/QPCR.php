@@ -264,7 +264,12 @@ class QPCR extends ExperimentType
      */
     protected function assertAllControlsExist($controls): void
     {
-        $missingControls = collect(self::CONTROL_IDS)->diff($controls->pluck('sampleId'));
+        $missingControls = collect(self::CONTROL_IDS)
+            ->reject(function ($controlId) {
+                $column = $controlId == self::NTC_CONTROL ? self::NTC_CONTROL : $controlId . 'ctrl';
+                return $this->parameters->pluck($column)->filter()->isEmpty();
+            })
+            ->diff($controls->pluck('sampleId'));
 
         if ($missingControls->isNotEmpty()) {
             throw new ExperimentException(
