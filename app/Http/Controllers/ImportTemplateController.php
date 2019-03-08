@@ -11,6 +11,7 @@ class ImportTemplateController extends Controller
         'samples',
         'oligos',
         'reagents',
+        'controls',
     ];
 
     public function show($resourceName, Request $request)
