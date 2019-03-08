@@ -51,7 +51,7 @@ class QPCRResultSpecifier
             return null;
         }
 
-        return pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
-            + $this->targetParameters['intercept']);
+        return round(pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
+            + $this->targetParameters['intercept']), 2);
     }
 }
