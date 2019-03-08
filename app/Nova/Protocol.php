@@ -63,7 +63,7 @@ class Protocol extends Resource
                 ->sortable()
                 ->hideFromDetail()
                 ->hideFromIndex(),
-            Text::make('Protocol Id')
+            Text::make('SOP Id', 'protocol_id')
                 ->rules(
                     'required',
                     (new StudyUnique('protocols', 'protocol_id'))->ignore($request->resourceId)
