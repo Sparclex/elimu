@@ -18,6 +18,8 @@ class CreateReagentsTable extends Migration
             $table->string('lot')->index();
             $table->string('name');
             $table->date('expires_at')->nullable();
+            $table->string('manufacturer')->nullable();
+            $table->string('supplier')->nullable();
             $table->unsignedInteger('study_id');
             $table->timestamps();
 
