@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 use Treestoneit\BelongsToField\BelongsToField;
 
@@ -46,6 +47,11 @@ class Shipment extends Resource
         return sprintf('%s - %s', $this->recipient, $this->shipment_date->format('Y-m-d'));
     }
 
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return parent::indexQuery($request, $query)->withCount('samples');
+    }
+
 
     /**
      * Get the fields displayed by the resource.
@@ -64,17 +70,24 @@ class Shipment extends Resource
             BelongsToField::make('Type', 'sampleType', SampleType::class),
             Text::make('Recipient')
                 ->rules('required'),
-            CreatableBelongsTo::make('Contact Person', 'recipientPerson', Person::class)
-                ->nullable(),
-            CreatableBelongsTo::make('Shipper', 'shipper', Person::class)
-                ->nullable(),
+            CreatableBelongsTo::make('Recipient Contact', 'recipientPerson', Person::class)
+                ->nullable()
+                ->hideFromIndex(),
+            Text::make('Shipper', 'shipper_institution'),
+            CreatableBelongsTo::make('Shipper Contact', 'shipper', Person::class)
+                ->nullable()
+                ->hideFromIndex(),
             Date::make('Shipment Date')
                 ->rules('required')
                 ->sortable(),
+            Trix::make('Condition'),
             Trix::make('Comment'),
             Boolean::make('Shipped', function () {
                 return optional(($this->shipment_date))->isPast();
             }),
+            Text::make('Samples', 'samples_count')
+                ->onlyOnIndex()
+                ->sortable(),
             CustomBelongsToMany::make('Samples')
                 ->fields(function () {
                     return [Number::make('Aliquots', 'quantity')];
