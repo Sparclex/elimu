@@ -5,6 +5,7 @@ use App\Models\Assay;
 use App\Models\Sample;
 use App\Models\Study;
 use Facades\Tests\Setup\ResultFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,10 +18,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        Model::unguard();
         $user = factory(\App\User::class)->create([
             'name' => 'Silvan',
             'email' => 'silvan.wehner@gmail.com',
-            'password' => \Hash::make('12345')
+            'password' => \Hash::make('12345'),
+            'is_admin' => true,
         ]);
 
         $study = factory(Study::class)->create([
