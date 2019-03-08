@@ -1,6 +1,6 @@
 image: registry.gitlab.com/sparclex/ihi-lims:latest
 services:
-  - mysql:latest
+  - mysql:5.7
 
 variables:
   MYSQL_DATABASE: nova_test
