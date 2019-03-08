@@ -63,7 +63,8 @@ class ExperimentManager
                             'study_id' => Auth::user()->study_id,
                             'sample_id' => $this->getSampleDatabaseIds()[$dataRow['sample']],
                             'target' => $dataRow['target']
-                        ]),
+                        ])->id,
+                        'sample_id' => $dataRow['sample'],
                         'experiment_id' => $this->experiment->id,
                         'study_id' => Auth::user()->study_id,
                         'primary_value' => $dataRow['primary_value'],
