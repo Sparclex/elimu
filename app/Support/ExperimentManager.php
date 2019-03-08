@@ -94,7 +94,7 @@ class ExperimentManager
      */
     protected function assertSampleExist()
     {
-        $missingSamples = $this->type->extractSamplesIds()->diff($this->getSampleDatabaseIds()->values());
+        $missingSamples = $this->type->extractSamplesIds()->diff($this->getSampleDatabaseIds()->keys());
 
         if ($missingSamples->isNotEmpty()) {
             throw new ExperimentException(sprintf(
