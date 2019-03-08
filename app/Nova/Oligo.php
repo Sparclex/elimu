@@ -52,18 +52,25 @@ class Oligo extends Resource
                 ->rules(
                     'required',
                     (new StudyUnique('oligos', 'oligo_id'))->ignore($request->resourceId)
-                ),
+                )
+                ->sortable(),
             Text::make('Sequence')
-                ->rules('required'),
-            Text::make('5\' Modification', '5_prime_modification'),
-            Text::make('3\' Modification', '3_prime_modification'),
+                ->rules('required')
+                ->sortable(),
+            Text::make('5\' Modification', '5_prime_modification')
+                ->sortable(),
+            Text::make('3\' Modification', '3_prime_modification')
+                ->sortable(),
             Text::make('Species')
-                ->rules('required'),
+                ->rules('required')
+                ->sortable(),
             Text::make('Target Gene')
-                ->rules('required'),
+                ->rules('required')
+                ->sortable(),
             Text::make('Publication')
                 ->rules('required')
-                ->hideFromIndex(),
+                ->hideFromIndex()
+                ->sortable(),
             Trix::make('Comment'),
 
             BelongsToMany::make('Assays')
