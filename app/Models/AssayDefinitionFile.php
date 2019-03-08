@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Excel;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -13,9 +14,18 @@ class AssayDefinitionFile extends Model implements AuditableContract
 {
     use Auditable, SetUserStudyOnSave;
 
-    protected $casts = [
-        'parameters' => 'collection'
-    ];
+    public function getParametersAttribute($value)
+    {
+        if (!$value) {
+            return new Collection();
+        }
+        $parameters = collect(json_decode($value, 1));
+        return $parameters->map(function ($targetParameter) {
+            $targetParameter['target'] = strtolower($targetParameter['target']);
+
+            return $targetParameter;
+        });
+    }
 
     public function sampleType()
     {
