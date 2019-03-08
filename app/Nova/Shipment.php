@@ -64,7 +64,7 @@ class Shipment extends Resource
             BelongsToField::make('Type', 'sampleType', SampleType::class),
             Text::make('Recipient')
                 ->rules('required'),
-            CreatableBelongsTo::make('Contact Person', 'recipient_person', Person::class)
+            CreatableBelongsTo::make('Contact Person', 'recipientPerson', Person::class)
                 ->nullable(),
             CreatableBelongsTo::make('Shipper', 'shipper', Person::class)
                 ->nullable(),

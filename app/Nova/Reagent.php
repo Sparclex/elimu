@@ -16,9 +16,9 @@ class Reagent extends Resource
 
     public static $title = 'lot';
 
-    public function subtitle()
+    public function title()
     {
-        return sprintf('%s | %s', $this->name, $this->expires_at->format('d.m.Y'));
+        return sprintf('%s | %s | %s', $this->name, $this->lot, $this->expires_at->format('d.m.Y'));
     }
 
     public function fields(Request $request)
@@ -36,7 +36,10 @@ class Reagent extends Resource
                 ->rules('required')
                 ->sortable(),
             Date::make('Expires at')
-                ->sortable()
+                ->sortable(),
+
+            Text::make('Manufacturer'),
+            Text::make('Supplier'),
         ];
     }
 }

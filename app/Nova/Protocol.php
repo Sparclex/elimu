@@ -72,7 +72,7 @@ class Protocol extends Resource
                 ->rules('required'),
             Text::make('Version')
                 ->rules('required'),
-            Date::make('implemented_at')
+            Date::make('Implemented date', 'implemented_at')
                 ->rules('required'),
             File::make('Attachment', 'attachment_path')
                 ->rules('required')

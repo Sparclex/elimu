@@ -49,7 +49,7 @@ class Assay extends Resource
             BelongsToMany::make('Controls')
                 ->searchable(),
             Trix::make('Description'),
-            HasMany::make('Results')
+            HasMany::make('Results'),
         ];
     }
 }

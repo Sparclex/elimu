@@ -32,6 +32,6 @@ class SampleTypePolicy extends Policy
 
     public function delete(User $user, $model)
     {
-        return $user->is_admin;
+        return $user->isManager();
     }
 }

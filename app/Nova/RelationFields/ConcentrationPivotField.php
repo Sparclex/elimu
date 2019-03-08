@@ -10,6 +10,7 @@ class ConcentrationPivotField
     {
         return [
             Number::make('Concentration')
+                ->step(0.01)
         ];
     }
 }
