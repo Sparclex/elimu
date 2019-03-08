@@ -26,14 +26,14 @@ class Reagent extends Resource
         return [
             ID::make()
                 ->sortable(),
+            Text::make('Name')
+                ->rules('required')
+                ->sortable(),
             Text::make('Lot')
                 ->rules(
                     'required',
                     (new StudyUnique('reagents', 'lot'))->ignore($request->resourceId)
                 )
-                ->sortable(),
-            Text::make('Name')
-                ->rules('required')
                 ->sortable(),
             Date::make('Expires at')
                 ->sortable(),

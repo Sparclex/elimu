@@ -18,7 +18,9 @@ class StorageTest extends TestCase
     public function it_should_show_all_position_on_an_empty_plate()
     {
         $user = $this->signInMonitor();
-        $user->study->sampleTypes()->attach($type = factory(SampleType::class)->create(), ['rows' => 2, 'columns' => 2]);
+        $user->study->sampleTypes()->save($type = factory(SampleType::class)->create(
+            ['rows' => 2, 'columns' => 2]
+        ));
 
         $this->assertEquals([
                 0 => [
@@ -53,7 +55,7 @@ class StorageTest extends TestCase
     public function it_should_show_a_filled_plate()
     {
         $user = $this->signInMonitor();
-        $user->study->sampleTypes()->attach($type = factory(SampleType::class)->create(), ['rows' => 2, 'columns' => 1]);
+        $user->study->sampleTypes()->save($type = factory(SampleType::class)->create(['rows' => 2, 'columns' => 1]));
         $sample1 = factory(Sample::class)->create();
         $quantity = 5;
         $sample1->sampleTypes()->attach($type->id, compact('quantity'));

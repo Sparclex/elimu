@@ -37,7 +37,7 @@ class ResultTest extends TestCase
 
         $this->get("/nova-vendor/lims/results/{$results->first()->assay_id}/targets")
             ->assertJson([
-                'PFvarts'
+                'pfvarts'
             ]);
     }
 

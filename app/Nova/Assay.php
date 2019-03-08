@@ -40,9 +40,10 @@ class Assay extends Resource
             BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
             BelongsToField::make('Instrument'),
             BelongsToField::make('SOP', 'protocol', Protocol::class),
-            BelongsToField::make('Reagent')->nullable(),
+            BelongsToField::make('Reagent')->nullable()->hideFromIndex(),
             Number::make('Reaction Volume', 'reaction_volume')
-                ->step(0.01),
+                ->step(0.01)
+                ->hideFromIndex(),
             BelongsToMany::make('Oligos')
                 ->searchable()
                 ->fields(new ConcentrationPivotField),
