@@ -6,6 +6,7 @@ use App\Fields\StorageSizeField;
 use App\Fields\StudyUserFields;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
@@ -45,9 +46,7 @@ class Study extends Resource
                 ->updateRules('required', 'unique:studies,name,{{resourceId}}'),
             Trix::make('Description'),
 
-            BelongsToMany::make('Sample Types', 'sampleTypes', SampleType::class)
-                ->fields(new StorageSizeField)
-                ->searchable(),
+            HasMany::make('Sample Types', 'sampleTypes', SampleType::class),
             BelongsToMany::make('Users')
                 ->fields(new StudyUserFields)
         ];

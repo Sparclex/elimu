@@ -11,21 +11,13 @@ class StorageController extends Controller
 {
     public function index(SampleType $sampleType, Request $request, Guard $guard)
     {
-        if (!$guard->user()->study_id) {
-            abort(401);
-        }
+        abort_unless($guard->user()->study_id, 401);
 
-        $sampleType = $guard
-            ->user()
-            ->study
-            ->sampleTypes()
-            ->wherePivot('sample_type_id', $sampleType->id)
-            ->first();
-
-        $perPage = $sampleType->pivot->columns * $sampleType->pivot->rows;
+        $perPage = $sampleType->columns * $sampleType->rows;
         $plateNumber = $request->plate > 0 ? $request->plate : 1;
 
         $positions = Storage::with('sample', 'sample.shipments')
+            ->where('sample_type_id', $sampleType->id)
             ->take($perPage)
             ->offset(($plateNumber - 1) * $perPage)
             ->get();
@@ -33,11 +25,11 @@ class StorageController extends Controller
         $plate = [];
         $shipments = [];
 
-        for ($row = 0; $row < $sampleType->pivot->rows; $row++) {
+        for ($row = 0; $row < $sampleType->rows; $row++) {
             $plate[$row] = [];
-            for ($column = 0; $column < $sampleType->pivot->columns; $column++) {
+            for ($column = 0; $column < $sampleType->columns; $column++) {
                 $currentIndex = $column +
-                    ($row * $sampleType->pivot->columns);
+                    ($row * $sampleType->columns);
 
                 if (isset($positions[$currentIndex])) {
                     $plate[$row][$column] = [
@@ -58,8 +50,8 @@ class StorageController extends Controller
         return [
             'data' => $plate,
             'size' => [
-                'columns' => $sampleType->pivot->columns,
-                'rows' => $sampleType->pivot->rows
+                'columns' => $sampleType->columns,
+                'rows' => $sampleType->rows
             ]
         ];
     }

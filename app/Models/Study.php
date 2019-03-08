@@ -13,8 +13,7 @@ class Study extends Model implements AuditableContract
 
     public function sampleTypes()
     {
-        return $this->belongsToMany(SampleType::class, 'storage_box_sizes')
-            ->withPivot(['rows', 'columns']);
+        return $this->hasMany(SampleType::class);
     }
 
     public function samples()

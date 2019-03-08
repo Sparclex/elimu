@@ -20,12 +20,6 @@ class SampleType extends Model implements AuditableContract
             ->using(SampleMutation::class);
     }
 
-    public function studies()
-    {
-        return $this->belongsToMany(Study::class, 'storage_box_sizes')
-            ->withPivot(['rows', 'columns']);
-    }
-
     public function storages()
     {
         return $this->hasMany(Storage::class);

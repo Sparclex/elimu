@@ -3,11 +3,14 @@
 namespace App\Nova;
 
 use App\Fields\StorageSizeField;
+use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Treestoneit\BelongsToField\BelongsToField;
 
 class SampleType extends Resource
 {
@@ -35,10 +38,12 @@ class SampleType extends Resource
             ID::make()->onlyOnForms(),
             Text::make('Name')
                 ->sortable()
-                ->creationRules('required', 'unique:sample_types,name')
-                ->updateRules('required', 'unique:sample_types,name,{{resourceId}}'),
-            BelongsToMany::make('Study', 'studies', Study::class)
-                ->fields(new StorageSizeField),
+                ->rules('required', (new StudyUnique('sample_types', 'name'))
+                    ->ignore($request->resourceId)),
+            Number::make('Columns')
+                ->rules('required_with:rows'),
+            Number::make('Rows')
+                ->rules('required_with:columns'),
             HasMany::make('Storage', 'storages', Storage::class),
 
             BelongsToMany::make('Samples', 'samples', Sample::class)
