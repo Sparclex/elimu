@@ -63,7 +63,8 @@ class Oligo extends Resource
             Text::make('Target Gene')
                 ->rules('required'),
             Text::make('Publication')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
             Trix::make('Comment'),
 
             BelongsToMany::make('PrimerMix')
