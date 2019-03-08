@@ -9,6 +9,21 @@ use Illuminate\Http\Request;
 
 class StorageController extends Controller
 {
+    public function storageable(Guard $guard)
+    {
+        abort_unless($guard->user()->study_id, 401);
+
+        return SampleType::whereNotNull('columns')
+            ->whereNotNull('rows')
+            ->get()
+            ->map(function ($sampleType) {
+                return [
+                    'id' => $sampleType->id,
+                    'name' => $sampleType->name
+                ];
+            });
+    }
+
     public function index(SampleType $sampleType, Request $request, Guard $guard)
     {
         abort_unless($guard->user()->study_id, 401);

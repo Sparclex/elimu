@@ -113,30 +113,22 @@
         },
         async mounted() {
             await this.fetchBoxSizes();
-            for (let boxSize of this.boxSizes) {
-                if (boxSize.id.value == this.sampleType) {
-                    this.selectSampleType(boxSize);
+            for (let sampleType of this.boxSizes) {
+                if (sampleType.id == this.sampleType) {
+                    this.selectSampleType(sampleType);
                 }
             }
             this.loading = false;
         },
         methods: {
             async fetchBoxSizes() {
-                return axios.get('/nova-api/sample-types', {
-                    params: {
-                        viaResource: 'studies',
-                        viaResourceId: window.selectedStudy,
-                        viaRelationship: 'sampleTypes',
-                        relationshipType: 'belongsToMany',
-                        perPage: 100,
-                    }
-                }).then(({data}) => {
-                    this.boxSizes = data.resources;
+                return axios.get('/nova-vendor/lims/storageable').then(({data}) => {
+                    this.boxSizes = data;
                 });
             },
 
             async fetchSamples() {
-                return axios.get('/nova-vendor/lims/storage/' + this.selectedSampleType.id.value, {
+                return axios.get('/nova-vendor/lims/storage/' + this.selectedSampleType.id, {
                     params: {
                         plate: this.currentPlate
                     }
@@ -151,7 +143,7 @@
             },
 
             boxSizeLabel(boxSizeResource) {
-                return boxSizeResource.fields[1].value;
+                return boxSizeResource.name;
             },
 
             selectSampleType(sampleType) {
@@ -175,7 +167,7 @@
             updateRoute() {
                 this.$router.replace({
                         path: '/storage-overview', query: {
-                            sampleType: this.selectedSampleType ? this.selectedSampleType.id.value : '',
+                            sampleType: this.selectedSampleType ? this.selectedSampleType.id : '',
                             plate: this.currentPlate,
                         }
                     }
