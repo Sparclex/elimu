@@ -36,8 +36,8 @@ class Control extends Resource
                     'required',
                     (new StudyUnique('assays', 'name'))->ignore($request->resourceId)
                 ),
-            Number::make('Concentration')
-                ->step(0.01),
+            Trix::make('Description'),
+            Text::make('Concentration'),
             BelongsToMany::make('Assays')
                 ->searchable(),
         ];
