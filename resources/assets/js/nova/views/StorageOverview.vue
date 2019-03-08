@@ -28,7 +28,7 @@
                             <loader/>
                         </div>
                         <div v-else>
-                            <h2 class="p-4 font-normal">Plate P{{formattedPlate}}</h2>
+                            <h2 class="p-4 font-normal">Box {{formattedPlate}}</h2>
                             <div class="max-w-full overflow-x-auto">
                                 <table class="min-w-full">
                                     <tr>
