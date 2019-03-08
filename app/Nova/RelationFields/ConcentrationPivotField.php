@@ -4,7 +4,7 @@ namespace App\Nova\RelationFields;
 
 use Laravel\Nova\Fields\Number;
 
-class PrimerMixOligoFields
+class ConcentrationPivotField
 {
     public function __invoke()
     {

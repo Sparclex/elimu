@@ -2,14 +2,13 @@
 
 namespace App\Nova;
 
-use App\Nova\RelationFields\PrimerMixOligoFields;
+use App\Nova\RelationFields\ConcentrationPivotField;
 use App\Rules\StudyUnique;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Oligo extends Resource
 {
@@ -67,9 +66,9 @@ class Oligo extends Resource
                 ->hideFromIndex(),
             Trix::make('Comment'),
 
-            BelongsToMany::make('PrimerMix')
+            BelongsToMany::make('Assays')
                 ->searchable()
-                ->fields(new PrimerMixOligoFields),
+                ->fields(new ConcentrationPivotField),
         ];
     }
 

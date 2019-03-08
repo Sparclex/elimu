@@ -15,6 +15,20 @@ class Assay extends Model implements AuditableContract
         'parameters' => 'collection'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function ($model) {
+            $model->creator_id = Person::firstOrCreate(['name' => auth()->user()->name])->id;
+        });
+    }
+
+    public function reagent()
+    {
+        return $this->belongsTo(Reagent::class);
+    }
+
     public function definitionFile()
     {
         return $this->belongsTo(AssayDefinitionFile::class, 'assay_definition_file_id');
@@ -30,9 +44,10 @@ class Assay extends Model implements AuditableContract
         return $this->belongsTo(Protocol::class);
     }
 
-    public function primerMix()
+    public function oligos()
     {
-        return $this->belongsTo(PrimerMix::class);
+        return $this->belongsToMany(Oligo::class)
+            ->withPivot('concentration');
     }
 
     public function results()

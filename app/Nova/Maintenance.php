@@ -39,7 +39,7 @@ class Maintenance extends Resource
             ID::make()
                 ->sortable(),
             BelongsToField::make('Instrument'),
-            BelongsToField::make('Technician'),
+            BelongsToField::make('Technician', 'technician', Person::class),
             Date::make('Date')
                 ->rules('required')
                 ->sortable(),

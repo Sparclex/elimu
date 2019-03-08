@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Shipment extends Resource
@@ -63,6 +64,10 @@ class Shipment extends Resource
             BelongsToField::make('Type', 'sampleType', SampleType::class),
             Text::make('Recipient')
                 ->rules('required'),
+            CreatableBelongsTo::make('Contact Person', 'recipient_person', Person::class)
+                ->nullable(),
+            CreatableBelongsTo::make('Shipper', 'shipper', Person::class)
+                ->nullable(),
             Date::make('Shipment Date')
                 ->rules('required')
                 ->sortable(),

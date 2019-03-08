@@ -25,4 +25,14 @@ class Shipment extends Model implements AuditableContract
     {
         return $this->belongsTo(SampleType::class);
     }
+
+    public function recipientPerson()
+    {
+        return $this->belongsTo(Person::class, 'recipient_person_id');
+    }
+
+    public function shipper()
+    {
+        return $this->belongsTo(Person::class);
+    }
 }

@@ -65,13 +65,14 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
         $newPositions = [];
 
         foreach ($rows as $row) {
+            $row['id'] = strval($row['id']);
             if (!$databaseSampleIds->has($row['id'])) {
                 $databaseSampleIds[$row['id']] = $this->saveSampleInformation($row)->id;
             }
 
             if (!$existingSampleMutations->contains(
                 function ($sampleMutation) use ($row, $databaseSampleIds, $sampleTypes) {
-                    return $row['id'] == $databaseSampleIds[$row->sample_id]
+                    return $row['id'] == $databaseSampleIds[$row['id']]
                         && $sampleTypes[$row['type']]->id == $sampleMutation->sample_type_id;
                 }
             )) {

@@ -9,8 +9,9 @@ class Oligo extends Model
 {
     use SetUserStudyOnSave;
 
-    public function primermix()
+    public function assays()
     {
-        return $this->belongsToMany(PrimerMix::class)->withPivot('concentration');
+        return $this->belongsToMany(Assay::class)
+            ->withPivot('concentration');
     }
 }
