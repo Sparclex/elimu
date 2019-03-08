@@ -37,9 +37,9 @@ class SampleTypeTest extends TestCase
     /** @test */
     public function a_monitor_cannot_update_a_type()
     {
-        $type = factory(SampleType::class)->create();
-
         $this->signInMonitor();
+
+        $type = factory(SampleType::class)->create();
 
         $this->put(self::RESOURCE_URI . "/{$type->id}", array_merge($type->toArray(), ['name' => 'New']))
             ->assertForbidden();
@@ -57,9 +57,9 @@ class SampleTypeTest extends TestCase
     /** @test */
     public function a_scientist_can_update_a_type()
     {
-        $type = factory(SampleType::class)->create();
-
         $this->signInScientist();
+
+        $type = factory(SampleType::class)->create();
 
         $this->put(self::RESOURCE_URI . "/{$type->id}", array_merge($type->toArray(), ['name' => 'New']))
             ->assertSuccessful();
@@ -68,9 +68,9 @@ class SampleTypeTest extends TestCase
     /** @test */
     public function a_scientist_cannot_delete_a_type()
     {
-        $type = factory(SampleType::class)->create();
+        $this->signInScientist();
 
-        $this->signInMonitor();
+        $type = factory(SampleType::class)->create();
 
         $this->novaDelete(self::RESOURCE_URI, $type->id)
             ->assertSuccessful();
@@ -79,11 +79,10 @@ class SampleTypeTest extends TestCase
     }
 
     /** @test */
-    public function a_administrator_can_delete_a_type()
+    public function a_lab_manager_can_delete_a_study()
     {
+        $this->signInManager();
         $type = factory(SampleType::class)->create();
-
-        $this->signInAsAdministrator();
 
         $this->novaDelete(self::RESOURCE_URI, $type->id)
             ->assertSuccessful();

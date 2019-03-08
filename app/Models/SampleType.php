@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class SampleType extends Model implements AuditableContract
 {
-    use Auditable;
+    use Auditable, SetUserStudyOnSave;
 
     protected $fillable = ['name'];
 

@@ -41,6 +41,12 @@ abstract class TestCase extends BaseTestCase
         return $user;
     }
 
+    public function signInManager(Study $study = null)
+    {
+        $study = $study ?? factory(Study::class)->create();
+        return $this->signIn(false, $study, Authorization::LABMANAGER);
+    }
+
     public function signInScientist(Study $study = null)
     {
         $study = $study ?? factory(Study::class)->create();
