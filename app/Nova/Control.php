@@ -13,9 +13,9 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Treestoneit\BelongsToField\BelongsToField;
 
-class Assay extends Resource
+class Control extends Resource
 {
-    public static $model = 'App\Models\Assay';
+    public static $model = 'App\Models\Control';
 
     public static $title = 'name';
 
@@ -36,20 +36,10 @@ class Assay extends Resource
                     'required',
                     (new StudyUnique('assays', 'name'))->ignore($request->resourceId)
                 ),
-            BelongsToField::make('Creator', 'creator', Person::class)->exceptOnForms(),
-            BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
-            BelongsToField::make('Instrument'),
-            BelongsToField::make('Protocol'),
-            BelongsToField::make('Reagent')->nullable(),
-            Number::make('Reaction Volume', 'reaction_volume')
+            Number::make('Concentration')
                 ->step(0.01),
-            BelongsToMany::make('Oligos')
-                ->searchable()
-                ->fields(new ConcentrationPivotField),
-            BelongsToMany::make('Controls')
+            BelongsToMany::make('Assays')
                 ->searchable(),
-            Trix::make('Description'),
-            HasMany::make('Results')
         ];
     }
 }
