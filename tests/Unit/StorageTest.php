@@ -54,9 +54,12 @@ class StorageTest extends TestCase
     {
         $user = $this->signInMonitor();
         $user->study->sampleTypes()->attach($type = factory(SampleType::class)->create(), ['rows' => 2, 'columns' => 1]);
+        $sample1 = factory(Sample::class)->create();
+        $quantity = 5;
+        $sample1->sampleTypes()->attach($type->id, compact('quantity'));
 
         $storagePointer = new StoragePointer($type->id, $user->study_id);
-        $storagePointer->store($sample1 = factory(Sample::class)->create(), 5);
+        $storagePointer->store($sample1, $quantity);
 
 
         $this->assertEquals([

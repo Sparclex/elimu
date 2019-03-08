@@ -53,13 +53,13 @@ abstract class TestCase extends BaseTestCase
         return $this->signIn(false, $study, Authorization::MONITOR);
     }
 
-    public function novaDelete($uri, $resourceIds)
+    public function novaDelete($uri, $resourceIds, $params = [])
     {
         $resourceIds = !is_array($resourceIds) ? [$resourceIds] : $resourceIds;
 
-        return $this->deleteJson($uri, [
+        return $this->deleteJson($uri, array_merge([
             'resources' => $resourceIds
-        ]);
+        ], $params));
     }
 
     public function createTmpFile($filename)

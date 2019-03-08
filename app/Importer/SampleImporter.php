@@ -39,6 +39,10 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
     public function collection(Collection $rows)
     {
+        $rows = $rows->filter(function ($row) {
+            return $row->filter()->isNotEmpty();
+        });
+
         $sampleTypes = [];
         $sampleTypeStorage = [];
 
@@ -48,51 +52,34 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
         foreach ($rows->pluck('type')->unique() as $name) {
             $sampleTypes[$name] = SampleType::firstOrCreate(compact('name'));
-            $sampleTypeStorage[$name] = new StoragePointer($sampleTypes[$name]->id, auth()->user()->study_id);
+            $sampleTypeStorage[$name] = new StoragePointer($sampleTypes[$name]->id);
         }
 
-        $existingSamples = Sample::whereIn('sample_id', $rows->pluck('id'))
+        $databaseSampleIds = Sample::whereIn('sample_id', $rows->pluck('id'))
             ->pluck('id', 'sample_id');
 
-        $newSamples = $rows->reject(function ($sample) use ($existingSamples) {
-            return $existingSamples->keys()->contains($sample['id']);
-        });
-
-        $existingSampleMutation = DB::table('sample_mutations')
-            ->whereIn('sample_id', $existingSamples->values())
+        $existingSampleMutations = DB::table('sample_mutations')
+            ->whereIn('sample_id', $databaseSampleIds->values())
             ->get();
-
-        $newSampleMutation = $rows->diff($newSamples)->reject(function ($sample) use (
-            $existingSampleMutation,
-            $existingSamples,
-            $sampleTypes
-        ) {
-            foreach ($existingSampleMutation as $sampleMutation) {
-                if (isset($existingSamples[$sampleMutation->sample_id])
-                    && $sample['id'] == $existingSamples[$sampleMutation->sample_id]
-                    && $sampleTypes[$sample['type']]->id == $sampleMutation->sample_type_id) {
-                    return true;
-                }
-            }
-            return false;
-        });
 
         $newPositions = [];
 
-        foreach ($newSamples as $sample) {
-            $sampleInformation = $this->saveSampleInformation($sample);
+        foreach ($rows as $row) {
+            if (!$databaseSampleIds->has($row['id'])) {
+                $databaseSampleIds[$row['id']] = $this->saveSampleInformation($row)->id;
+            }
 
-            $this->saveMutation($sample, $sampleInformation->id, $sampleTypes[$sample['type']]);
+            if (!$existingSampleMutations->contains(
+                function ($sampleMutation) use ($row, $databaseSampleIds, $sampleTypes) {
+                    return $row['id'] == $databaseSampleIds[$row->sample_id]
+                        && $sampleTypes[$row['type']]->id == $sampleMutation->sample_type_id;
+                }
+            )) {
+                $this->saveMutation($row, $databaseSampleIds[$row['id']], $sampleTypes[$row['type']]);
 
-            $newPositions = $sampleTypeStorage[$sample['type']]
-                ->store($sampleInformation->id, $sample['quantity'], false);
-        }
-
-        foreach ($newSampleMutation as $mutation) {
-            $this->saveMutation($mutation, $existingSamples[$mutation['id']], $sampleTypes[$mutation['type']]);
-
-            $newPositions = $sampleTypeStorage[$mutation['type']]
-                ->store($existingSamples[$mutation['id']], $mutation['quantity'], false);
+                $newPositions = array_merge($newPositions, $sampleTypeStorage[$row['type']]
+                    ->store($databaseSampleIds[$row['id']], $row['quantity'], false));
+            }
         }
 
         collect($newPositions)->chunk(200)->each(function ($positions) {
@@ -154,6 +141,19 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
             'sample_id' => $sampleId,
             'sample_type_id' => $sampleType->id,
             'quantity' => $row['quantity'] ?? 0,
+            'extra' => $this->extraColumnsToJson($row)
         ]);
+    }
+
+    private function extraColumnsToJson(Collection $row)
+    {
+        $extraValues = [];
+        foreach ($row as $key => $value) {
+            if (strtolower(substr($key, 0, 6)) == 'extra_') {
+                $extraValues[substr($key, 6)] = $value;
+            }
+        }
+
+        return json_encode($extraValues);
     }
 }

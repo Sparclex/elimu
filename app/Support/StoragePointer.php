@@ -6,34 +6,39 @@ use App\Models\Storage;
 
 class StoragePointer
 {
-    protected $lastPosition;
+    protected $position;
     protected $sampleTypeId;
     protected $studyId;
 
-    public function __construct($sampleTypeId, $studyId)
+    public function __construct($sampleTypeId, $studyId = null)
     {
 
         $this->sampleTypeId = $sampleTypeId;
-        $this->studyId = auth()->check() ? auth()->user()->study_id : $studyId;
+        $this->studyId = $studyId ?? auth()->user()->study_id;
+        $this->retrieveLatestPosition();
     }
 
-    public function getNextPosition()
+    public function next()
     {
-        $this->lastPosition += 1;
-
-        return $this->lastPosition;
+        $this->position = $this->position + 1;
     }
 
-    public function getLastPosition()
+    public function getPosition()
     {
-        if (!$this->lastPosition) {
-            $this->lastPosition = Storage::where('study_id', $this->studyId)
+        return $this->position;
+    }
+
+    protected function retrieveLatestPosition()
+    {
+        if ($this->position == null) {
+            $this->position = Storage::where('study_id', $this->studyId)
                 ->where('sample_type_id', $this->sampleTypeId)
                 ->orderByDesc('position')
-                ->pluck('position');
+                ->pluck('position')
+                ->first() ?? -1;
         }
 
-        return $this->lastPosition;
+        return $this->position;
     }
 
     public function store($sampleId, $quantity = null, $persist = true)
@@ -59,11 +64,12 @@ class StoragePointer
 
     public function add($sampleId, $persist = true)
     {
+        $this->next();
         $newPosition = [
             'sample_id' => $sampleId,
             'sample_type_id' => $this->sampleTypeId,
             'study_id' => $this->studyId,
-            'position' => $this->getNextPosition()
+            'position' => $this->getPosition()
         ];
 
         if ($persist) {

@@ -39,9 +39,9 @@ class SamplePolicy extends Policy
      * @param  \App\Tag  $tag
      * @return mixed
      */
-    public function attachSampleType()
+    public function attachType(User $user, Sample $sample)
     {
-        return false;
+        return $sample->study_id == $user->study_id &&  $user->isScientist();
     }
 
     /**
@@ -52,8 +52,8 @@ class SamplePolicy extends Policy
      * @param  \App\Tag  $tag
      * @return mixed
      */
-    public function detachSampleType()
+    public function detachType(User $user, Sample $sample)
     {
-        return false;
+        return $sample->study_id == $user->study_id &&  $user->isScientist();
     }
 }

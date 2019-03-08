@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\SampleMutation;
+use App\Observers\StorageGenerator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use App\Providers\TelescopeServiceProvider;
@@ -15,18 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Collection::macro('standardDeviation', function ($key = null) {
-            $data = $key ? $this->pluck($key)->values() : $this->values();
-            $variance = 0.0;
-            $average = $data->avg();
-
-            foreach ($data as $element) {
-                // sum of squares of differences between
-                // all numbers and means.
-                $variance += pow(($element - $average), 2);
-            }
-            return (float) sqrt($variance/$data->count());
-        });
+        SampleMutation::observe(StorageGenerator::class);
     }
 
     /**
