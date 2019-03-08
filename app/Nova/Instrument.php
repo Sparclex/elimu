@@ -10,7 +10,6 @@ use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
 class Instrument extends Resource
 {
-    public static $displayInNavigation = true;
     /**
      * The model the resource corresponds to.
      *
