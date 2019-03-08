@@ -10,7 +10,9 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Experiment extends Resource
@@ -22,6 +24,12 @@ class Experiment extends Resource
     public static $search = ['id'];
     public static $globallySearchable = false;
 
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return $query->withCount('samples');
+    }
+
+
     public function fields(Request $request)
     {
         return [
@@ -29,6 +37,7 @@ class Experiment extends Resource
             SampleIds::make('Samples')
                 ->help('A new line for each sample id')
                 ->rules('required'),
+            Text::make('Name'),
             BelongsToField::make('Assay'),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
