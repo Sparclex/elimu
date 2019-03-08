@@ -39,7 +39,7 @@ class Assay extends Resource
             BelongsToField::make('Creator', 'creator', Person::class)->exceptOnForms(),
             BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
             BelongsToField::make('Instrument'),
-            BelongsToField::make('Protocol'),
+            BelongsToField::make('SOP', 'protocol', Protocol::class),
             BelongsToField::make('Reagent')->nullable(),
             Number::make('Reaction Volume', 'reaction_volume')
                 ->step(0.01),

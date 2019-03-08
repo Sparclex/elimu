@@ -26,6 +26,16 @@ class Protocol extends Resource
      */
     public static $title = 'protocol_id';
 
+    public static function label()
+    {
+        return 'SOPs';
+    }
+
+    public static function singularLabel()
+    {
+        return 'SOP';
+    }
+
     public function subtitle()
     {
         return $this->name;
