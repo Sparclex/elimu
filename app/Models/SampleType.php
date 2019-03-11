@@ -16,7 +16,7 @@ class SampleType extends Model implements AuditableContract
     public function samples()
     {
         return $this->belongsToMany(Sample::class, 'sample_mutations')
-            ->withPivot('quantity')
+            ->withPivot('quantity', 'extra')
             ->using(SampleMutation::class);
     }
 

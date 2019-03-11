@@ -430,9 +430,13 @@ class QPCR extends ExperimentType
     {
         $results = $this->resultQuery(null, $assay)->with('sample', 'sample.sampleTypes')->get();
 
+        $sampleTypeId = $assay->definitionFile->sample_type_id;
+
         $table = [];
 
         foreach ($results->groupBy('sample_id') as $rowData) {
+            $extra = optional($rowData[0]->sample->sampleTypes->firstWhere('id', $sampleTypeId))->pivot->extra;
+
             $row = [
                 'id' => $rowData[0]->sample->sample_id,
                 'subject_id' => $rowData[0]->sample->subject_id,
@@ -440,7 +444,7 @@ class QPCR extends ExperimentType
                 'visit_id' => $rowData[0]->sample->visit_id,
                 'birthdate' => $rowData[0]->sample->birthdate,
                 'gender' => $rowData[0]->sample->gender,
-                'extra' => $rowData[0]->sample->extra ? $rowData[0]->sample->extra->implode(',') : '',
+                'extra' => $extra ? $extra->filter()->implode(',') : '',
             ];
 
             foreach ($rowData as $result) {
