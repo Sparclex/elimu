@@ -444,8 +444,11 @@ class QPCR extends ExperimentType
                 'visit_id' => $rowData[0]->sample->visit_id,
                 'birthdate' => $rowData[0]->sample->birthdate,
                 'gender' => $rowData[0]->sample->gender,
-                'extra' => $extra ? $extra->filter()->implode(',') : '',
             ];
+
+            foreach ($extra as $key => $value) {
+                $row[$key] = $value;
+            }
 
             foreach ($rowData as $result) {
                 $specifier = new QPCRResultSpecifier(
@@ -469,6 +472,17 @@ class QPCR extends ExperimentType
     {
         $headings = [];
 
+        $sampleType = $assay->results()
+            ->first()
+            ->sample
+            ->sampleTypes()
+            ->wherePivot('sample_type_id', $assay->definitionFile->sample_type_id)
+            ->first();
+
+        foreach ($sampleType->pivot->extra as $key => $value) {
+            $headings[] = $key;
+        }
+
         foreach ($assay->definitionFile->parameters->pluck('target') as $target) {
             $headings[] = 'replicas_' . $target;
             $headings[] = 'mean_cq_' . $target;
@@ -476,6 +490,8 @@ class QPCR extends ExperimentType
             $headings[] = 'qual_' . $target;
             $headings[] = 'quant_' . $target;
         }
+
+
 
         return $headings;
     }

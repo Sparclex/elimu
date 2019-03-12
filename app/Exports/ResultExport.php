@@ -38,7 +38,6 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
             'visit_id',
             'birthdate',
             'gender',
-            'extra',
         ];
 
         return array_merge($headings, $this->experimentType->headers($this->assay));
