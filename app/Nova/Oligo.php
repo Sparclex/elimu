@@ -12,6 +12,8 @@ use Laravel\Nova\Fields\Trix;
 
 class Oligo extends Resource
 {
+
+    public static $perPageViaRelationship = 15;
     /**
      * The model the resource corresponds to.
      *
