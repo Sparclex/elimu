@@ -21,7 +21,7 @@ class Experiment extends Resource
 
     public static $model = 'App\Models\Experiment';
 
-    public static $search = ['id'];
+    public static $search = ['id', 'name'];
     public static $globallySearchable = false;
 
     public static function indexQuery(NovaRequest $request, $query)
@@ -37,7 +37,8 @@ class Experiment extends Resource
             SampleIds::make('Samples')
                 ->help('A new line for each sample id')
                 ->rules('required'),
-            Text::make('Name'),
+            Text::make('Name')
+                ->sortable(),
             BelongsToField::make('Assay'),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
