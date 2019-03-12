@@ -16,7 +16,11 @@
 
                 <div>
                     <!-- Validation Errors -->
-                    <validation-errors :errors="errors" />
+                    <div class="bg-danger mx-8 py-6 rounded text-white my-4" v-if="errors.length > 0">
+                        <ul>
+                            <li v-for="error in errors">{{error[0]}}</li>
+                        </ul>
+                    </div>
 
                     <!-- Action Fields -->
                     <div class="action">
@@ -36,7 +40,7 @@
                     >
                         <component
                                 :is="'form-' + field.component"
-                                :errors="errors"
+                                :errors="emptyErrors"
                                 :resource-name="resourceName"
                                 :field="field"
                         />
@@ -75,7 +79,8 @@ import { Errors } from 'laravel-nova'
         props: ['templateUri', 'resourceName'],
         data() {
             return {
-                errors: new Errors(),
+                emptyErrors: new Errors(),
+                errors: [],
                 working: false,
                 fields: [
                     {
@@ -112,9 +117,9 @@ import { Errors } from 'laravel-nova'
                     .catch(({ response }) => {
                         if (response.data.danger) {
                             this.$toasted.error(response.data.danger);
-                            this.errors = new Errors();
+                            this.errors = [];
                         } else {
-                            this.errors = new Errors(response.data.errors);
+                            this.errors = response.data.errors;
                         }
                     })
                     .finally(() => {
