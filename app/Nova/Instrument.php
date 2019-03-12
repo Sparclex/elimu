@@ -58,7 +58,7 @@ class Instrument extends Resource
                 ->rules('required'),
             Text::make('Serial Number'),
             CreatableBelongsTo::make('Responsible', 'responsible', Person::class),
-            CreatableBelongsTo::make('Institution'),
+            CreatableBelongsTo::make('Institution')->hideFromIndex(),
             CreatableBelongsTo::make('Laboratory'),
         ];
     }
