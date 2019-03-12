@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -45,7 +46,10 @@ class Person extends Resource
         return [
             ID::make()->sortable(),
             Text::make('Name')
-                ->rules('required|unique:people,name')
+                ->rules('required|unique:people,name'),
+            HasMany::make('Instruments'),
+            HasMany::make('Maintenances'),
+            HasMany::make('Shipments'),
         ];
     }
 

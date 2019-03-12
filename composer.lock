@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fc238f9bcd3b66abf7a58d71ac952dc",
+    "content-hash": "5490d037627fcfa87b27e6e72614e94c",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -4007,16 +4007,16 @@
         },
         {
             "name": "sparclex/nova-creatable-belongs-to",
-            "version": "v0.0.3",
+            "version": "v0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sparclex/nova-creatable-belongs-to.git",
-                "reference": "5a38143cb497db7a128fd8d071ea4bc8870c8668"
+                "reference": "c3c80277ae4e6591cb9ca7aea9e6be477713c731"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sparclex/nova-creatable-belongs-to/zipball/5a38143cb497db7a128fd8d071ea4bc8870c8668",
-                "reference": "5a38143cb497db7a128fd8d071ea4bc8870c8668",
+                "url": "https://api.github.com/repos/Sparclex/nova-creatable-belongs-to/zipball/c3c80277ae4e6591cb9ca7aea9e6be477713c731",
+                "reference": "c3c80277ae4e6591cb9ca7aea9e6be477713c731",
                 "shasum": ""
             },
             "require": {
@@ -4045,7 +4045,7 @@
                 "laravel",
                 "nova"
             ],
-            "time": "2019-03-08T09:19:58+00:00"
+            "time": "2019-03-12T17:41:29+00:00"
         },
         {
             "name": "sparclex/nova-import-card",
