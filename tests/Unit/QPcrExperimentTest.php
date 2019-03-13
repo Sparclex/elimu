@@ -61,26 +61,6 @@ class QPcrExperimentTest extends TestCase
         );
     }
 
-    /** @test */
-    public function it_should_fail_for_invalid_controls()
-    {
-        $this->signInScientist();
-
-        $experiment = ExperimentFactory::withSamples('1179588')
-            ->qpcrType()
-            ->withParameters($this->getParameters())
-            ->create();
-
-        $handler = new QPCR(
-            base_path('tests/stubs/rdmls/invalid.xml'),
-            $experiment->assay->definitionFile->parameters->keyBy('target')
-        );
-
-        $this->expectException(ExperimentException::class);
-
-        $handler->validate();
-    }
-
     public function getParameters()
     {
         return [
@@ -106,5 +86,25 @@ class QPcrExperimentTest extends TestCase
                 'ntc' => '',
             ]
         ];
+    }
+
+    /** @test */
+    public function it_should_fail_for_invalid_controls()
+    {
+        $this->signInScientist();
+
+        $experiment = ExperimentFactory::withSamples('1179588')
+            ->qpcrType()
+            ->withParameters($this->getParameters())
+            ->create();
+
+        $handler = new QPCR(
+            base_path('tests/stubs/rdmls/invalid.xml'),
+            $experiment->assay->definitionFile->parameters->keyBy('target')
+        );
+
+        $this->expectException(ExperimentException::class);
+
+        $handler->validate();
     }
 }

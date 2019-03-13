@@ -110,7 +110,7 @@ class ResultFactory
             }
         }
 
-        $experiment->samples()->attach(array_pluck($samples,'id'));
+        $experiment->samples()->attach(array_pluck($samples, 'id'));
 
         return (new QPCR(null, $this->parameters->keyBy('target')))
             ->resultQuery(null, $experiment->assay)

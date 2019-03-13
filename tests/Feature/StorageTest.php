@@ -4,9 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Sample;
 use App\Models\SampleType;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class StorageTest extends TestCase
 {
@@ -27,7 +26,7 @@ class StorageTest extends TestCase
             'quantity' => 2,
             'viaRelationship' => 'sampleTypes'
         ])
-        ->assertSuccessful();
+            ->assertSuccessful();
 
         $this->assertDatabaseHas('storage', [
             'sample_type_id' => $sampleType->id,
@@ -92,7 +91,6 @@ class StorageTest extends TestCase
             'sample_id' => $sample2->id,
             'position' => 3
         ]);
-
 
 
         // remove on delete

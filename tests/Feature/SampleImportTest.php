@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Sample;
 use App\Models\SampleMutation;
 use Facades\Tests\Setup\SampleFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;

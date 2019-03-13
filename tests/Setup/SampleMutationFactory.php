@@ -50,6 +50,11 @@ class SampleMutationFactory
         return $this;
     }
 
+    public function create()
+    {
+        return factory(SampleMutation::class)->create($this->raw());
+    }
+
     public function raw()
     {
         $sample = $this->sample ?? factory(Sample::class)->create([
@@ -62,10 +67,5 @@ class SampleMutationFactory
             'study_id' => $sample->study_id,
             'quantity' => $this->quantity ?? 0
         ]);
-    }
-
-    public function create()
-    {
-        return factory(SampleMutation::class)->create($this->raw());
     }
 }

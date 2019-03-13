@@ -5,9 +5,8 @@ namespace Tests\Unit;
 use App\Experiments\QPCR;
 use App\Support\QPCRResultSpecifier;
 use Facades\Tests\Setup\ResultFactory;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class QPCRResultSpecifierTest extends TestCase
 {
@@ -23,6 +22,32 @@ class QPCRResultSpecifierTest extends TestCase
             ->create();
 
         $this->assertEquals('Positive', $this->specifier($results)->qualitative());
+    }
+
+    protected function getParameters()
+    {
+        return collect([
+            [
+                'target' => 'PFvarts',
+                'cutoff' => 42,
+                'minvalues' => 2,
+                'cuttoffstdev' => 5
+            ],
+            [
+                'target' => 'PZZZAB',
+                'cutoff' => 42,
+                'minvalues' => 2,
+                'cuttoffstdev' => 5
+            ]
+        ]);
+    }
+
+    protected function specifier($results)
+    {
+        return new QPCRResultSpecifier(
+            $this->getParameters()->firstWhere('target', 'PFvarts'),
+            $results->first()
+        );
     }
 
     /** @test */
@@ -71,31 +96,5 @@ class QPCRResultSpecifierTest extends TestCase
             ->create();
 
         $this->assertEquals('Not enough data', $this->specifier($results)->qualitative());
-    }
-
-    protected function specifier($results) {
-        return new QPCRResultSpecifier(
-            $this->getParameters()->firstWhere('target', 'PFvarts'),
-            $results->first()
-        );
-    }
-
-
-    protected function getParameters()
-    {
-        return collect([
-            [
-                'target' => 'PFvarts',
-                'cutoff' => 42,
-                'minvalues' => 2,
-                'cuttoffstdev' => 5
-            ],
-            [
-                'target' => 'PZZZAB',
-                'cutoff' => 42,
-                'minvalues' => 2,
-                'cuttoffstdev' => 5
-            ]
-        ]);
     }
 }

@@ -26,21 +26,6 @@ class ResultTest extends TestCase
             ->assertSuccessful();
     }
 
-    /** @test */
-    public function it_returns_available_targets()
-    {
-        $this->signInScientist();
-
-        $results = ResultFactory::withParameters($this->getParameters())
-            ->withError(QPCR::ERROR_STDDEV)
-            ->create();
-
-        $this->get("/nova-vendor/lims/results/{$results->first()->assay_id}/targets")
-            ->assertJson([
-                'pfvarts'
-            ]);
-    }
-
     protected function getParameters()
     {
         return collect([
@@ -57,5 +42,20 @@ class ResultTest extends TestCase
                 'cuttoffstdev' => 5
             ]
         ]);
+    }
+
+    /** @test */
+    public function it_returns_available_targets()
+    {
+        $this->signInScientist();
+
+        $results = ResultFactory::withParameters($this->getParameters())
+            ->withError(QPCR::ERROR_STDDEV)
+            ->create();
+
+        $this->get("/nova-vendor/lims/results/{$results->first()->assay_id}/targets")
+            ->assertJson([
+                'pfvarts'
+            ]);
     }
 }

@@ -24,6 +24,22 @@ class QPCRResultTest extends TestCase
         $this->assertEquals(2, $results->first()->replicas);
     }
 
+    protected function getParameters()
+    {
+        return collect([
+            [
+                'target' => 'pfvarts',
+                'minvalues' => 2,
+                'cutoff' => 42,
+            ],
+            [
+                'target' => 'fluor',
+                'minvalues' => 2,
+                'cutoff' => 40,
+            ]
+        ]);
+    }
+
     /** @test */
     public function it_has_a_standard_deviation()
     {
@@ -85,21 +101,5 @@ class QPCRResultTest extends TestCase
             ->create();
 
         $this->assertEquals(1, $results->first()->replicas);
-    }
-
-    protected function getParameters()
-    {
-        return collect([
-            [
-                'target' => 'pfvarts',
-                'minvalues' => 2,
-                'cutoff' => 42,
-            ],
-            [
-                'target' => 'fluor',
-                'minvalues' => 2,
-                'cutoff' => 40,
-            ]
-        ]);
     }
 }

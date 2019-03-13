@@ -4,8 +4,10 @@ namespace Tests\Unit;
 
 use App\Models\Queries\StoragePlates;
 use App\Models\Sample;
+use App\Models\SampleMutation;
 use App\Models\SampleType;
 use App\Models\Shipment;
+use App\Models\Storage;
 use App\Support\StoragePointer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,6 +15,12 @@ use Tests\TestCase;
 class StorageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        SampleMutation::unsetEventDispatcher();
+    }
 
     /** @test */
     public function it_should_show_all_position_on_an_empty_plate()
@@ -63,20 +71,21 @@ class StorageTest extends TestCase
         $storagePointer = new StoragePointer($type->id, $user->study_id);
         $storagePointer->store($sample1, $quantity);
 
+        $this->assertEquals($quantity, Storage::count());
 
         $this->assertEquals([
                 0 => [
                     0 => [
                         'id' => $sample1->id,
                         'sample_id' => $sample1->sample_id,
-                        'shipped' => null,
+                        'shipped' => false,
                     ],
                 ],
                 1 => [
                     0 => [
                         'id' => $sample1->id,
                         'sample_id' => $sample1->sample_id,
-                        'shipped' => null,
+                        'shipped' => false,
                     ]
                 ]
             ]

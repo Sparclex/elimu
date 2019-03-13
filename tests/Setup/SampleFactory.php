@@ -5,7 +5,6 @@ namespace Tests\Setup;
 use App\Models\Sample;
 use App\Models\SampleType;
 use App\Models\Study;
-use App\User;
 use Facades\Tests\Setup\StudyFactory;
 
 class SampleFactory
@@ -39,8 +38,7 @@ class SampleFactory
                 'study_id' => $this->study ?? factory(Study::class)
             ], $attributes));
 
-        if(count($this->types))
-        {
+        if (count($this->types)) {
             $sample->sampleTypes()->attach(collect($this->types)->pluck('id'));
         }
 

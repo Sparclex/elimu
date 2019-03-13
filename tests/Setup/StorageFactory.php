@@ -4,9 +4,6 @@ namespace Tests\Setup;
 
 use App\Models\Sample;
 use App\Models\SampleType;
-use App\Models\Storage;
-use App\Models\Study;
-use App\Policies\Authorization;
 use App\Support\StoragePointer;
 use Facades\Tests\Setup\StudyFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -39,7 +36,7 @@ class StorageFactory
         $sampleTypeStorage = new StoragePointer($typeId, $study->id);
 
         $storages = new Collection();
-        for($i = 0; $i < $quantity; $i++) {
+        for ($i = 0; $i < $quantity; $i++) {
             $storages->push($sampleTypeStorage->add(factory(Sample::class)->create(['study_id' => $study->id])->id));
         }
 

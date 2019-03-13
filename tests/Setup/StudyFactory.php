@@ -30,7 +30,6 @@ class StudyFactory
     public $storage = [];
 
 
-
     public function withMonitor($monitor)
     {
         $this->monitor = $monitor;
@@ -67,22 +66,22 @@ class StudyFactory
     {
         $study = factory(Study::class)->create($attributes);
 
-        if($this->manager) {
+        if ($this->manager) {
             $study->users()->attach($this->manager, ['power' => Authorization::LABMANAGER]);
             $this->manager->study()->associate($study);
         }
 
-        if($this->scientist) {
+        if ($this->scientist) {
             $study->users()->attach($this->scientist, ['power' => Authorization::SCIENTIST]);
             $this->scientist->study()->associate($study);
         }
 
-        if($this->monitor) {
+        if ($this->monitor) {
             $study->users()->attach($this->monitor, ['power' => Authorization::MONITOR]);
             $this->monitor->study()->associate($study);
         }
 
-        if(count($this->storage)) {
+        if (count($this->storage)) {
             $study->sampleTypes()->attach($this->storage);
         }
 

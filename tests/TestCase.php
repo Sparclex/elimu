@@ -33,7 +33,7 @@ abstract class TestCase extends BaseTestCase
         $this->be($user = factory(User::class)
             ->create(['is_admin' => $isAdmin]));
 
-        if($study) {
+        if ($study) {
             $user->studies()->attach($study, compact('power'));
             $user->study()->associate($study);
         }
