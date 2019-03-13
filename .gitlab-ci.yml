@@ -41,6 +41,8 @@ composer:
   - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
   - cp .env.example .env
   - php artisan key:generate
+  - php artisan telescope:publish
+  - php artisan nova:publish
   artifacts:
     expire_in: 1 month
     paths:
