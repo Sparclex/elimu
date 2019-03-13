@@ -48,6 +48,7 @@ composer:
     paths:
     - vendor/
     - .env
+    - public/vendor/
 
 npm:
   stage: build
