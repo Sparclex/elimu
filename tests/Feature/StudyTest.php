@@ -124,10 +124,11 @@ class StudyTest extends TestCase
     public function a_normal_user_cannot_view_any_studies()
     {
         $this->signIn();
+        $this->withoutExceptionHandling()
+            ->get(config('nova.path'))->assertSuccessful();
 
-        $this->get(config('nova.path'))->assertSuccessful();
-
-        $this->get(self::RESOURCE_URI)
+        $this->withExceptionHandling()
+            ->get(self::RESOURCE_URI)
             ->assertForbidden();
     }
 
