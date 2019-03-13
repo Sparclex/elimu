@@ -48,6 +48,35 @@ class ExperimentManager
         }
     }
 
+    /**
+     * @throws ExperimentException
+     */
+    protected function assertSampleExist()
+    {
+        $missingSamples = $this->type->extractSamplesIds()->diff($this->getSampleDatabaseIds()->keys());
+
+        if ($missingSamples->isNotEmpty()) {
+            throw new ExperimentException(sprintf(
+                'Following samples are missing: %s',
+                $missingSamples->implode(', ')
+            ));
+        }
+    }
+
+    protected function getSampleDatabaseIds()
+    {
+        if (!$this->sampleDatabaseIds) {
+            $this->sampleDatabaseIds = Sample::whereIn(
+                'sample_id',
+                $this->type->extractSamplesIds()->toArray()
+            )->whereHas('experiments', function ($query) {
+                return $query->where('experiment_id', $this->experiment->id);
+            })->pluck('id', 'sample_id');
+        }
+
+        return $this->sampleDatabaseIds;
+    }
+
     public function store()
     {
         DB::transaction(function () {
@@ -74,34 +103,5 @@ class ExperimentManager
                 })->toArray()
             );
         });
-    }
-
-    protected function getSampleDatabaseIds()
-    {
-        if (!$this->sampleDatabaseIds) {
-            $this->sampleDatabaseIds = Sample::whereIn(
-                'sample_id',
-                $this->type->extractSamplesIds()->toArray()
-            )->whereHas('experiments', function ($query) {
-                return $query->where('experiment_id', $this->experiment->id);
-            })->pluck('id', 'sample_id');
-        }
-
-        return $this->sampleDatabaseIds;
-    }
-
-    /**
-     * @throws ExperimentException
-     */
-    protected function assertSampleExist()
-    {
-        $missingSamples = $this->type->extractSamplesIds()->diff($this->getSampleDatabaseIds()->keys());
-
-        if ($missingSamples->isNotEmpty()) {
-            throw new ExperimentException(sprintf(
-                'Following samples are missing: %s',
-                $missingSamples->implode(', ')
-            ));
-        }
     }
 }

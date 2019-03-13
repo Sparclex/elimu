@@ -4,7 +4,6 @@ namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 abstract class ExperimentType

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\OnlyCurrentStudy;
 use App\Models\Traits\SetUserStudyOnSave;
 use OwenIt\Auditing\Models\Audit as AuditModel;
 

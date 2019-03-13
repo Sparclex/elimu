@@ -25,6 +25,14 @@ class Protocol extends Resource
      * @var string
      */
     public static $title = 'protocol_id';
+    /**
+     * The columns that should be searched.
+     *
+     * @var array
+     */
+    public static $search = [
+        'protocol_id', 'name'
+    ];
 
     public static function label()
     {
@@ -40,15 +48,6 @@ class Protocol extends Resource
     {
         return $this->name;
     }
-
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
-    public static $search = [
-        'protocol_id', 'name'
-    ];
 
     /**
      * Get the fields displayed by the resource.

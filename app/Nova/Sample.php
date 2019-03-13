@@ -2,9 +2,7 @@
 
 namespace App\Nova;
 
-use App\Fields\QuickBelongsToMany;
 use App\Importer\SampleImporter;
-use App\Models\Storage;
 use App\Nova\Filters\SampleFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -15,7 +13,6 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Treestoneit\BelongsToField\BelongsToField;
 
 class Sample extends Resource
 {

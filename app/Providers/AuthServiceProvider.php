@@ -12,7 +12,6 @@ use App\Models\Result;
 use App\Models\ResultData;
 use App\Models\Sample;
 use App\Models\SampleData;
-use App\Models\SampleMutation;
 use App\Models\SampleType;
 use App\Models\Storage;
 use App\Models\Study;

@@ -2,7 +2,6 @@
 
 namespace App\Nova;
 
-use App\Fields\Status;
 use App\Nova\Lenses\InvalidResults;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;

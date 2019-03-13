@@ -53,15 +53,15 @@ class User extends Authenticatable
             ->wherePivot('power', '>=', Authorization::LABMANAGER);
     }
 
-    public function study()
-    {
-        return $this->belongsTo(Study::class);
-    }
-
     public function studies()
     {
         return $this->belongsToMany(Study::class)
             ->withPivot(['power', 'selected']);
+    }
+
+    public function study()
+    {
+        return $this->belongsTo(Study::class);
     }
 
     public function scopeWithSelectedStudy(Builder $query)
@@ -80,11 +80,6 @@ class User extends Authenticatable
         return $this->hasPower(Authorization::SCIENTIST, $study);
     }
 
-    public function isManager($study = null)
-    {
-        return $this->hasPower(Authorization::LABMANAGER, $study);
-    }
-
     public function hasPower($power, $study = null)
     {
         $studyId = $study ? $study->id : $this->study_id;
@@ -92,5 +87,10 @@ class User extends Authenticatable
             ->wherePivot('power', '>=', $power)
             ->wherePivot('study_id', $studyId)
             ->exists();
+    }
+
+    public function isManager($study = null)
+    {
+        return $this->hasPower(Authorization::LABMANAGER, $study);
     }
 }

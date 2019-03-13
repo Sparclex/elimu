@@ -30,21 +30,6 @@ class ResultData extends Resource
 
     public static $with = ['result', 'experiment'];
 
-    public function title()
-    {
-        return $this->sample_id;
-    }
-
-    public function subtitle()
-    {
-        return sprintf(
-            '%d %s (%s)',
-            $this->experiment->id,
-            $this->experiment->name,
-            $this->target
-        );
-    }
-
     public static function singularLabel()
     {
         return 'Data';
@@ -58,6 +43,21 @@ class ResultData extends Resource
     public static function uriKey()
     {
         return 'result-data';
+    }
+
+    public function title()
+    {
+        return $this->sample_id;
+    }
+
+    public function subtitle()
+    {
+        return sprintf(
+            '%d %s (%s)',
+            $this->experiment->id,
+            $this->experiment->name,
+            $this->target
+        );
     }
 
     public function fields(Request $request)
@@ -91,6 +91,15 @@ class ResultData extends Resource
         ];
     }
 
+    public function actions(Request $request)
+    {
+        return [
+            (new ChangeValidationStatus())->canRun(function ($request, $user) {
+                return true;
+            }),
+        ];
+    }
+
     private function data()
     {
         /*
@@ -115,14 +124,5 @@ class ResultData extends Resource
             AdditionalData::make('extra')
         ];
         */
-    }
-
-    public function actions(Request $request)
-    {
-        return [
-            (new ChangeValidationStatus())->canRun(function ($request, $user) {
-                return true;
-            }),
-        ];
     }
 }

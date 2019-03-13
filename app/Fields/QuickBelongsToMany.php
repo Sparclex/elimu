@@ -24,7 +24,7 @@ class QuickBelongsToMany extends Field
     public function resolve($resource, $attribute = null)
     {
         $this->value = $resource->{$this->attribute}
-        ->pluck('pivot')
+            ->pluck('pivot')
             ->map(function ($data) {
                 $newData = [
                     'id' => $data[$data->getRelatedKey()],

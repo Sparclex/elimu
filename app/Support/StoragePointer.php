@@ -18,24 +18,14 @@ class StoragePointer
         $this->retrieveLatestPosition();
     }
 
-    public function next()
-    {
-        $this->position = $this->position + 1;
-    }
-
-    public function getPosition()
-    {
-        return $this->position;
-    }
-
     protected function retrieveLatestPosition()
     {
         if ($this->position == null) {
             $this->position = Storage::where('study_id', $this->studyId)
-                ->where('sample_type_id', $this->sampleTypeId)
-                ->orderByDesc('position')
-                ->pluck('position')
-                ->first() ?? -1;
+                    ->where('sample_type_id', $this->sampleTypeId)
+                    ->orderByDesc('position')
+                    ->pluck('position')
+                    ->first() ?? -1;
         }
 
         return $this->position;
@@ -77,5 +67,15 @@ class StoragePointer
         }
 
         return $newPosition;
+    }
+
+    public function next()
+    {
+        $this->position = $this->position + 1;
+    }
+
+    public function getPosition()
+    {
+        return $this->position;
     }
 }

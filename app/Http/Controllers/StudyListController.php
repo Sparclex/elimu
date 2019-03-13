@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Study;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 

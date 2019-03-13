@@ -23,11 +23,11 @@ trait OnlyAvailableForChosenStudy
 
     public function update(User $user, $model)
     {
-        return $model->study_id == $user->study_id &&  $user->isScientist();
+        return $model->study_id == $user->study_id && $user->isScientist();
     }
 
     public function delete(User $user, $model)
     {
-        return $model->study_id == $user->study_id &&  $user->isScientist();
+        return $model->study_id == $user->study_id && $user->isScientist();
     }
 }

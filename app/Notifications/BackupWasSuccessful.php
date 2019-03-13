@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Notifications;
 
-use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\PusherPushNotifications\Message;
+use NotificationChannels\Telegram\TelegramMessage;
 use Spatie\Backup\Notifications\Notifications\BackupWasSuccessful as BaseNotification;
 
 class BackupWasSuccessful extends BaseNotification

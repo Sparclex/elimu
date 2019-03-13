@@ -41,13 +41,13 @@ class AssayDefinitionFile extends Model implements AuditableContract
     {
         $this->attributes['path'] = $value;
 
-        if (!file_exists(storage_path('app/' .$value))) {
+        if (!file_exists(storage_path('app/' . $value))) {
             return;
         }
 
         $reader = IOFactory::createReader(Excel::XLSX);
         $reader->setReadDataOnly(true);
-        $data = collect($reader->load(storage_path('app/'. $value))
+        $data = collect($reader->load(storage_path('app/' . $value))
             ->getActiveSheet()
             ->toArray())
             ->filter(function ($row) {

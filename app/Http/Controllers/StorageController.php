@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Queries\StoragePlates;
 use App\Models\SampleType;
-use App\Models\Storage;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 

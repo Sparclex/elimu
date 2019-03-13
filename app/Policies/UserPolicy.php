@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Study;
-use App\Providers\AuthServiceProvider;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

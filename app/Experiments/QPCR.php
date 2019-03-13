@@ -55,35 +55,13 @@ class QPCR extends ExperimentType
             ->values();
     }
 
-    /**
-     * Validates the result file
-     *
-     * @throws ExperimentException
-     */
-    public function validate(): void
+    protected function getData()
     {
-        $this->assertFileNotEmpty();
-        $this->assertTargetsMatchParameter();
-        $this->assertControlsAreValid();
-    }
+        if (!$this->data) {
+            $this->data = Parser::xml($this->getFileContents());
+        }
 
-    /**
-     * Stores the experiment results
-     * @param $experiment
-     *
-     * @return Collection
-     */
-    public function getDatabaseData($experiment): Collection
-    {
-        return $this->getResultData()->map(function ($data) use ($experiment) {
-            return [
-                'sample' => $data['sampleId'],
-                'target' => $data['target'],
-                'primary_value' => floatval($data['cq']),
-                'secondary_value' => $data['reactId'],
-                'extra' => json_encode(array_except($data, 'cq', 'reactId'))
-            ];
-        });
+        return $this->data;
     }
 
     protected function getFileContents()
@@ -109,49 +87,16 @@ class QPCR extends ExperimentType
         return $this->fileContents;
     }
 
-    protected function getData()
+    /**
+     * Validates the result file
+     *
+     * @throws ExperimentException
+     */
+    public function validate(): void
     {
-        if (!$this->data) {
-            $this->data = Parser::xml($this->getFileContents());
-        }
-
-        return $this->data;
-    }
-
-    protected function getParsedData()
-    {
-        if (!$this->parsedData) {
-            $parsedData = [];
-            foreach ($this->getData()['experiment']['run'] as $run) {
-                $format = $run['pcrFormat'];
-                foreach ($run['react'] as $react) {
-                    if (in_array($react['sample']['@id'], $this->ignoredSamples)) {
-                        continue;
-                    }
-                    $parsedData[] = [
-                        'sampleId' => strtolower($react['sample']['@id']),
-                        'target' => strtolower($react['data']['tar']['@id']),
-                        'position' => Position::fromPosition($react['@id'])
-                            ->withRows($format['rows'])
-                            ->withColumns($format['columns'])
-                            ->toLabel(),
-                        'reactId' => $react['@id'],
-                        'content' => collect($this->getData()['sample'])
-                            ->firstWhere('@id', $react['sample']['@id'])['type'],
-                        'cq' => $this->getCq($react['data'], $react['data']['tar']['@id']),
-                        'data' => $react['data']['adp'] ?? []
-                    ];
-                }
-            }
-            $this->parsedData = collect($parsedData);
-        }
-
-        return $this->parsedData;
-    }
-
-    protected function getCq($data, $target)
-    {
-        return strtolower($data['cq']) == "nan" ? null : $data['cq'];
+        $this->assertFileNotEmpty();
+        $this->assertTargetsMatchParameter();
+        $this->assertControlsAreValid();
     }
 
     protected function assertFileNotEmpty()
@@ -214,6 +159,76 @@ class QPCR extends ExperimentType
         }
     }
 
+    protected function getControlData()
+    {
+        $controls = $this->getParsedData()->filter(function ($sample) {
+            return in_array($sample['sampleId'], self::CONTROL_IDS);
+        });
+
+        $this->assertAllControlsExist($controls);
+
+        return $controls;
+    }
+
+    protected function getParsedData()
+    {
+        if (!$this->parsedData) {
+            $parsedData = [];
+            foreach ($this->getData()['experiment']['run'] as $run) {
+                $format = $run['pcrFormat'];
+                foreach ($run['react'] as $react) {
+                    if (in_array($react['sample']['@id'], $this->ignoredSamples)) {
+                        continue;
+                    }
+                    $parsedData[] = [
+                        'sampleId' => strtolower($react['sample']['@id']),
+                        'target' => strtolower($react['data']['tar']['@id']),
+                        'position' => Position::fromPosition($react['@id'])
+                            ->withRows($format['rows'])
+                            ->withColumns($format['columns'])
+                            ->toLabel(),
+                        'reactId' => $react['@id'],
+                        'content' => collect($this->getData()['sample'])
+                            ->firstWhere('@id', $react['sample']['@id'])['type'],
+                        'cq' => $this->getCq($react['data'], $react['data']['tar']['@id']),
+                        'data' => $react['data']['adp'] ?? []
+                    ];
+                }
+            }
+            $this->parsedData = collect($parsedData);
+        }
+
+        return $this->parsedData;
+    }
+
+    protected function getCq($data, $target)
+    {
+        return strtolower($data['cq']) == "nan" ? null : $data['cq'];
+    }
+
+    /**
+     * @param Collection $controls
+     * @throws ExperimentException
+     */
+    protected function assertAllControlsExist($controls): void
+    {
+        $missingControls = collect(self::CONTROL_IDS)
+            ->reject(function ($controlId) {
+                $column = $controlId == self::NTC_CONTROL ? self::NTC_CONTROL : $controlId . 'ctrl';
+                return $this->parameters->pluck($column)->filter()->isEmpty();
+            })
+            ->diff($controls->pluck('sampleId'));
+
+        if ($missingControls->isNotEmpty()) {
+            throw new ExperimentException(
+                sprintf(
+                    'The following controls are missing: %s',
+                    $missingControls->implode(', ')
+                )
+            );
+        }
+    }
+
     protected function assertControlIsValid($control, $parameter, $cutoff)
     {
         if (!$parameter) {
@@ -247,38 +262,23 @@ class QPCR extends ExperimentType
         }
     }
 
-    protected function getControlData()
-    {
-        $controls = $this->getParsedData()->filter(function ($sample) {
-            return in_array($sample['sampleId'], self::CONTROL_IDS);
-        });
-
-        $this->assertAllControlsExist($controls);
-
-        return $controls;
-    }
-
     /**
-     * @param Collection $controls
-     * @throws ExperimentException
+     * Stores the experiment results
+     * @param $experiment
+     *
+     * @return Collection
      */
-    protected function assertAllControlsExist($controls): void
+    public function getDatabaseData($experiment): Collection
     {
-        $missingControls = collect(self::CONTROL_IDS)
-            ->reject(function ($controlId) {
-                $column = $controlId == self::NTC_CONTROL ? self::NTC_CONTROL : $controlId . 'ctrl';
-                return $this->parameters->pluck($column)->filter()->isEmpty();
-            })
-            ->diff($controls->pluck('sampleId'));
-
-        if ($missingControls->isNotEmpty()) {
-            throw new ExperimentException(
-                sprintf(
-                    'The following controls are missing: %s',
-                    $missingControls->implode(', ')
-                )
-            );
-        }
+        return $this->getResultData()->map(function ($data) use ($experiment) {
+            return [
+                'sample' => $data['sampleId'],
+                'target' => $data['target'],
+                'primary_value' => floatval($data['cq']),
+                'secondary_value' => $data['reactId'],
+                'extra' => json_encode(array_except($data, 'cq', 'reactId'))
+            ];
+        });
     }
 
     /**
@@ -294,6 +294,22 @@ class QPCR extends ExperimentType
     public function ignore(array $ignoredSamples)
     {
         $this->ignoredSamples = $ignoredSamples;
+    }
+
+    public function results($request, $assay)
+    {
+        $paginator = $this->resultQuery($request, $assay)->simplePaginate($request->get('perPage', 25));
+
+        return [
+            'label' => 'Results',
+            'resources' => $paginator->getCollection()
+                ->mapInto(QPCRResult::class)
+                ->map
+                ->serializeForIndex($request),
+            'prev_page_url' => $paginator->previousPageUrl(),
+            'next_page_url' => $paginator->nextPageUrl(),
+            'softDeletes' => false,
+        ];
     }
 
     public function resultQuery($request, $assay)
@@ -315,48 +331,6 @@ class QPCR extends ExperimentType
         }
 
         return $query;
-    }
-
-    public function results($request, $assay)
-    {
-        $paginator = $this->resultQuery($request, $assay)->simplePaginate($request->get('perPage', 25));
-
-        return [
-            'label' => 'Results',
-            'resources' => $paginator->getCollection()
-                ->mapInto(QPCRResult::class)
-                ->map
-                ->serializeForIndex($request),
-            'prev_page_url' => $paginator->previousPageUrl(),
-            'next_page_url' => $paginator->nextPageUrl(),
-            'softDeletes' => false,
-        ];
-    }
-
-    public function serialize($result)
-    {
-        return [
-            ID::make(),
-            BelongsTo::make('Sample', 'sample', Sample::class),
-            Text::make('Target'),
-            Text::make('Result', function () use ($result) {
-                $parameters = $this->parameters[$result->target];
-                $error = null;
-                if ($result->replicas < $parameters['minvalues']) {
-                    $error = 'Not enough values';
-                } elseif ($result->positives != $result->replicas && $result->positives != 0) {
-                    $error = 'Needs repetition';
-                } elseif ($result->positives > 0 && $result->stddev > $parameters['cuttoffstdev']) {
-                    $error = 'Standard deviation too high';
-                }
-
-                if ($error) {
-                    return $error;
-                }
-
-                return $result->avg_cq != null && $result->avg_cq <= $parameters['cutoff'] ? 'Positive' : 'Negative';
-            })
-        ];
     }
 
     protected static function targetQuery($parameters, $filters)
@@ -426,6 +400,32 @@ class QPCR extends ExperimentType
         return $query;
     }
 
+    public function serialize($result)
+    {
+        return [
+            ID::make(),
+            BelongsTo::make('Sample', 'sample', Sample::class),
+            Text::make('Target'),
+            Text::make('Result', function () use ($result) {
+                $parameters = $this->parameters[$result->target];
+                $error = null;
+                if ($result->replicas < $parameters['minvalues']) {
+                    $error = 'Not enough values';
+                } elseif ($result->positives != $result->replicas && $result->positives != 0) {
+                    $error = 'Needs repetition';
+                } elseif ($result->positives > 0 && $result->stddev > $parameters['cuttoffstdev']) {
+                    $error = 'Standard deviation too high';
+                }
+
+                if ($error) {
+                    return $error;
+                }
+
+                return $result->avg_cq != null && $result->avg_cq <= $parameters['cutoff'] ? 'Positive' : 'Negative';
+            })
+        ];
+    }
+
     public function export($assay)
     {
         $results = $this->resultQuery(null, $assay)->with('sample', 'sample.sampleTypes')->get();
@@ -490,7 +490,6 @@ class QPCR extends ExperimentType
             $headings[] = 'qual_' . $target;
             $headings[] = 'quant_' . $target;
         }
-
 
 
         return $headings;

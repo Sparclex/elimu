@@ -6,7 +6,6 @@ use App\Support\Position;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Storage extends Resource

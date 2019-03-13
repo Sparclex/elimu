@@ -100,11 +100,6 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
         ];
     }
 
-    private function sampleInformationColumns()
-    {
-        return ['subject_id', 'visit_id', 'collected_at', 'birthdate', 'gender'];
-    }
-
     private function saveSampleInformation(Collection $row)
     {
         $sampleInformation = new Sample;
@@ -134,6 +129,11 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
         $sampleInformation->save();
 
         return $sampleInformation;
+    }
+
+    private function sampleInformationColumns()
+    {
+        return ['subject_id', 'visit_id', 'collected_at', 'birthdate', 'gender'];
     }
 
     private function saveMutation(Collection $row, $sampleId, $sampleType)

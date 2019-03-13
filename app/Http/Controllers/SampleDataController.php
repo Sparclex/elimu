@@ -21,7 +21,7 @@ class SampleDataController extends Controller
 
         $parameters = $dataSample->experiment->inputParameters;
 
-        $file = new File(storage_path('app/'.$dataSample->experiment->result_file));
+        $file = new File(storage_path('app/' . $dataSample->experiment->result_file));
         $rdml = RDML::make($file)->withInputParameters($parameters);
         return [
             'display' => true,

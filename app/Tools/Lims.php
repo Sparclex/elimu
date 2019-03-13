@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Tools;
 
 use Laravel\Nova\Tool;

@@ -9,7 +9,6 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Trix;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class AssayDefinitionFile extends Resource

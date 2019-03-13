@@ -29,7 +29,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         return [
             new Lims,
-            //new \Spatie\BackupTool\BackupTool,
         ];
     }
 

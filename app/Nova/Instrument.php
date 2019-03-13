@@ -2,10 +2,9 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
 class Instrument extends Resource
@@ -23,12 +22,6 @@ class Instrument extends Resource
      * @var string
      */
     public static $title = 'instrument_id';
-
-    public function subtitle()
-    {
-        return sprintf('%s (%s)', $this->name, $this->serial_number);
-    }
-
     /**
      * The columns that should be searched.
      *
@@ -40,10 +33,15 @@ class Instrument extends Resource
         'serial_number'
     ];
 
+    public function subtitle()
+    {
+        return sprintf('%s (%s)', $this->name, $this->serial_number);
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
@@ -66,7 +64,7 @@ class Instrument extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -77,7 +75,7 @@ class Instrument extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -88,7 +86,7 @@ class Instrument extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -99,7 +97,7 @@ class Instrument extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)

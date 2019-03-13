@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SampleMutation;
-use App\Nova\SampleMutation as SampleResource;
 use App\Nova\Result as ResultResource;
-use Illuminate\Http\Request;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResultManagerController

@@ -2,8 +2,7 @@
 
 namespace App\Nova;
 
-use App\Fields\StorageSizeField;
-use App\Fields\StudyUserFields;
+use App\Nova\RelationFields\StudyUserFields;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;

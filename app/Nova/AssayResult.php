@@ -3,17 +3,13 @@
 namespace App\Nova;
 
 use App\Nova\Filters\TargetFilte;
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\DecodesFilters;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Http\Requests\ResourceIndexRequest;
 
 class AssayResult extends Resource
 {
-
-    protected $assay = false;
 
     /**
      * The model the resource corresponds to.
@@ -21,16 +17,13 @@ class AssayResult extends Resource
      * @var string
      */
     public static $model = 'App\Models\Sample';
-
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
     public static $title = 'id';
-
     public static $globallySearchable = false;
-
     /**
      * The columns that should be searched.
      *
@@ -39,6 +32,7 @@ class AssayResult extends Resource
     public static $search = [
         'id',
     ];
+    protected $assay = false;
 
     public static function singularLabel()
     {
@@ -56,10 +50,15 @@ class AssayResult extends Resource
             ->whereHas('results');
     }
 
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
@@ -117,11 +116,6 @@ class AssayResult extends Resource
     }
 
     public function authorizedToAdd(NovaRequest $request, $model)
-    {
-        return false;
-    }
-
-    public static function authorizedToCreate(Request $request)
     {
         return false;
     }

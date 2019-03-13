@@ -42,16 +42,15 @@ class Shipment extends Resource
         'id', 'recipient', 'shipment_date'
     ];
 
-    public function title()
-    {
-        return sprintf('%s - %s', $this->recipient, $this->shipment_date->format('Y-m-d'));
-    }
-
     public static function indexQuery(NovaRequest $request, $query)
     {
         return parent::indexQuery($request, $query)->withCount('samples');
     }
 
+    public function title()
+    {
+        return sprintf('%s - %s', $this->recipient, $this->shipment_date->format('Y-m-d'));
+    }
 
     /**
      * Get the fields displayed by the resource.

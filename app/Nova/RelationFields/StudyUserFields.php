@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Fields;
+namespace App\Nova\RelationFields;
 
 use App\Policies\Authorization;
 use Laravel\Nova\Fields\Select;

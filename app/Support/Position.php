@@ -106,12 +106,21 @@ class Position
             $this->label = sprintf("%s%'.02d", strtoupper($this->numberToAlpha($column)), $row);
 
             if ($this->showPlates) {
-                $plate = (int) ($this->position / ($this->columns * $this->rows)) + 1;
+                $plate = (int)($this->position / ($this->columns * $this->rows)) + 1;
                 $this->label = sprintf("P%'.03d %s", $plate, $this->label);
             }
         }
 
         return $this->label;
+    }
+
+    public function numberToAlpha($number)
+    {
+        if ($number > count(self::ALPHABET)) {
+            throw new InvalidArgumentException('Number is not convertable to character');
+        }
+
+        return self::ALPHABET[$number - 1];
     }
 
     public function toPosition()
@@ -123,14 +132,5 @@ class Position
         }
 
         return $this->position;
-    }
-
-    public function numberToAlpha($number)
-    {
-        if ($number > count(self::ALPHABET)) {
-            throw new InvalidArgumentException('Number is not convertable to character');
-        }
-
-        return self::ALPHABET[$number - 1];
     }
 }

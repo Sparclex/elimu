@@ -23,6 +23,18 @@ class QPCRResultSpecifier
         return $this;
     }
 
+    public function quantitative()
+    {
+        if ($this->qualitative() != 'Positive'
+            || !isset($this->targetParameters['slope'])
+            || !isset($this->targetParameters['intercept'])) {
+            return null;
+        }
+
+        return round(pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
+            + $this->targetParameters['intercept']), 2);
+    }
+
     public function qualitative()
     {
         $parameters = $this->targetParameters;
@@ -41,17 +53,5 @@ class QPCRResultSpecifier
         return $this->result->avg_cq != null
         && $this->result->avg_cq <= $parameters['cutoff']
             ? 'Positive' : 'Negative';
-    }
-
-    public function quantitative()
-    {
-        if ($this->qualitative() != 'Positive'
-            || !isset($this->targetParameters['slope'])
-            || !isset($this->targetParameters['intercept'])) {
-            return null;
-        }
-
-        return round(pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
-            + $this->targetParameters['intercept']), 2);
     }
 }

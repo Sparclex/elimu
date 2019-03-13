@@ -24,14 +24,14 @@ class Experiment extends Resource
     public static $search = ['id', 'name'];
     public static $globallySearchable = false;
 
-    public function title()
-    {
-        return sprintf('%d %s', $this->id, $this->name);
-    }
-
     public static function indexQuery(NovaRequest $request, $query)
     {
         return $query->withCount('samples');
+    }
+
+    public function title()
+    {
+        return sprintf('%d %s', $this->id, $this->name);
     }
 
     public function fields(Request $request)

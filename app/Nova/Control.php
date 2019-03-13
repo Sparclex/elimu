@@ -2,16 +2,12 @@
 
 namespace App\Nova;
 
-use App\Nova\RelationFields\ConcentrationPivotField;
 use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
-use Treestoneit\BelongsToField\BelongsToField;
 
 class Control extends Resource
 {
