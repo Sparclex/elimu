@@ -13,7 +13,7 @@ use Treestoneit\BelongsToField\BelongsToField;
 
 class ResultData extends Resource
 {
-    public static $globallySearchable = false;
+    public static $globallySearchable = true;
 
     public static $displayInNavigation = false;
 
@@ -23,10 +23,27 @@ class ResultData extends Resource
 
     public static $search = [
         'sample_id',
-        'status',
+        'target',
+        'primary_value',
+        'secondary_value'
     ];
 
     public static $with = ['result', 'experiment'];
+
+    public function title()
+    {
+        return $this->sample_id;
+    }
+
+    public function subtitle()
+    {
+        return sprintf(
+            '%d %s (%s)',
+            $this->experiment->id,
+            $this->experiment->name,
+            $this->target
+        );
+    }
 
     public static function singularLabel()
     {
