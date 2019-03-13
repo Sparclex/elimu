@@ -29,6 +29,9 @@ class Result extends Resource
                 ->hideFromIndex(),
             BelongsToField::make('Sample'),
             BelongsToField::make('Assay'),
+            Text::make('Type', function () {
+                return $this->assay->definitionFile->sampleType->name;
+            }),
             Text::make('Target')
                 ->sortable(),
 
