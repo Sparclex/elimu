@@ -361,7 +361,7 @@ class QPCR extends ExperimentType
 
     protected static function targetQuery($parameters, $filters)
     {
-        $query = Result::where('target', $parameters['target'])
+        $query = Result::where('results.target', $parameters['target'])
             ->select("results.*")
             ->selectRaw('avg(primary_value) as avg_cq')
             ->selectRaw('count(*) as replicas')
