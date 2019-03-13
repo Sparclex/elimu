@@ -51,6 +51,8 @@ class ResultData extends Resource
             BelongsToField::make('Experiment'),
             Text::make('Sample ID', 'sample_id')
                 ->sortable(),
+            Text::make('Target')
+                ->sortable(),
             Number::make('Primary Value')
                 ->displayUsing(function ($value) {
                     if (!$value) {
