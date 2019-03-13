@@ -4,13 +4,11 @@ namespace App\Nova;
 
 use App\Actions\ChangeValidationStatus;
 use App\Fields\AdditionalData;
-use App\Fields\Status;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Panel;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class ResultData extends Resource
@@ -52,7 +50,18 @@ class ResultData extends Resource
             BelongsToField::make('Result'),
             BelongsToField::make('Experiment'),
             Text::make('Sample ID', 'sample_id'),
-            Number::make('Primary Value'),
+            Number::make('Primary Value')
+                ->displayUsing(function ($value) {
+                    if (!$value) {
+                        return "&mdash;";
+                    }
+                    return number_format(round($value, 2), 2);
+                })
+                ->asHtml()
+                ->nullable()
+                ->nullValues(function ($value) {
+                    return $value == '' || $value == 'null' || (float)$value === 0.00 || $value == '0.00';
+                }),
             Text::make('Secondary Value'),
             Boolean::make('included'),
             AdditionalData::make('extra')
