@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Reagent extends Resource
 {
@@ -40,6 +41,19 @@ class Reagent extends Resource
 
             Text::make('Manufacturer'),
             Text::make('Supplier'),
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

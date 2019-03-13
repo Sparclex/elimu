@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Trix;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 use Treestoneit\BelongsToField\BelongsToField;
 
@@ -44,6 +45,19 @@ class Maintenance extends Resource
                 ->rules('required')
                 ->sortable(),
             Trix::make('Procedure')
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

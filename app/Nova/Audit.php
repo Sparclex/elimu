@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Panel;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Audit extends Resource
 {
@@ -72,6 +73,19 @@ class Audit extends Resource
             BelongsTo::make('User'),
             Text::make('IP Address')->hideFromIndex(),
             Text::make('User Agent')->hideFromIndex(),
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

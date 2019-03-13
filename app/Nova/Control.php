@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Control extends Resource
 {
@@ -36,6 +37,19 @@ class Control extends Resource
             Text::make('Concentration'),
             BelongsToMany::make('Assays')
                 ->searchable(),
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

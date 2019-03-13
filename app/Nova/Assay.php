@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Assay extends Resource
@@ -51,6 +52,19 @@ class Assay extends Resource
                 ->searchable(),
             Trix::make('Description'),
             HasMany::make('Results'),
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

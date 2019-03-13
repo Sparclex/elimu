@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
 class Protocol extends Resource
@@ -85,39 +86,6 @@ class Protocol extends Resource
     }
 
     /**
-     * Get the cards available for the request.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function cards(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the lenses available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function lenses(Request $request)
-    {
-        return [];
-    }
-
-    /**
      * Get the actions available for the resource.
      *
      * @param  \Illuminate\Http\Request $request
@@ -125,6 +93,8 @@ class Protocol extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
+        ];
     }
 }

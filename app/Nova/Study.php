@@ -9,6 +9,7 @@ use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Study extends Resource
 {
@@ -48,6 +49,19 @@ class Study extends Resource
             HasMany::make('Sample Types', 'sampleTypes', SampleType::class),
             BelongsToMany::make('Users')
                 ->fields(new StudyUserFields)
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
         ];
     }
 }

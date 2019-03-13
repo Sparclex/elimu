@@ -3673,16 +3673,16 @@
         },
         {
             "name": "sparclex/nova-creatable-belongs-to",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sparclex/nova-creatable-belongs-to.git",
-                "reference": "1c8ad2cde0419c8c77a84e87a850e5ec8172258a"
+                "reference": "56840ca2fde02e2cb68af4c8354624a997bfa276"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sparclex/nova-creatable-belongs-to/zipball/1c8ad2cde0419c8c77a84e87a850e5ec8172258a",
-                "reference": "1c8ad2cde0419c8c77a84e87a850e5ec8172258a",
+                "url": "https://api.github.com/repos/Sparclex/nova-creatable-belongs-to/zipball/56840ca2fde02e2cb68af4c8354624a997bfa276",
+                "reference": "56840ca2fde02e2cb68af4c8354624a997bfa276",
                 "shasum": ""
             },
             "require": {
@@ -3711,7 +3711,7 @@
                 "laravel",
                 "nova"
             ],
-            "time": "2019-03-12T17:34:10+00:00"
+            "time": "2019-03-13T20:12:39+00:00"
         },
         {
             "name": "sparclex/nova-import-card",

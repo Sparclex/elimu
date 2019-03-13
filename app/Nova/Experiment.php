@@ -13,6 +13,7 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Experiment extends Resource
@@ -68,8 +69,16 @@ class Experiment extends Resource
         ];
     }
 
-    public function cards(Request $request)
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
     {
-        return [];
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
+        ];
     }
 }

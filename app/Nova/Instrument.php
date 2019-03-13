@@ -5,6 +5,7 @@ namespace App\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 use Sparclex\NovaCreatableBelongsTo\CreatableBelongsTo;
 
 class Instrument extends Resource
@@ -102,6 +103,8 @@ class Instrument extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
+        ];
     }
 }

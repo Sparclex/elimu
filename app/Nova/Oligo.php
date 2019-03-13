@@ -9,6 +9,7 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Oligo extends Resource
 {
@@ -82,39 +83,6 @@ class Oligo extends Resource
     }
 
     /**
-     * Get the cards available for the request.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function cards(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * Get the lenses available for the resource.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function lenses(Request $request)
-    {
-        return [];
-    }
-
-    /**
      * Get the actions available for the resource.
      *
      * @param  \Illuminate\Http\Request $request
@@ -122,6 +90,8 @@ class Oligo extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new DownloadExcel)->withHeadings()->allFields(),
+        ];
     }
 }
