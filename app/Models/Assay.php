@@ -24,6 +24,11 @@ class Assay extends Model implements AuditableContract
         });
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
     public function controls()
     {
         return $this->belongsToMany(Control::class);
