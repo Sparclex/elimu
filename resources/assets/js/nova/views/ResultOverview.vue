@@ -169,15 +169,13 @@
             </div>
 
             <!-- Pagination -->
-            <pagination-links
+            <pagination-simple
                     v-if="response"
-                    resource-name="Results"
-                    :resources="results"
-                    :resource-response="response"
-                    @previous="selectPreviousPage"
-                    @next="selectNextPage"
-            >
-            </pagination-links>
+                    :next="hasNextPage"
+                    :previous="hasPreviousPage"
+                    @page="selectPage"
+                    :page="currentPage"
+            />
         </loading-card>
     </loading-view>
 </template>
@@ -383,8 +381,23 @@
             },
 
             debouncer: _.debounce(callback => callback(), 500),
+
+            /**
+             * Select the next page.
+             */
+            selectPage(page) {
+                this.updateQueryString({ [this.pageParameter]: page })
+            },
         },
         computed: {
+
+            hasNextPage() {
+                return Boolean(this.response && this.response.next_page_url)
+            },
+
+            hasPreviousPage() {
+                return Boolean(this.response && this.response.prev_page_url)
+            },
 
             pageParameter() {
                 return 'analyzed-results_page'
