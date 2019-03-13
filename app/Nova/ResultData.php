@@ -49,7 +49,8 @@ class ResultData extends Resource
             ID::make()->onlyOnForms(),
             BelongsToField::make('Result'),
             BelongsToField::make('Experiment'),
-            Text::make('Sample ID', 'sample_id'),
+            Text::make('Sample ID', 'sample_id')
+                ->sortable(),
             Number::make('Primary Value')
                 ->displayUsing(function ($value) {
                     if (!$value) {
@@ -58,12 +59,15 @@ class ResultData extends Resource
                     return number_format(round($value, 2), 2);
                 })
                 ->asHtml()
+                ->sortable()
                 ->nullable()
                 ->nullValues(function ($value) {
                     return $value == '' || $value == 'null' || (float)$value === 0.00 || $value == '0.00';
                 }),
-            Text::make('Secondary Value'),
-            Boolean::make('included'),
+            Text::make('Secondary Value')
+                ->sortable(),
+            Boolean::make('included')
+                ->sortable(),
             AdditionalData::make('extra')
         ];
     }
