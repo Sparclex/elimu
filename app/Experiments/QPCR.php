@@ -347,7 +347,7 @@ class QPCR extends ExperimentType
             ->where('included', true);
 
         if (isset($filters['target'])) {
-            $query->where('target', $filters['target']);
+            $query->where('results.target', $filters['target']);
         }
 
         if (isset($filters['status'])) {
