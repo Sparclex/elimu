@@ -262,13 +262,13 @@
                         this.currentPage +
                         this.currentPerPage +
                         this.currentStatus +
-                        this.currentAssay +
+                        this.currentAssayId +
                         this.currentTarget
                     )
                 },
                 () => {
-                    this.initializeSearchFromQueryString();
                     this.initializeAssayFromQueryString();
+                    this.initializeSearchFromQueryString();
                     this.initializePerPageFromQueryString();
                     this.initializeCurrentPageFromQueryString();
                     this.initializeStatusFromQueryString();
@@ -418,13 +418,13 @@
                 return this.$route.query[this.searchParameter] || ''
             },
 
-            currentAssay() {
-                if (!this.$route.query['assay']) {
-                    return null;
-                }
+            currentAssayId() {
+                return this.$route.query['assay'] || null;
+            },
 
+            currentAssay() {
                 for (let assay of this.assays) {
-                    if (assay.value == this.$route.query['assay']) {
+                    if (assay.value == this.currentAssayId) {
                         return assay;
                     }
                 }
