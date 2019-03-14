@@ -51,7 +51,7 @@ class QPCRResultSpecifier
         }
 
         return $this->result->avg_cq != null
-        && $this->result->avg_cq <= $parameters['cutoff']
+        && $this->result->positives > 0
             ? 'Positive' : 'Negative';
     }
 }
