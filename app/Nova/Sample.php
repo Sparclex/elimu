@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Importer\SampleImporter;
 use App\Nova\Filters\SampleFilter;
+use App\Nova\Lenses\SampleRegistry;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Date;
@@ -66,6 +67,13 @@ class Sample extends Resource
                 ->fields(function () {
                     return [Number::make('Aliquots', 'quantity')];
                 }),
+        ];
+    }
+
+    public function lenses(Request $request)
+    {
+        return [
+            new SampleRegistry
         ];
     }
 

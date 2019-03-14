@@ -98,10 +98,11 @@ class Position
             if (!$this->rows || !$this->columns) {
                 throw new InvalidArgumentException('Rows and Columns need to be defined');
             }
+            $position = $this->position % ($this->rows * $this->columns) + 1;
 
-            $column = $this->position % $this->columns;
+            $column = $position % $this->columns;
             $column = $column == 0 ? $this->columns : $column;
-            $row = (($this->position - $column) / $this->columns) + 1;
+            $row = (($position - $column) / $this->columns) + 1;
 
             $this->label = sprintf("%s%'.02d", strtoupper($this->numberToAlpha($column)), $row);
 
