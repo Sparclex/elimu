@@ -22,7 +22,7 @@ trait RelationSortable
 
         $query->leftJoin(
             $relation->getRelated()->getTable() . ' as tmp',
-            $model->getTable() . "." . $relation->getForeignKey(),
+            $model->getTable() . "." . $relation->getForeignKeyName(),
             "tmp.id"
         );
         $query->orderBy('ordercolumn', $request->get('orderByDirection'));

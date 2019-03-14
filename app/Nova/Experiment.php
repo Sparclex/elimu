@@ -23,11 +23,12 @@ class Experiment extends Resource
     public static $model = 'App\Models\Experiment';
 
     public static $search = ['id', 'name'];
+
     public static $globallySearchable = false;
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->withCount('samples');
+        return self::sortBy($request, $query->withCount('samples'), 'assay');
     }
 
     public function title()
@@ -44,7 +45,8 @@ class Experiment extends Resource
                 ->rules('required'),
             Text::make('Name')
                 ->sortable(),
-            BelongsToField::make('Assay'),
+            BelongsToField::make('Assay')
+                ->sortable(),
             DateTime::make('Requested at')
                 ->rules('required', 'date')
                 ->hideWhenCreating()
