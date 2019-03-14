@@ -36,7 +36,7 @@ class Reagent extends Resource
                     (new StudyUnique('reagents', 'lot'))->ignore($request->resourceId)
                 )
                 ->sortable(),
-            Date::make('Expires at')
+            Date::make('Expiry date', 'expires_at')
                 ->sortable(),
 
             Text::make('Manufacturer'),
