@@ -377,16 +377,16 @@ class QPCR extends ExperimentType
                     break;
                 case 'stdev':
                     $query->havingRaw('(positives = replicas or positives = 0)')
-                        ->having('replicas', $parameters['minvalues'])
+                        ->having('replicas', '>=', $parameters['minvalues'])
                         ->having('stddev', '>', $parameters['cuttoffstdev']);
                     break;
                 case 'replicates':
                     $query->having('replicas', '<', $parameters['minvalues']);
                     break;
                 case 'repetition':
-                    $query->having('positives', '<>', $parameters['minvalues'])
+                    $query->havingRaw('positives <> replicas')
                         ->having('positives', '>', 0)
-                        ->having('replicas', $parameters['minvalues']);
+                        ->having('replicas', '>=', $parameters['minvalues']);
                     break;
             }
         }
