@@ -37,6 +37,11 @@ class AssayDefinitionFile extends Model implements AuditableContract
         return $this->belongsTo(SampleType::class);
     }
 
+    public function resultTypeClass()
+    {
+        return config('lims.result_types.' . $this->result_type);
+    }
+
     public function setPathAttribute($value)
     {
         $this->attributes['path'] = $value;

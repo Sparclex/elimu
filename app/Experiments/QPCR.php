@@ -7,9 +7,11 @@ use App\Models\Result;
 use App\Nova\Sample;
 use App\Support\Position;
 use App\Support\QPCRResultSpecifier;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Nathanmac\Utilities\Parser\Facades\Parser;
 use ZipArchive;
@@ -493,5 +495,28 @@ class QPCR extends ExperimentType
 
 
         return $headings;
+    }
+
+    public static function primaryValue(Request $request)
+    {
+        return Number::make('Primary Value')
+            ->displayUsing(function ($value) {
+                if (!$value) {
+                    return "&mdash;";
+                }
+                return number_format(round($value, 2), 2);
+            })
+            ->asHtml();
+    }
+
+    public static function secondaryValue(Request $request)
+    {
+        return Text::make('Secondary Value')
+            ->displayUsing(function ($value) {
+                return Position::fromPosition($value)
+                    ->withColumns(8)
+                    ->withRows(12)
+                    ->toLabel();
+            });
     }
 }

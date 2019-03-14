@@ -62,6 +62,24 @@ class ResultData extends Resource
 
     public function fields(Request $request)
     {
+        $secondaryValue = Text::make('Secondary Value');
+        $primaryValue = Number::make('Primary Value');
+
+        if ($this->result) {
+            $resultClass = $this->result->assay->definitionFile->resultTypeClass();
+
+            if (method_exists($resultClass, 'primaryValue')) {
+                $primaryValue = $resultClass::primaryValue($request);
+            }
+
+            if (method_exists($resultClass, 'secondaryValue')) {
+                $secondaryValue = $resultClass::secondaryValue($request);
+            }
+        }
+
+        $secondaryValue = $secondaryValue->sortable();
+        $primaryValue = $primaryValue->sortable();
+
         return [
             ID::make()->onlyOnForms(),
             BelongsToField::make('Result'),
@@ -70,21 +88,8 @@ class ResultData extends Resource
                 ->sortable(),
             Text::make('Target')
                 ->sortable(),
-            Number::make('Primary Value')
-                ->displayUsing(function ($value) {
-                    if (!$value) {
-                        return "&mdash;";
-                    }
-                    return number_format(round($value, 2), 2);
-                })
-                ->asHtml()
-                ->sortable()
-                ->nullable()
-                ->nullValues(function ($value) {
-                    return $value == '' || $value == 'null' || (float)$value === 0.00 || $value == '0.00';
-                }),
-            Text::make('Secondary Value')
-                ->sortable(),
+            $primaryValue,
+            $secondaryValue,
             Boolean::make('included')
                 ->sortable(),
             AdditionalData::make('extra')
