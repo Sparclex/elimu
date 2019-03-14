@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Cards\IntroductionCard;
+use App\Cards\LatestUpdatesCard;
 use App\Tools\Lims;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
@@ -77,7 +78,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
-            new IntroductionCard()
+            new LatestUpdatesCard()
         ];
     }
 
