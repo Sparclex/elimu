@@ -37,11 +37,17 @@ class Assay extends Resource
                     'required',
                     (new StudyUnique('assays', 'name'))->ignore($request->resourceId)
                 ),
-            BelongsToField::make('Creator', 'creator', Person::class)->exceptOnForms(),
+            BelongsToField::make('Creator', 'creator', Person::class)
+                ->exceptOnForms(),
             BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
             BelongsToField::make('Instrument'),
             BelongsToField::make('SOP', 'protocol', Protocol::class),
-            BelongsToField::make('Reagent')->nullable()->hideFromIndex(),
+            BelongsToField::make('Reagent')
+                ->nullable()
+                ->hideFromIndex(),
+            BelongsToField::make('QPCR Program', 'qpcrProgram', QPCRProgram::class)
+                ->nullable()
+                ->hideFromIndex(),
             Number::make('Reaction Volume', 'reaction_volume')
                 ->step(0.01)
                 ->hideFromIndex(),

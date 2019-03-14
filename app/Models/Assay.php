@@ -24,6 +24,11 @@ class Assay extends Model implements AuditableContract
         });
     }
 
+    public function qpcrProgram()
+    {
+        return $this->belongsTo(QPCRProgram::class, 'qpcr_program_id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(Person::class);

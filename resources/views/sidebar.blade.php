@@ -43,6 +43,11 @@
                 Controls
             </router-link>
         </li>
+        <li class="leading-tight mb-4 ml-8 text-sm">
+            <router-link :to="{name: 'index', params: {resourceName: 'q-p-c-r-programs'}}" class="text-white text-justify no-underline dim">
+                QPCR Programs
+            </router-link>
+        </li>
     </ul>
 
     <h3 class="flex items-center font-normal text-white mb-6 text-base no-underline">
