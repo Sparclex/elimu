@@ -73,14 +73,14 @@ class Shipment extends Resource
             CreatableBelongsTo::make('Recipient Contact', 'recipientPerson', Person::class)
                 ->nullable()
                 ->hideFromIndex(),
-            Text::make('Shipper', 'shipper_institution'),
+            Text::make('Shipping institution', 'shipper_institution'),
             CreatableBelongsTo::make('Shipper Contact', 'shipper', Person::class)
                 ->nullable()
                 ->hideFromIndex(),
             Date::make('Shipment Date')
                 ->rules('required')
                 ->sortable(),
-            Trix::make('Condition'),
+            Trix::make('Shipping condition'),
             Trix::make('Comment'),
             Boolean::make('Shipped', function () {
                 return optional(($this->shipment_date))->isPast();
