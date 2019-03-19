@@ -59,7 +59,8 @@ class Oligo extends Resource
                 ->sortable(),
             Text::make('Sequence')
                 ->rules('required')
-                ->sortable(),
+                ->sortable()
+                ->hideFromIndex(),
             Text::make('5\' Modification', '5_prime_modification')
                 ->sortable(),
             Text::make('3\' Modification', '3_prime_modification')
