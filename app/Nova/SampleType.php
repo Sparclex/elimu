@@ -40,11 +40,12 @@ class SampleType extends Resource
                 ->rules('required', (new StudyUnique('sample_types', 'name'))
                     ->ignore($request->resourceId)),
             Number::make('Columns')
-                ->rules('required_with:rows'),
+                ->rules('required_with:rows')
+                ->hideFromIndex(),
             Number::make('Rows')
-                ->rules('required_with:columns'),
+                ->rules('required_with:columns')
+                ->hideFromIndex(),
             HasMany::make('Storage', 'storages', Storage::class),
-
             BelongsToMany::make('Samples', 'samples', Sample::class)
                 ->fields(function () {
                     return [
