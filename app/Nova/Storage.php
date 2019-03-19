@@ -6,6 +6,7 @@ use App\Support\Position;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Storage extends Resource
@@ -16,7 +17,7 @@ class Storage extends Resource
 
     public static $title = 'id';
 
-    public static $with = ['sample'];
+    public static $with = ['sample', 'sampleType'];
 
     public static function label()
     {
@@ -29,18 +30,11 @@ class Storage extends Resource
             ID::make()
                 ->onlyOnForms(),
             BelongsToField::make('Sample'),
+            BelongsToField::make('Type', 'sampleType', SampleType::class),
             Number::make('Position')->resolveUsing(function () {
-                return $this->position;
-                $boxSize = auth()
-                    ->user()
-                    ->study
-                    ->sampleTypes()
-                    ->wherePivot('sample_type_id', $this->sample_type_id)
-                    ->first()->pivot;
-
                 return Position::fromPosition($this->position)
-                    ->withColumns($boxSize->columns)
-                    ->withRows($boxSize->rows)
+                    ->withColumns($this->sampleType->columns)
+                    ->withRows($this->sampleType->rows)
                     ->showPlates()
                     ->toLabel();
             })->sortable(),

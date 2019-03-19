@@ -38,6 +38,11 @@ class Sample extends Model implements AuditableContract
             ->using(SampleMutation::class);
     }
 
+    public function storage()
+    {
+        return $this->hasMany(Storage::class);
+    }
+
     public function storagePositions()
     {
         return $this->belongsToMany(SampleType::class, 'storage')

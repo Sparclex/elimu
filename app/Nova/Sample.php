@@ -56,6 +56,8 @@ class Sample extends Resource
 
             HasMany::make('Results'),
 
+            HasMany::make('Storage', 'storage', Storage::class),
+
             BelongsToMany::make('Types', 'sampleTypes', SampleType::class)
                 ->fields(function () {
                     return [
