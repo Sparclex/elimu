@@ -25,8 +25,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('telescope:prune')->weekly();
-        $schedule->command('backup:clean')->dailyAt('01:30');
-        $schedule->command('backup:run --only-db')->dailyAt('01:35');
+        $schedule->command('backup:clean')->dailyAt('00:10');
+        $schedule->command('backup:run --only-db')->dailyAt('00:20');
+    }
+
+    protected function scheduleTimezone()
+    {
+        return 'Europe/Zurich';
     }
 
     /**
