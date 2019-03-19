@@ -12,7 +12,7 @@ abstract class Resource extends NovaResource
 
     public static $displayInNavigation = false;
 
-    public static $perPageViaRelationship = 6;
+    public static $perPageViaRelationship = 16;
 
     /**
      * Build an "index" query for the given resource.
