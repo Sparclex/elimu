@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SetUserStudyOnSave;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class QPCRProgram extends Model
+class QPCRProgram extends Model implements AuditableContract
 {
+    use SetUserStudyOnSave, Auditable;
+
     protected $table = 'qpcr_programs';
 
     protected $casts = [
