@@ -15,6 +15,6 @@ class QPCRProgram extends Model
 
     public function assays()
     {
-        return $this->hasMany(Assay::class, 'qpcr_program_id');
+        return $this->belongsToMany(Assay::class, 'assay_qpcr_program', 'qpcr_program_id');
     }
 }

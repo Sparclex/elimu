@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Fields\Table;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -73,7 +74,8 @@ class QPCRProgram extends Resource
                     Text::make('Threshold')
                 ]),
 
-            HasMany::make('Assays')
+            BelongsToMany::make('Assays')
+                ->searchable(),
         ];
     }
 

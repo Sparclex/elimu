@@ -45,9 +45,6 @@ class Assay extends Resource
             BelongsToField::make('Reagent')
                 ->nullable()
                 ->hideFromIndex(),
-            BelongsToField::make('QPCR Program', 'qpcrProgram', QPCRProgram::class)
-                ->nullable()
-                ->hideFromIndex(),
             Number::make('Reaction Volume', 'reaction_volume')
                 ->step(0.01)
                 ->hideFromIndex(),
@@ -55,6 +52,8 @@ class Assay extends Resource
                 ->searchable()
                 ->fields(new ConcentrationPivotField),
             BelongsToMany::make('Controls')
+                ->searchable(),
+            BelongsToMany::make('QPCR Programs', 'qpcrPrograms', QPCRProgram::class)
                 ->searchable(),
             Trix::make('Description'),
             HasMany::make('Results'),
