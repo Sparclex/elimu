@@ -12,21 +12,28 @@ class Assay extends Model implements AuditableContract
     use Auditable, SetUserStudyOnSave;
 
     protected $casts = [
-        'parameters' => 'collection'
+        'parameters' => 'collection',
     ];
 
     public static function boot()
     {
         parent::boot();
 
-        self::creating(function ($model) {
-            $model->creator_id = Person::firstOrCreate(['name' => auth()->user()->name])->id;
-        });
+        self::creating(
+            function ($model) {
+                $model->creator_id = Person::firstOrCreate(['name' => auth()->user()->name])->id;
+            }
+        );
     }
 
     public function qpcrPrograms()
     {
-        return $this->belongsToMany(QPCRProgram::class, 'assay_qpcr_program');
+        return $this->belongsToMany(
+            QPCRProgram::class,
+            'assay_qpcr_program',
+            'assay_id',
+            'qpcr_program_id'
+        );
     }
 
     public function creator()
@@ -61,8 +68,7 @@ class Assay extends Model implements AuditableContract
 
     public function oligos()
     {
-        return $this->belongsToMany(Oligo::class)
-            ->withPivot('concentration');
+        return $this->belongsToMany(Oligo::class)->withPivot('concentration');
     }
 
     public function results()
