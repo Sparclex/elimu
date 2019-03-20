@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Cards\IntroductionCard;
 use App\Cards\LatestUpdatesCard;
+use App\Nova\Metrics\NewResults;
+use App\Nova\Metrics\ResultsPerDay;
 use App\Tools\Lims;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
@@ -78,7 +80,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
-            new LatestUpdatesCard()
+            new LatestUpdatesCard(),
+            new NewResults(),
+            new ResultsPerDay()
         ];
     }
 
