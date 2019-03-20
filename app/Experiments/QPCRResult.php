@@ -29,13 +29,13 @@ class QPCRResult extends Resource
             }),
             Text::make('Target'),
             Text::make('Result', function () {
-                $parameters = $this->assay->definitionFile->parameters->firstWhere('target', $this->target);
+                $parameters = $this->assay->definitionFile->parameters->firstWhere('target', strtolower($this->target));
                 return (new QPCRResultSpecifier($parameters, $this->resource))
                     ->withStyles()
                     ->qualitative();
             })->asHtml(),
             Number::make('Quant', function () {
-                $parameters = $this->assay->definitionFile->parameters->firstWhere('target', $this->target);
+                $parameters = $this->assay->definitionFile->parameters->firstWhere('target', strtolower($this->target));
                 return (new QPCRResultSpecifier($parameters, $this->resource))
                     ->quantitative();
             }),
