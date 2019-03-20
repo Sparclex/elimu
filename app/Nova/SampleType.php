@@ -47,14 +47,14 @@ class SampleType extends Resource
                 ->hideFromIndex(),
             Select::make('Column Format')
                 ->options($formats)
-                ->rules('required', Rule::in($formats))
+                ->rules(Rule::in($formats))
                 ->hideFromIndex(),
             Number::make('Rows')
                 ->rules('required_with:columns')
                 ->hideFromIndex(),
             Select::make('Row Format')
                 ->options($formats)
-                ->rules('required', Rule::in($formats))
+                ->rules(Rule::in($formats))
                 ->hideFromIndex(),
             HasMany::make('Storage', 'storages', Storage::class),
             BelongsToMany::make('Samples', 'samples', Sample::class)
