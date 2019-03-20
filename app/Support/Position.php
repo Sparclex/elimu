@@ -121,7 +121,12 @@ class Position
             $this->label = sprintf("%s%'.02d", strtoupper($this->numberToAlpha($column)), $row);
 
             if ($this->showPlates) {
-                $plate = (int) ($this->position / ($this->columns * $this->rows)) + 1;
+                if (! $this->startWithZero) {
+                    $plate = (int) (($this->position - 1) / ($this->columns * $this->rows)) + 1;
+                } else {
+                    $plate = (int) ($this->position / ($this->columns * $this->rows)) + 1;
+                }
+
                 $this->label = sprintf("P%'.03d %s", $plate, $this->label);
             }
         }
