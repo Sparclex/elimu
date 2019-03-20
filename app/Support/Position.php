@@ -100,6 +100,9 @@ class Position
 
     public function withRowFormat($format)
     {
+        if (! $format) {
+            return $this;
+        }
         $this->rowFormat = $format;
 
         return $this;
@@ -107,6 +110,9 @@ class Position
 
     public function withColumnFormat($format)
     {
+        if (! $format) {
+            return $this;
+        }
         $this->columnFormat = $format;
 
         return $this;
