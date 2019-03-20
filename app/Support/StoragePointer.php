@@ -21,7 +21,8 @@ class StoragePointer
     protected function retrieveLatestPosition()
     {
         if ($this->position == null) {
-            $this->position = Storage::where('study_id', $this->studyId)
+            $this->position = Storage::withoutGlobalScopes()
+                    ->where('study_id', $this->studyId)
                     ->where('sample_type_id', $this->sampleTypeId)
                     ->orderByDesc('position')
                     ->pluck('position')

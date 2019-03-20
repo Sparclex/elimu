@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class Position
@@ -32,7 +33,7 @@ class Position
         "w",
         "x",
         "y",
-        "z"
+        "z",
     ];
 
     protected $position;
@@ -48,6 +49,8 @@ class Position
     protected $columns;
 
     protected $showPlates;
+
+    protected $startWithZero = false;
 
     public function __construct($position, $isLabel = false)
     {
@@ -69,6 +72,13 @@ class Position
     public static function fromLabel($label)
     {
         return new static($label, true);
+    }
+
+    public function startWithZero($startWithZero = true)
+    {
+        $this->startWithZero = $startWithZero;
+
+        return $this;
     }
 
     public function withRows($rows)
@@ -94,11 +104,15 @@ class Position
 
     public function toLabel()
     {
-        if (!$this->label) {
-            if (!$this->rows || !$this->columns) {
+        if (! $this->label) {
+            if (! $this->rows || ! $this->columns) {
                 throw new InvalidArgumentException('Rows and Columns need to be defined');
             }
-            $position = $this->position % ($this->rows * $this->columns) + 1;
+            if (! $this->startWithZero) {
+                $position = ($this->position - 1) % ($this->rows * $this->columns) + 1;
+            } else {
+                $position = $this->position % ($this->rows * $this->columns) + 1;
+            }
 
             $column = $position % $this->columns;
             $column = $column == 0 ? $this->columns : $column;
@@ -107,7 +121,7 @@ class Position
             $this->label = sprintf("%s%'.02d", strtoupper($this->numberToAlpha($column)), $row);
 
             if ($this->showPlates) {
-                $plate = (int)($this->position / ($this->columns * $this->rows)) + 1;
+                $plate = (int) ($this->position / ($this->columns * $this->rows)) + 1;
                 $this->label = sprintf("P%'.03d %s", $plate, $this->label);
             }
         }
@@ -126,10 +140,32 @@ class Position
 
     public function toPosition()
     {
-        if (!$this->position) {
-            if (!$this->rows || !$this->columns) {
+        if (! $this->position) {
+            if (! $this->rows || ! $this->columns) {
                 throw new InvalidArgumentException('Rows and Columns need to be defined');
             }
+
+            preg_match_all('/([a-z])([0-9]+)/i', $this->label, $matches);
+
+            [$all, $column, $row] = $matches;
+
+            $column = count($column) == 2 ? $column[1] : $column[0];
+            $plate = 0;
+
+            if (count($row) == 2) {
+                $plate = ((int) $row[0]) - 1;
+                $row = $row[1];
+            } else {
+                $row = $row[0];
+            }
+
+            $column = array_search(strtolower($column), self::ALPHABET);
+
+            if (! $this->startWithZero) {
+                $column = $column + 1;
+            }
+            $this->position = (((int) $row) - 1) * $this->columns + $column;
+            $this->position += $plate * $this->columns * $this->rows;
         }
 
         return $this->position;

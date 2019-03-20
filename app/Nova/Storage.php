@@ -35,6 +35,7 @@ class Storage extends Resource
                 return Position::fromPosition($this->position)
                     ->withColumns($this->sampleType->columns)
                     ->withRows($this->sampleType->rows)
+                    ->startWithZero()
                     ->showPlates()
                     ->toLabel();
             })->sortable(),

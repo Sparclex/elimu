@@ -38,6 +38,11 @@ class Sample extends Model implements AuditableContract
             ->using(SampleMutation::class);
     }
 
+    public function allSampleTypes()
+    {
+        return $this->sampleTypes()->withoutGlobalScopes();
+    }
+
     public function storage()
     {
         return $this->hasMany(Storage::class);
