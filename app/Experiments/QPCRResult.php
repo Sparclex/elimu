@@ -39,6 +39,8 @@ class QPCRResult extends Resource
                 return (new QPCRResultSpecifier($parameters, $this->resource))
                     ->quantitative();
             }),
+
+            Number::make('Replicas')
         ];
     }
 }
