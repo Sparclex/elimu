@@ -34,7 +34,9 @@ class StorageController extends Controller
             'data' => $plate,
             'size' => [
                 'columns' => $sampleType->columns,
-                'rows' => $sampleType->rows
+                'rows' => $sampleType->rows,
+                'columnFormat' => $sampleType->column_format,
+                'rowFormat' => $sampleType->row_format
             ]
         ];
     }

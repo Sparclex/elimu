@@ -38,7 +38,7 @@
                                         </th>
                                     </tr>
                                     <tr v-for="row in rows" class="border-b-2 border-40">
-                                        <th class="td-fit p-2 bg-30 text-80">{{row}}</th>
+                                        <th class="td-fit p-2 bg-30 text-80">{{rowLabel(row)}}</th>
                                         <td v-for="column in columns"
                                             class="p-2 border-40 text-center relative"
                                             :class="{
@@ -107,6 +107,8 @@
                 samples: [],
                 rows: 0,
                 columns: 0,
+                columnFormat: '',
+                rowFormat: '',
                 loadingStorage: true,
                 currentPlate: this.plate,
             }
@@ -137,6 +139,8 @@
                         this.samples = data.data;
                         this.columns = data.size.columns;
                         this.rows = data.size.rows;
+                        this.columnFormat = data.size.columnFormat;
+                        this.rowFormat = data.size.rowFormat;
                         this.loadingStorage = false;
                         this.updateRoute();
                     });
@@ -175,7 +179,22 @@
             },
 
             columnLabel(column) {
-                return String.fromCharCode(97 + column - 1).toUpperCase();
+                return this.label(column, this.columnFormat)
+            },
+
+            rowLabel(row) {
+                return this.label(row, this.rowFormat);
+            },
+
+            label(number, format) {
+                switch(format) {
+                    case 'abc':
+                        return String.fromCharCode(97 + number - 1);
+                    case 'ABC':
+                        return String.fromCharCode(97 + number - 1).toUpperCase();
+                }
+
+                return number;
             }
         },
         computed: {
