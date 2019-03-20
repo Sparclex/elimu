@@ -45,7 +45,7 @@ class PositionTest extends TestCase
     {
         $this->assertEquals(
             $label,
-            (new Position($position))
+            Position::fromPosition($position)
                 ->startWithZero($startWithZero)
                 ->withColumns(self::COLUMNS)
                 ->withRows(self::ROWS)
@@ -62,11 +62,66 @@ class PositionTest extends TestCase
     {
         $this->assertEquals(
             $position,
-            (new Position($label, true))
+            Position::fromLabel($label)
                 ->startWithZero($startWithZero)
                 ->withColumns(self::COLUMNS)
                 ->withRows(self::ROWS)
                 ->showPlates($showPlates)
+                ->toPosition()
+        );
+    }
+
+    public function formatProvider()
+    {
+        return [
+            [1, 'A01', 'ABC', '123'],
+            [1, 'A01', '123', 'ABC'],
+            [2, 'B01', 'ABC', '123'],
+            [2, 'A02', '123', 'ABC'],
+            [1, 'a01', 'abc', '123'],
+            [8, 'a08', '123', 'abc'],
+            [9, 'b01', '123', 'abc'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider formatProvider
+     * @param $label
+     * @param $position
+     * @param $columnFormat
+     * @param $rowFormat
+     */
+    public function it_determines_the_correct_label_format($position, $label, $columnFormat, $rowFormat)
+    {
+        $this->assertEquals(
+            $label,
+            Position::fromPosition($position)
+                ->withColumns(self::COLUMNS)
+                ->withColumnFormat($columnFormat)
+                ->withRows(self::ROWS)
+                ->withRowFormat($rowFormat)
+                ->toLabel()
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider formatProvider
+     * @param $label
+     * @param $position
+     * @param $columnFormat
+     * @param $rowFormat
+     */
+    public function it_determines_the_correct_position_from_label_format($position, $label, $columnFormat, $rowFormat)
+    {
+        $this->assertEquals(
+            $position,
+            Position::fromLabel($label)
+                ->withColumns(self::COLUMNS)
+                ->withColumnFormat($columnFormat)
+                ->withRows(self::ROWS)
+                ->withRowFormat($rowFormat)
                 ->toPosition()
         );
     }

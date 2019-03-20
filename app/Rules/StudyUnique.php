@@ -6,7 +6,7 @@ use Illuminate\Validation\Rules\Unique;
 
 class StudyUnique extends Unique
 {
-    public function __construct(string $table, string $column = 'NULL')
+    public function __construct($table, $column = 'NULL')
     {
         parent::__construct($table, $column);
 

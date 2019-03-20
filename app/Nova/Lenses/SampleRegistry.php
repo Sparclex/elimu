@@ -55,6 +55,8 @@ class SampleRegistry extends Lens
                     'sample_mutations.extra as extra',
                     'sample_types.columns',
                     'sample_types.rows',
+                    'sample_types.row_format',
+                    'sample_types.column_format',
                 ])
                     ->join('sample_mutations', 'samples.id', 'sample_mutations.sample_id')
                     ->join('sample_types', 'sample_mutations.sample_type_id', 'sample_types.id')
@@ -110,6 +112,9 @@ class SampleRegistry extends Lens
                     ->showPlates()
                     ->withRows($this->rows)
                     ->withColumns($this->columns)
+                    ->startWithZero()
+                    ->withRowFormat($this->row_format)
+                    ->withColumnFormat($this->column_format)
                     ->toLabel();
             })->sortable(),
 

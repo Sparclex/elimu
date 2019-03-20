@@ -5,10 +5,12 @@ namespace App\Nova;
 use App\Fields\StorageSizeField;
 use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 
 class SampleType extends Resource
@@ -33,6 +35,7 @@ class SampleType extends Resource
 
     public function fields(Request $request)
     {
+        $formats = array_combine(['ABC', 'abc', '123'], ['ABC', 'abc', '123']);
         return [
             ID::make()->onlyOnForms(),
             Text::make('Name')
@@ -42,8 +45,16 @@ class SampleType extends Resource
             Number::make('Columns')
                 ->rules('required_with:rows')
                 ->hideFromIndex(),
+            Select::make('Column Format')
+                ->options($formats)
+                ->rules('required', Rule::in($formats))
+                ->hideFromIndex(),
             Number::make('Rows')
                 ->rules('required_with:columns')
+                ->hideFromIndex(),
+            Select::make('Row Format')
+                ->options($formats)
+                ->rules('required', Rule::in($formats))
                 ->hideFromIndex(),
             HasMany::make('Storage', 'storages', Storage::class),
             BelongsToMany::make('Samples', 'samples', Sample::class)

@@ -31,10 +31,12 @@ class Storage extends Resource
                 ->onlyOnForms(),
             BelongsToField::make('Sample'),
             BelongsToField::make('Type', 'sampleType', SampleType::class),
-            Number::make('Position')->resolveUsing(function () {
+            Text::make('Position')->resolveUsing(function () {
                 return Position::fromPosition($this->position)
                     ->withColumns($this->sampleType->columns)
                     ->withRows($this->sampleType->rows)
+                    ->withColumnFormat($this->sampleType->column_format)
+                    ->withRowFormat($this->sampleType->row_format)
                     ->startWithZero()
                     ->showPlates()
                     ->toLabel();

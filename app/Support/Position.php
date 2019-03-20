@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class Position
@@ -40,15 +39,15 @@ class Position
 
     protected $label;
 
-    protected $rowLabel;
+    protected $rowFormat = '123';
 
     protected $rows;
 
-    protected $columnLabel;
+    protected $columnFormat = 'ABC';
 
     protected $columns;
 
-    protected $showPlates;
+    protected $showPlates = false;
 
     protected $startWithZero = false;
 
@@ -59,9 +58,6 @@ class Position
         } else {
             $this->position = $position;
         }
-
-        $this->columnLabel = 'ABC';
-        $this->rowLabel = '123';
     }
 
     public static function fromPosition($position)
@@ -102,6 +98,20 @@ class Position
         return $this;
     }
 
+    public function withRowFormat($format)
+    {
+        $this->rowFormat = $format;
+
+        return $this;
+    }
+
+    public function withColumnFormat($format)
+    {
+        $this->columnFormat = $format;
+
+        return $this;
+    }
+
     public function toLabel()
     {
         if (! $this->label) {
@@ -118,7 +128,11 @@ class Position
             $column = $column == 0 ? $this->columns : $column;
             $row = (($position - $column) / $this->columns) + 1;
 
-            $this->label = sprintf("%s%'.02d", strtoupper($this->numberToAlpha($column)), $row);
+            if ($this->rowFormat == '123') {
+                $this->label = sprintf("%s%s", $this->columnLabel($column), $this->rowLabel($row));
+            } else {
+                $this->label = sprintf("%s%s", $this->rowLabel($row), $this->columnLabel($column));
+            }
 
             if ($this->showPlates) {
                 if (! $this->startWithZero) {
@@ -132,6 +146,30 @@ class Position
         }
 
         return $this->label;
+    }
+
+    protected function columnLabel($column)
+    {
+        return $this->label($column, $this->columnFormat);
+    }
+
+    protected function rowLabel($row)
+    {
+        return $this->label($row, $this->rowFormat);
+    }
+
+    protected function label($number, $format)
+    {
+        switch ($format) {
+            case 'abc':
+                return $this->numberToAlpha($number);
+            case 'ABC':
+                return strtoupper($this->numberToAlpha($number));
+            case '123':
+                return sprintf("%'.02d", $number);
+            default:
+                throw new InvalidArgumentException(sprintf('%s is not a valid format', $format));
+        }
     }
 
     public function numberToAlpha($number)
@@ -169,6 +207,13 @@ class Position
             if (! $this->startWithZero) {
                 $column = $column + 1;
             }
+
+            if ($this->rowFormat != '123') {
+                $tmp = $row;
+                $row = $column;
+                $column = $tmp;
+            }
+
             $this->position = (((int) $row) - 1) * $this->columns + $column;
             $this->position += $plate * $this->columns * $this->rows;
         }
