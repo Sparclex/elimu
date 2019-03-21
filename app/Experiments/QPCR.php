@@ -448,9 +448,10 @@ class QPCR extends ExperimentType
                 'birthdate' => $rowData[0]->sample->birthdate,
                 'gender' => $rowData[0]->sample->gender,
             ];
-
-            foreach ($extra as $key => $value) {
-                $row[$key] = $value;
+            if ($extra) {
+                foreach ($extra as $key => $value) {
+                    $row[$key] = $value;
+                }
             }
 
             foreach ($rowData as $result) {
