@@ -4,7 +4,6 @@ namespace App\Nova\Lenses;
 
 use App\Models\SampleType;
 use App\Models\Storage;
-use App\Nova\Filters\SampleFilter;
 use App\Nova\Filters\TypeFilter;
 use App\Support\Position;
 use Illuminate\Http\Request;
@@ -12,6 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\LensRequest;
 use Laravel\Nova\Lenses\Lens;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class SampleRegistry extends Lens
 {
@@ -118,6 +118,13 @@ class SampleRegistry extends Lens
                     ->toLabel();
             })->sortable(),
 
+        ];
+    }
+
+    public function actions(Request $request)
+    {
+        return [
+            (new DownloadExcel)->withHeadings()->only('id', 'sample_id', 'type', 'position', 'collected_at')
         ];
     }
 
