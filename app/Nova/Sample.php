@@ -65,6 +65,8 @@ class Sample extends Resource
                     ];
                 }),
 
+            BelongsToMany::make('Experiments'),
+
             BelongsToMany::make('Shipments')
                 ->fields(function () {
                     return [Number::make('Aliquots', 'quantity')];
