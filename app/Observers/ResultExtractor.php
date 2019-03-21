@@ -9,7 +9,7 @@ class ResultExtractor
 {
     public function __construct(Experiment $experiment)
     {
-        if (!$experiment->result_file) {
+        if (!$experiment->result_file || $experiment->isClean('result_file')) {
             return;
         }
 
