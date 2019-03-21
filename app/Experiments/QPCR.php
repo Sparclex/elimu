@@ -366,7 +366,7 @@ class QPCR extends ExperimentType
                     $query->havingRaw('positives <> replicas')
                         ->having('positives', '>', 0)
                         ->orHaving('replicas', '<', $parameters['minvalues'])
-                        ->orHaving('stddev', '>', $parameters['cuttoffstdev']);
+                        ->orHavingRaw('stddev > ? and positives = replicas', [$parameters['cuttoffstdev']]);
                     break;
                 case 'positive':
                     $query->havingRaw('positives = replicas')
