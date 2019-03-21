@@ -13,7 +13,7 @@ class ResultExtractor
             return;
         }
 
-        $experimentType = config('lims.result_types.' . $experiment->assay->definitionFile->result_type);
+        $experimentType = config('elimu.result_types.' . $experiment->assay->definitionFile->result_type);
 
         $experimentType = new $experimentType(
             storage_path('app/' . $experiment->result_file),

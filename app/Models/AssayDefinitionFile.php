@@ -39,7 +39,7 @@ class AssayDefinitionFile extends Model implements AuditableContract
 
     public function resultTypeClass()
     {
-        return config('lims.result_types.' . $this->result_type);
+        return config('elimu.result_types.' . $this->result_type);
     }
 
     public function setPathAttribute($value)

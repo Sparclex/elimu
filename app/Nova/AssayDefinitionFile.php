@@ -55,7 +55,7 @@ class AssayDefinitionFile extends Resource
      */
     public function fields(Request $request)
     {
-        $resultTypes = array_keys(config('lims.result_types'));
+        $resultTypes = array_keys(config('elimu.result_types'));
 
         return [
             ID::make()->sortable(),

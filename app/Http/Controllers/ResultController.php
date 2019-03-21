@@ -17,7 +17,7 @@ class ResultController extends Controller
             && $guard->user()->study_id == $assay->study_id,
             403
         );
-        $experimentType = config('lims.result_types.' . $assay->definitionFile->result_type);
+        $experimentType = config('elimu.result_types.' . $assay->definitionFile->result_type);
 
         $experimentType = new $experimentType(null, $assay->definitionFile->parameters->keyBy('target'));
 
@@ -56,7 +56,7 @@ class ResultController extends Controller
             403
         );
 
-        $experimentType = config('lims.result_types.' . $assay->definitionFile->result_type);
+        $experimentType = config('elimu.result_types.' . $assay->definitionFile->result_type);
 
         $experimentType = new $experimentType(null, $assay->definitionFile->parameters->keyBy('target'));
 
