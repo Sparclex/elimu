@@ -20,7 +20,7 @@ class Audit extends Resource
      *
      * @var string
      */
-    public static $model = \OwenIt\Auditing\Models\Audit::class;
+    public static $model = \App\Models\Audit::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
