@@ -59,6 +59,9 @@ class Experiment extends Resource
 
             CustomBelongsToMany::make('Samples'),
 
+            Text::make('Original Filename')
+                ->onlyOnDetail(),
+
             File::make('Result File')
                 ->hideWhenCreating()
                 ->disk('local')
