@@ -2,14 +2,22 @@
 
 namespace App\Support;
 
+use InvalidArgumentException;
+
 class QPCRResultSpecifier
 {
     private $targetParameters;
+
     private $result;
+
     private $styles;
 
     public function __construct($targetParameters, $result)
     {
+        throw_unless(
+            $targetParameters != null,
+            new InvalidArgumentException(sprintf('No Parameters for target %s', $result->target))
+        );
 
         $this->targetParameters = $targetParameters;
         $this->result = $result;
@@ -26,13 +34,19 @@ class QPCRResultSpecifier
     public function quantitative()
     {
         if ($this->qualitative() != 'Positive'
-            || !isset($this->targetParameters['slope'])
-            || !isset($this->targetParameters['intercept'])) {
+            || ! isset($this->targetParameters['slope'])
+            || ! isset($this->targetParameters['intercept'])) {
             return null;
         }
 
-        return round(pow(10, $this->targetParameters['slope'] * $this->result->avg_cq
-            + $this->targetParameters['intercept']), 2);
+        return round(
+            pow(
+                10,
+                $this->targetParameters['slope'] * $this->result->avg_cq
+                + $this->targetParameters['intercept']
+            ),
+            2
+        );
     }
 
     public function qualitative()

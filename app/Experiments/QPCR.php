@@ -456,7 +456,7 @@ class QPCR extends ExperimentType
 
             foreach ($rowData as $result) {
                 $specifier = new QPCRResultSpecifier(
-                    $assay->definitionFile->parameters->firstWhere('target', $result->target),
+                    $assay->definitionFile->parameters->firstWhere('target', strtolower($result->target)),
                     $result
                 );
                 $row['replicas_' . $result->target] = $result->replicas;
