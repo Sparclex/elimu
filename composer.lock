@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b1aefa3e0bcab725111f4c814208d63",
+    "content-hash": "c21d3cc22b6743bdfef817b4a5d29787",
     "packages": [
         {
             "name": "alexbowers/nova-prepopulate-searchable",
@@ -55,6 +55,54 @@
                 "nova"
             ],
             "time": "2018-09-06T20:24:04+00:00"
+        },
+        {
+            "name": "awesome-nova/dependent-filter",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awesome-nova/dependent-filter.git",
+                "reference": "848161d8a7451a7b12eb2631edda725a432b203b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awesome-nova/dependent-filter/zipball/848161d8a7451a7b12eb2631edda725a432b203b",
+                "reference": "848161d8a7451a7b12eb2631edda725a432b203b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AwesomeNova\\DependentFilterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AwesomeNova\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmytro Kulyk",
+                    "email": "lnkvisitor.ts@gmail.com"
+                }
+            ],
+            "description": "Dependent filters for Laravel Nova",
+            "keywords": [
+                "filter",
+                "laravel",
+                "nova"
+            ],
+            "time": "2019-02-17T16:00:15+00:00"
         },
         {
             "name": "barryvdh/laravel-dompdf",

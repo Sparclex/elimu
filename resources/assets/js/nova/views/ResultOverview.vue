@@ -1,28 +1,36 @@
 <template>
-    <loading-view :loading="initialLoading">
-        <div class="w-full max-w-xl">
-            <heading class="flex mb-3">Results</heading>
-            <p class="text-90 leading-tight mb-8">Choose an assay to view or export all related results:</p>
-        </div>
-        <div class="flex -mx-4 items-center mb-6">
-            <div class="w-1/3 px-4">
-                <multiselect :value="assay" :options="assays" keyed-by="value" label="display"
-                             @input="selectAssay"></multiselect>
-            </div>
-            <div class="w-1/3" v-if="response">
-                <button class="btn btn-default btn-primary" @click.prevent="download">Download</button>
-            </div>
+    <loading-view :loading="initialLoading" :dusk="resourceName + '-index-component'">
+        <custom-index-header v-if="!viaResource" class="mb-3" :resource-name="resourceName"/>
+
+        <div v-if="shouldShowCards">
+            <cards
+                    v-if="smallCards.length > 0"
+                    :cards="smallCards"
+                    class="mb-3"
+                    :resource-name="resourceName"
+            />
+
+            <cards
+                    v-if="largeCards.length > 0"
+                    :cards="largeCards"
+                    size="large"
+                    :resource-name="resourceName"
+            />
         </div>
 
-        <div class="flex" v-if="assay">
+        <heading v-if="resourceResponse" class="mb-3">{{ headingTitle }}</heading>
+
+        <div class="flex">
             <!-- Search -->
             <div
+                    v-if="resourceInformation.searchable && !viaHasOne"
                     class="relative h-9 mb-6 flex-no-shrink"
             >
                 <icon type="search" class="absolute search-icon-center ml-3 text-70"/>
 
                 <input
                         data-testid="search-input"
+                        dusk="search"
                         class="appearance-none form-control form-input w-search pl-search"
                         :placeholder="__('Search')"
                         type="search"
@@ -31,96 +39,157 @@
                         @search="performSearch"
                 />
             </div>
+
+            <div class="w-full flex items-center mb-6">
+                <custom-index-toolbar v-if="!viaResource" :resource-name="resourceName"/>
+
+                <!-- Create / Attach Button -->
+                <create-resource-button
+                        :singular-name="singularName"
+                        :resource-name="resourceName"
+                        :via-resource="viaResource"
+                        :via-resource-id="viaResourceId"
+                        :via-relationship="viaRelationship"
+                        :relationship-type="relationshipType"
+                        :authorized-to-create="authorizedToCreate && !resourceIsFull"
+                        :authorized-to-relate="authorizedToRelate"
+                        class="flex-no-shrink ml-auto"
+                />
+            </div>
         </div>
 
-        <loading-card :loading="loading" v-if="assay">
+        <loading-card :loading="loading">
             <div class="py-3 flex items-center border-b border-50">
-                <div class="ml-auto px-3">
-                    <dropdown
-                            class-whitelist="flatpickr-calendar"
-                            v-if="assay"
-                    >
+                <div class="flex items-center">
+                    <div class="px-3" v-if="shouldShowCheckBoxes">
+                        <!-- Select All -->
+                        <dropdown dusk="select-all-dropdown">
+                            <dropdown-trigger slot-scope="{ toggle }" :handle-click="toggle">
+                                <fake-checkbox :checked="selectAllChecked"/>
+                            </dropdown-trigger>
+
+                            <dropdown-menu slot="menu" direction="ltr" width="250">
+                                <div class="p-4">
+                                    <ul class="list-reset">
+                                        <li class="flex items-center mb-4">
+                                            <checkbox-with-label
+                                                    :checked="selectAllChecked"
+                                                    @change="toggleSelectAll"
+                                            >
+                                                {{ __('Select All') }}
+                                            </checkbox-with-label>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <checkbox-with-label
+                                                    dusk="select-all-matching-button"
+                                                    :checked="selectAllMatchingChecked"
+                                                    @change="toggleSelectAllMatching"
+                                            >
+                                                <template>
+                                                    <span class="mr-1">
+                                                        {{ __('Select All Matching') }} ({{
+                                                            allMatchingResourceCount
+                                                        }})
+                                                    </span>
+                                                </template>
+                                            </checkbox-with-label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </dropdown-menu>
+                        </dropdown>
+                    </div>
+                </div>
+
+                <div class="flex items-center ml-auto px-3">
+                    <!-- Action Selector -->
+                    <action-selector
+                            v-if="selectedResources.length > 0"
+                            :resource-name="resourceName"
+                            :actions="actions"
+                            :pivot-actions="pivotActions"
+                            :pivot-name="pivotName"
+                            :query-string="{
+                            currentSearch,
+                            encodedFilters,
+                            currentTrashed,
+                            viaResource,
+                            viaResourceId,
+                            viaRelationship,
+                        }"
+                            :selected-resources="selectedResourcesForActionSelector"
+                            @actionExecuted="getResources"
+                    />
+
+                    <!-- Lenses -->
+                    <dropdown class="bg-30 hover:bg-40 mr-3 rounded" v-if="lenses.length > 0">
                         <dropdown-trigger
                                 slot-scope="{ toggle }"
                                 :handle-click="toggle"
-                                class="bg-30 px-3 border-2 border-30 rounded"
-                                :class="{ 'bg-primary border-primary': filtersAreApplied }"
+                                class="px-3"
                         >
-                            <icon type="filter" :class="filtersAreApplied ? 'text-white' : 'text-80'"/>
-                            <span v-if="filtersAreApplied" class="ml-2 font-bold text-white text-80">
-                                {{ activeFilterCount }}
-                            </span>
+                            <h3
+                                    slot="default"
+                                    class="flex items-center font-normal text-base text-90 h-9"
+                            >
+                                {{ __('Lens') }}
+                            </h3>
                         </dropdown-trigger>
 
-                        <dropdown-menu slot="menu" width="290" direction="rtl" :dark="true">
-                            <scroll-wrap :height="350">
-                                <div v-if="filtersAreApplied" class="bg-30 border-b border-60">
-                                    <button
-                                            @click="clearFilters"
-                                            class="py-2 w-full block text-xs uppercase tracking-wide text-center text-80 dim font-bold focus:outline-none"
-                                    >
-                                        {{ __('Reset Filters') }}
-                                    </button>
-                                </div>
-                                <div>
-                                    <h3 slot="default" class="text-sm uppercase tracking-wide text-80 bg-30 p-3">
-                                        {{ __('Per Page') }}
-                                    </h3>
-
-                                    <div class="p-2">
-                                        <select
-                                                slot="select"
-                                                dusk="per-page-select"
-                                                class="block w-full form-control-sm form-select"
-                                                :value="perPage"
-                                                @change="updatePerPageChanged"
-                                        >
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Custom Filters -->
-
-                                <div>
-                                    <h3 class="text-sm uppercase tracking-wide text-80 bg-30 p-3">Target</h3>
-
-                                    <div class="p-2">
-                                        <select class="block w-full form-control-sm form-select"
-                                                @input="changeTarget"
-                                                :value="selectedTarget"
-                                        >
-                                            <option :value="null" selected>&mdash;</option>
-
-                                            <option v-for="target in targets">
-                                                {{ target }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 class="text-sm uppercase tracking-wide text-80 bg-30 p-3">Status</h3>
-
-                                    <div class="p-2">
-                                        <select class="block w-full form-control-sm form-select"
-                                                @input="changeStatus"
-                                                :value="selectedStatus">
-                                            <option :value="null" selected>&mdash;</option>
-
-                                            <option v-for="status in stati" :value="status.value">
-                                                {{ status.label }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </scroll-wrap>
+                        <dropdown-menu slot="menu" width="240" direction="rtl">
+                            <lens-selector :resource-name="resourceName" :lenses="lenses"/>
                         </dropdown-menu>
                     </dropdown>
+
+                    <!-- Filters -->
+                    <filter-menu
+                            :resource-name="resourceName"
+                            :soft-deletes="softDeletes"
+                            :via-resource="viaResource"
+                            :via-has-one="viaHasOne"
+                            :trashed="trashed"
+                            :per-page="perPage"
+                            @clear-selected-filters="clearSelectedFilters"
+                            @filter-changed="filterChanged"
+                            @trashed-changed="trashedChanged"
+                            @per-page-changed="updatePerPageChanged"
+                    />
+
+                    <delete-menu
+                            v-if="shouldShowDeleteMenu"
+                            dusk="delete-menu"
+                            :soft-deletes="softDeletes"
+                            :resources="resources"
+                            :selected-resources="selectedResources"
+                            :via-many-to-many="viaManyToMany"
+                            :all-matching-resource-count="allMatchingResourceCount"
+                            :all-matching-selected="selectAllMatchingChecked"
+                            :authorized-to-delete-selected-resources="
+                            authorizedToDeleteSelectedResources
+                        "
+                            :authorized-to-force-delete-selected-resources="
+                            authorizedToForceDeleteSelectedResources
+                        "
+                            :authorized-to-delete-any-resources="authorizedToDeleteAnyResources"
+                            :authorized-to-force-delete-any-resources="
+                            authorizedToForceDeleteAnyResources
+                        "
+                            :authorized-to-restore-selected-resources="
+                            authorizedToRestoreSelectedResources
+                        "
+                            :authorized-to-restore-any-resources="authorizedToRestoreAnyResources"
+                            @deleteSelected="deleteSelectedResources"
+                            @deleteAllMatching="deleteAllMatchingResources"
+                            @forceDeleteSelected="forceDeleteSelectedResources"
+                            @forceDeleteAllMatching="forceDeleteAllMatchingResources"
+                            @restoreSelected="restoreSelectedResources"
+                            @restoreAllMatching="restoreAllMatchingResources"
+                            @close="deleteModalOpen = false"
+                    />
                 </div>
             </div>
-            <div v-if="results.length === 0" class="flex justify-center items-center px-6 py-8">
+
+            <div v-if="!resources.length" class="flex justify-center items-center px-6 py-8">
                 <div class="text-center">
                     <svg
                             class="mb-3"
@@ -147,221 +216,385 @@
                     <h3 class="text-base text-80 font-normal mb-6">
                         {{
                         __('No :resource matched the given criteria.', {
-                        resource: 'Result',
+                        resource: singularName.toLowerCase(),
                         })
                         }}
                     </h3>
+
+                    <create-resource-button
+                            classes="btn btn-sm btn-outline inline-flex items-center"
+                            :singular-name="singularName"
+                            :resource-name="resourceName"
+                            :via-resource="viaResource"
+                            :via-resource-id="viaResourceId"
+                            :via-relationship="viaRelationship"
+                            :relationship-type="relationshipType"
+                            :authorized-to-create="authorizedToCreate && !resourceIsFull"
+                            :authorized-to-relate="authorizedToRelate"
+                    >
+                    </create-resource-button>
                 </div>
             </div>
-            <div class="overflow-hidden overflow-x-auto relative" v-else>
+
+            <div class="overflow-hidden overflow-x-auto relative">
                 <!-- Resource Table -->
                 <resource-table
-                        :authorized-to-relate="false"
-                        resource-name="results"
-                        :resources="results"
-                        singular-name="Result"
-                        :selected-resources="[]"
-                        :selected-resource-ids="[]"
-                        :actions-are-available="false"
-                        :should-show-checkboxes="false"
+                        :authorized-to-relate="authorizedToRelate"
+                        :resource-name="resourceName"
+                        :resources="resources"
+                        :singular-name="singularName"
+                        :selected-resources="selectedResources"
+                        :selected-resource-ids="selectedResourceIds"
+                        :actions-are-available="allActions.length > 0"
+                        :should-show-checkboxes="shouldShowCheckBoxes"
+                        :via-resource="viaResource"
+                        :via-resource-id="viaResourceId"
+                        :via-relationship="viaRelationship"
+                        :relationship-type="relationshipType"
+                        :update-selection-status="updateSelectionStatus"
+                        @order="orderByField"
+                        @delete="deleteResources"
+                        @restore="restoreResources"
                         ref="resourceTable"
                 />
             </div>
 
             <!-- Pagination -->
-            <pagination-simple
-                    v-if="response"
+            <component
+                    :is="paginationComponent"
+                    v-if="resourceResponse && resources.length > 0"
                     :next="hasNextPage"
                     :previous="hasPreviousPage"
                     @page="selectPage"
+                    :pages="totalPages"
                     :page="currentPage"
-            />
+            >
+                <span
+                        v-if="resourceCountLabel"
+                        class="text-sm text-80 px-4"
+                        :class="{ 'ml-auto': paginationComponent == 'pagination-links' }"
+                >
+                    {{ resourceCountLabel }}
+                </span>
+            </component>
         </loading-card>
     </loading-view>
 </template>
 
 <script>
-    import Multiselect from 'vue-multiselect';
-    import {Errors, InteractsWithQueryString, Paginatable, PerPageable,} from 'laravel-nova'
+    import {
+        Capitalize,
+        Deletable,
+        Filterable,
+        HasCards,
+        InteractsWithQueryString,
+        InteractsWithResourceInformation,
+        Minimum,
+        Paginatable,
+        PerPageable
+    } from 'laravel-nova'
 
     export default {
-        components: {Multiselect},
-        mixins: [InteractsWithQueryString, PerPageable, Paginatable],
-        data() {
-            return {
-                page: 1,
-                assay: null,
-                assays: [],
-                results: [],
-                response: null,
-                filters: [],
-                targets: [],
-                perPage: 25,
-                search: '',
-                selectedStatus: null,
-                selectedTarget: null,
-                initialLoading: true,
-                loading: false,
-                stati: [
-                    {
-                        label: 'Errors',
-                        value: 'errors'
-                    },
-                    {
-                        label: 'Valid',
-                        value: 'valid'
-                    },
-                    {
-                        label: 'Positive',
-                        value: 'positive'
-                    },
-                    {
-                        label: 'Negative',
-                        value: 'negative'
-                    },
-                    {
-                        label: 'Repetition needed',
-                        value: 'repetition'
-                    },
-                    {
-                        label: 'Standard deviation too high',
-                        value: 'stddev'
-                    },
-                    {
-                        label: 'Not enough values',
-                        value: 'replicates'
-                    }
-                ]
-            }
+        mixins: [
+            Deletable,
+            Filterable,
+            HasCards,
+            Paginatable,
+            PerPageable,
+            InteractsWithResourceInformation,
+            InteractsWithQueryString,
+        ],
+
+        props: {
+            field: {
+                type: Object,
+            },
+            resourceName: {
+                type: String,
+                required: true,
+            },
+            viaResource: {
+                default: '',
+            },
+            viaResourceId: {
+                default: '',
+            },
+            viaRelationship: {
+                default: '',
+            },
+            relationshipType: {
+                type: String,
+                default: '',
+            },
         },
+
+        data: () => ({
+            actionEventsRefresher: null,
+            initialLoading: true,
+            loading: true,
+
+            resourceResponse: null,
+            resources: [],
+            softDeletes: false,
+            selectedResources: [],
+            selectAllMatchingResources: false,
+            allMatchingResourceCount: 0,
+
+            deleteModalOpen: false,
+
+            actions: [],
+            pivotActions: null,
+
+            search: '',
+            lenses: [],
+
+            authorizedToRelate: false,
+
+            orderBy: '',
+            orderByDirection: '',
+            trashed: '',
+        }),
+
+        /**
+         * Mount the component and retrieve its initial data.
+         */
         async created() {
-            let {data} = await Nova.request()
-                .get('/nova-api/results/associatable/assay?first=false&search=&withTrashed=false');
-            this.assays = data.resources;
+            if (Nova.missingResource(this.resourceName)) return this.$router.push({name: '404'})
 
-            this.initializeSearchFromQueryString();
-            this.initializeAssayFromQueryString();
-            this.initializePerPageFromQueryString();
-            this.initializeCurrentPageFromQueryString();
-            this.initializeStatusFromQueryString();
-            this.initializeTargetFromQueryString();
-
-            this.initialLoading = false;
-
-
-            if (this.assay) {
-                this.loading = true;
-                await [this.fetchResults(), this.fetchTargets()];
-                this.loading = false;
+            // Bind the keydown even listener when the router is visited if this
+            // component is not a relation on a Detail page
+            if (!this.viaResource && !this.viaResourceId) {
+                document.addEventListener('keydown', this.handleKeydown)
             }
+
+            this.initializeSearchFromQueryString()
+            this.initializePerPageFromQueryString()
+            this.initializeTrashedFromQueryString()
+            this.initializeOrderingFromQueryString()
+
+            await this.initializeFilters()
+            await this.getResources()
+            await this.getAuthorizationToRelate()
+
+            this.getLenses()
+            this.getActions()
+
+            this.initialLoading = false
 
             this.$watch(
                 () => {
                     return (
+                        this.resourceName +
+                        this.encodedFilters +
                         this.currentSearch +
                         this.currentPage +
                         this.currentPerPage +
-                        this.currentStatus +
-                        this.currentAssayId +
-                        this.currentTarget
+                        this.currentOrderBy +
+                        this.currentOrderByDirection +
+                        this.currentTrashed
                     )
                 },
                 () => {
-                    this.initializeAssayFromQueryString();
-                    this.initializeSearchFromQueryString();
-                    this.initializePerPageFromQueryString();
-                    this.initializeCurrentPageFromQueryString();
-                    this.initializeStatusFromQueryString();
-                    this.initializeTargetFromQueryString();
-                    if (this.assay) {
-                        this.fetchTargets()
-                        this.fetchResults()
-                    }
+                    this.getResources()
+
+                    this.initializeSearchFromQueryString()
+                    this.initializePerPageFromQueryString()
+                    this.initializeTrashedFromQueryString()
+                    this.initializeOrderingFromQueryString()
                 }
             )
 
+            // Refresh the action events
+            if (this.resourceName === 'action-events') {
+                Nova.$on('refresh-action-events', () => {
+                    this.getResources()
+                })
+
+                this.actionEventsRefresher = setInterval(() => {
+                    this.getResources()
+                }, 15 * 1000)
+            }
         },
+
+        beforeRouteUpdate(to, from, next) {
+            next()
+            this.initializeState(false)
+        },
+
+        /**
+         * Unbind the keydown even listener when the component is destroyed
+         */
+        destroyed() {
+            if (this.actionEventsRefresher) {
+                clearInterval(this.actionEventsRefresher)
+            }
+
+            document.removeEventListener('keydown', this.handleKeydown)
+        },
+
         methods: {
-            initializeStatusFromQueryString() {
-                this.selectedStatus = this.currentStatus;
-            },
-
-            initializeTargetFromQueryString() {
-                this.selectedTarget = this.currentTarget;
-            },
-
-            initializeCurrentPageFromQueryString() {
-                this.page = this.currentPage;
-            },
-            initializeAssayFromQueryString() {
-                this.assay = this.currentAssay;
-            },
-            initializeSearchFromQueryString() {
-                this.search = this.currentSearch;
-            },
-
-            selectAssay(assay) {
-                if (!assay) {
-                    this.$router.push({query: {}});
-                } else {
-                    this.updateQueryString({
-                        'assay': assay.value
-                    });
+            /**
+             * Handle the keydown event
+             */
+            handleKeydown(e) {
+                // `c`
+                if (
+                    !e.ctrlKey &&
+                    !e.altKey &&
+                    !e.metaKey &&
+                    !e.shiftKey &&
+                    e.keyCode == 67 &&
+                    e.target.tagName != 'INPUT' &&
+                    e.target.tagName != 'TEXTAREA'
+                ) {
+                    this.$router.push({name: 'create', params: {resourceName: this.resourceName}})
                 }
             },
-            async fetchResults() {
-                let {data: response} = await Nova.request().get(`/nova-vendor/lims/results/${this.assay.value}`, {
-                    params: {
-                        page: this.page,
-                        perPage: this.perPage,
-                        status: this.selectedStatus,
-                        target: this.selectedTarget,
-                        search: this.search,
-                    }
-                });
-                this.response = response;
-                this.results = response.resources;
+
+            /**
+             * Select all of the available resources
+             */
+            selectAllResources() {
+                this.selectedResources = this.resources.slice(0)
             },
 
-            async fetchTargets() {
-                let {data: response} = await Nova.request().get(`/nova-vendor/lims/results/${this.assay.value}/targets`);
-                this.targets = response;
+            /**
+             * Toggle the selection of all resources
+             */
+            toggleSelectAll(event) {
+                if (this.selectAllChecked) return this.clearResourceSelections()
+                this.selectAllResources()
             },
 
-            changeTarget(event) {
-                this.updateQueryString({
-                    [this.pageParameter]: 1,
-                    'target': event.target.value
-                });
+            /**
+             * Toggle the selection of all matching resources in the database
+             */
+            toggleSelectAllMatching() {
+                if (!this.selectAllMatchingResources) {
+                    this.selectAllResources()
+                    this.selectAllMatchingResources = true
+
+                    return
+                }
+
+                this.selectAllMatchingResources = false
             },
 
-            changeStatus(event) {
-                this.updateQueryString({
-                    [this.pageParameter]: 1,
-                    'status': event.target.value
-                });
+            /*
+             * Update the resource selection status
+             */
+            updateSelectionStatus(resource) {
+                if (!_(this.selectedResources).includes(resource))
+                    return this.selectedResources.push(resource)
+                const index = this.selectedResources.indexOf(resource)
+                if (index > -1) return this.selectedResources.splice(index, 1)
             },
 
-            clearFilters() {
-                this.updateQueryString({
-                    [this.pageParameter]: 1,
-                    'status': null,
-                    'target': null
-                });
+            /**
+             * Get the resources based on the current page, search, filters, etc.
+             */
+            getResources() {
+                this.$nextTick(() => {
+                    this.clearResourceSelections()
+
+                    return Minimum(
+                        Nova.request().get('/nova-api/' + this.resourceName, {
+                            params: this.resourceRequestQueryString,
+                        })
+                    ).then(({data}) => {
+                        this.resources = []
+
+                        this.resourceResponse = data
+                        this.resources = data.resources
+                        this.softDeletes = data.softDeletes
+
+                        this.loading = false
+
+                        this.getAllMatchingResourceCount()
+                    })
+                })
             },
 
-            async download() {
-                let {data: response} = await Nova.request()
-                    .get(`/nova-vendor/lims/results/${this.assay.value}/request-for-download`);
+            /**
+             * Get the relatable authorization status for the resource.
+             */
+            getAuthorizationToRelate() {
+                if (
+                    !this.authorizedToCreate &&
+                    (this.relationshipType != 'belongsToMany' && this.relationshipType != 'morphToMany')
+                ) {
+                    return
+                }
 
-                let link = document.createElement('a');
-                link.href = response.download;
-                link.download = response.name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                if (!this.viaResource) {
+                    return (this.authorizedToRelate = true)
+                }
+
+                return Nova.request()
+                    .get(
+                        '/nova-api/' +
+                        this.resourceName +
+                        '/relate-authorization' +
+                        '?viaResource=' +
+                        this.viaResource +
+                        '&viaResourceId=' +
+                        this.viaResourceId +
+                        '&viaRelationship=' +
+                        this.viaRelationship +
+                        '&relationshipType=' +
+                        this.relationshipType
+                    )
+                    .then(response => {
+                        this.authorizedToRelate = response.data.authorized
+                    })
             },
 
+            /**
+             * Get the lenses available for the current resource.
+             */
+            getLenses() {
+                this.lenses = []
+
+                if (this.viaResource) {
+                    return
+                }
+
+                return Nova.request()
+                    .get('/nova-api/' + this.resourceName + '/lenses')
+                    .then(response => {
+                        this.lenses = response.data
+                    })
+            },
+
+            /**
+             * Get the actions available for the current resource.
+             */
+            getActions() {
+                this.actions = []
+                this.pivotActions = null
+                return Nova.request()
+                    .get(
+                        '/nova-api/' +
+                        this.resourceName +
+                        '/actions' +
+                        '?viaResource=' +
+                        this.viaResource +
+                        '&viaResourceId=' +
+                        this.viaResourceId +
+                        '&viaRelationship=' +
+                        this.viaRelationship
+                    )
+                    .then(response => {
+                        this.actions = _.filter(response.data.actions, action => {
+                            return !action.onlyOnDetail
+                        })
+                        this.pivotActions = response.data.pivotActions
+                    })
+            },
+
+            /**
+             * Execute a search against the resource.
+             */
             performSearch(event) {
                 this.debouncer(() => {
                     // Only search if we're not tabbing into the field
@@ -374,41 +607,226 @@
                 })
             },
 
-            updatePerPageChanged(event) {
-                this.perPage = event.target.value;
+            debouncer: _.debounce(callback => callback(), 500),
 
-                this.perPageChanged()
+            /**
+             * Clear the selected resouces and the "select all" states.
+             */
+            clearResourceSelections() {
+                this.selectAllMatchingResources = false
+                this.selectedResources = []
             },
 
-            debouncer: _.debounce(callback => callback(), 500),
+            /**
+             * Get the count of all of the matching resources.
+             */
+            getAllMatchingResourceCount() {
+                Nova.request()
+                    .get('/nova-api/' + this.resourceName + '/count', {
+                        params: this.resourceRequestQueryString,
+                    })
+                    .then(response => {
+                        this.allMatchingResourceCount = response.data.count
+                    })
+            },
+
+            /**
+             * Sort the resources by the given field.
+             */
+            orderByField(field) {
+                var direction = this.currentOrderByDirection == 'asc' ? 'desc' : 'asc'
+                if (this.currentOrderBy != field.attribute) {
+                    direction = 'asc'
+                }
+                this.updateQueryString({
+                    [this.orderByParameter]: field.attribute,
+                    [this.orderByDirectionParameter]: direction,
+                })
+            },
+
+            /**
+             * Sync the current search value from the query string.
+             */
+            initializeSearchFromQueryString() {
+                this.search = this.currentSearch
+            },
+
+            /**
+             * Sync the current order by values from the query string.
+             */
+            initializeOrderingFromQueryString() {
+                this.orderBy = this.currentOrderBy
+                this.orderByDirection = this.currentOrderByDirection
+            },
+
+            /**
+             * Sync the trashed state values from the query string.
+             */
+            initializeTrashedFromQueryString() {
+                this.trashed = this.currentTrashed
+            },
+
+            /**
+             * Update the trashed constraint for the resource listing.
+             */
+            trashedChanged(trashedStatus) {
+                this.trashed = trashedStatus
+                this.updateQueryString({[this.trashedParameter]: this.trashed})
+            },
+
+            /**
+             * Update the per page parameter in the query string
+             */
+            updatePerPageChanged(perPage) {
+                this.perPage = perPage
+                this.perPageChanged()
+            },
 
             /**
              * Select the next page.
              */
             selectPage(page) {
-                this.updateQueryString({ [this.pageParameter]: page })
+                this.updateQueryString({[this.pageParameter]: page})
             },
         },
+
         computed: {
-
-            hasNextPage() {
-                return Boolean(this.response && this.response.next_page_url)
+            /**
+             * Determine if the resource has any filters
+             */
+            hasFilters() {
+                return this.$store.getters[`${this.resourceName}/hasFilters`]
             },
 
-            hasPreviousPage() {
-                return Boolean(this.response && this.response.prev_page_url)
+            /**
+             * Determine if the resource should show any cards
+             */
+            shouldShowCards() {
+                // Don't show cards if this resource is beings shown via a relations
+                return this.cards.length > 0 && this.resourceName == this.$route.params.resourceName
             },
 
-            pageParameter() {
-                return 'analyzed-results_page'
+            /**
+             * Get the endpoint for this resource's metrics.
+             */
+            cardsEndpoint() {
+                return `/nova-api/${this.resourceName}/cards`
             },
 
+            /**
+             * Get the name of the search query string variable.
+             */
             searchParameter() {
-                return 'analyzed-results_search'
+                return this.resourceName + '_search'
             },
 
+            /**
+             * Get the name of the order by query string variable.
+             */
+            orderByParameter() {
+                return this.resourceName + '_order'
+            },
+
+            /**
+             * Get the name of the order by direction query string variable.
+             */
+            orderByDirectionParameter() {
+                return this.resourceName + '_direction'
+            },
+
+            /**
+             * Get the name of the trashed constraint query string variable.
+             */
+            trashedParameter() {
+                return this.resourceName + '_trashed'
+            },
+
+            /**
+             * Get the name of the per page query string variable.
+             */
             perPageParameter() {
-                return 'analyzed-results_per-page'
+                return this.resourceName + '_per_page'
+            },
+
+            /**
+             * Get the name of the page query string variable.
+             */
+            pageParameter() {
+                return this.resourceName + '_page'
+            },
+
+            /**
+             * Build the resource request query string.
+             */
+            resourceRequestQueryString() {
+                return {
+                    search: this.currentSearch,
+                    filters: this.encodedFilters,
+                    orderBy: this.currentOrderBy,
+                    orderByDirection: this.currentOrderByDirection,
+                    perPage: this.currentPerPage,
+                    trashed: this.currentTrashed,
+                    page: this.currentPage,
+                    viaResource: this.viaResource,
+                    viaResourceId: this.viaResourceId,
+                    viaRelationship: this.viaRelationship,
+                    viaResourceRelationship: this.viaResourceRelationship,
+                    relationshipType: this.relationshipType,
+                }
+            },
+
+            /**
+             * Determine if all resources are selected.
+             */
+            selectAllChecked() {
+                return this.selectedResources.length == this.resources.length
+            },
+
+            /**
+             * Determine if all matching resources are selected.
+             */
+            selectAllMatchingChecked() {
+                return (
+                    this.selectedResources.length == this.resources.length &&
+                    this.selectAllMatchingResources
+                )
+            },
+
+            /**
+             * Get the IDs for the selected resources.
+             */
+            selectedResourceIds() {
+                return _.map(this.selectedResources, resource => resource.id.value)
+            },
+
+            /**
+             * Get all of the actions available to the resource.
+             */
+            allActions() {
+                return this.hasPivotActions
+                    ? this.actions.concat(this.pivotActions.actions)
+                    : this.actions
+            },
+
+            /**
+             * Determine if the resource has any pivot actions available.
+             */
+            hasPivotActions() {
+                return this.pivotActions && this.pivotActions.actions.length > 0
+            },
+
+            /**
+             * Determine if the resource has any actions available.
+             */
+            actionsAreAvailable() {
+                return this.allActions.length > 0
+            },
+
+            /**
+             * Get the name of the pivot model for the resource.
+             */
+            pivotName() {
+                return this.pivotActions ? this.pivotActions.name : ''
             },
 
             /**
@@ -418,36 +836,225 @@
                 return this.$route.query[this.searchParameter] || ''
             },
 
-            currentAssayId() {
-                return this.$route.query['assay'] || null;
+            /**
+             * Get the current order by value from the query string.
+             */
+            currentOrderBy() {
+                return this.$route.query[this.orderByParameter] || ''
             },
 
-            currentAssay() {
-                for (let assay of this.assays) {
-                    if (assay.value == this.currentAssayId) {
-                        return assay;
-                    }
+            /**
+             * Get the current order by direction from the query string.
+             */
+            currentOrderByDirection() {
+                return this.$route.query[this.orderByDirectionParameter] || 'desc'
+            },
+
+            /**
+             * Get the current trashed constraint value from the query string.
+             */
+            currentTrashed() {
+                return this.$route.query[this.trashedParameter] || ''
+            },
+
+            /**
+             * Determine if the current resource listing is via a many-to-many relationship.
+             */
+            viaManyToMany() {
+                return (
+                    this.relationshipType == 'belongsToMany' || this.relationshipType == 'morphToMany'
+                )
+            },
+
+            /**
+             * Determine if the resource / relationship is "full".
+             */
+            resourceIsFull() {
+                return this.viaHasOne && this.resources.length > 0
+            },
+
+            /**
+             * Determine if the current resource listing is via a has-one relationship.
+             */
+            viaHasOne() {
+                return this.relationshipType == 'hasOne' || this.relationshipType == 'morphOne'
+            },
+
+            /**
+             * Get the singular name for the resource
+             */
+            singularName() {
+                if (this.isRelation && this.field) {
+                    return Capitalize(this.field.singularLabel)
                 }
 
-                return null;
+                return Capitalize(this.resourceInformation.singularLabel)
             },
 
-            currentTarget() {
-                return this.$route.query['target'] || ''
+            /**
+             * Get the selected resources for the action selector.
+             */
+            selectedResourcesForActionSelector() {
+                return this.selectAllMatchingChecked ? 'all' : this.selectedResourceIds
             },
 
-            currentStatus() {
-                return this.$route.query['status'] || '';
+            /**
+             * Determine if there are any resources for the view
+             */
+            hasResources() {
+                return Boolean(this.resources.length > 0)
             },
 
-            filtersAreApplied() {
-                return this.selectedTarget || this.selectedStatus;
+            /**
+             * Determine if there any lenses for this resource
+             */
+            hasLenses() {
+                return Boolean(this.lenses.length > 0)
             },
-            activeFilterCount() {
-                return [this.selectedTarget, this.selectedStatus].filter(function (value) {
-                    return value != null;
-                }).length;
-            }
-        }
+
+            /**
+             * Determine whether to show the selection checkboxes for resources
+             */
+            shouldShowCheckBoxes() {
+                return (
+                    Boolean(this.hasResources && !this.viaHasOne) &&
+                    Boolean(
+                        this.actionsAreAvailable ||
+                        this.authorizedToDeleteAnyResources ||
+                        this.canShowDeleteMenu
+                    )
+                )
+            },
+
+            /**
+             * Determine if any selected resources may be deleted.
+             */
+            authorizedToDeleteSelectedResources() {
+                return Boolean(_.find(this.selectedResources, resource => resource.authorizedToDelete))
+            },
+
+            /**
+             * Determine if any selected resources may be force deleted.
+             */
+            authorizedToForceDeleteSelectedResources() {
+                return Boolean(
+                    _.find(this.selectedResources, resource => resource.authorizedToForceDelete)
+                )
+            },
+
+            /**
+             * Determine if the user is authorized to delete any listed resource.
+             */
+            authorizedToDeleteAnyResources() {
+                return (
+                    this.resources.length > 0 &&
+                    Boolean(_.find(this.resources, resource => resource.authorizedToDelete))
+                )
+            },
+
+            /**
+             * Determine if the user is authorized to force delete any listed resource.
+             */
+            authorizedToForceDeleteAnyResources() {
+                return (
+                    this.resources.length > 0 &&
+                    Boolean(_.find(this.resources, resource => resource.authorizedToForceDelete))
+                )
+            },
+
+            /**
+             * Determine if any selected resources may be restored.
+             */
+            authorizedToRestoreSelectedResources() {
+                return Boolean(_.find(this.selectedResources, resource => resource.authorizedToRestore))
+            },
+
+            /**
+             * Determine if the user is authorized to restore any listed resource.
+             */
+            authorizedToRestoreAnyResources() {
+                return (
+                    this.resources.length > 0 &&
+                    Boolean(_.find(this.resources, resource => resource.authorizedToRestore))
+                )
+            },
+
+            /**
+             * Determinw whether the delete menu should be shown to the user
+             */
+            shouldShowDeleteMenu() {
+                return Boolean(this.selectedResources.length > 0) && this.canShowDeleteMenu
+            },
+
+            /**
+             * Determine whether the user is authorized to perform actions on the delete menu
+             */
+            canShowDeleteMenu() {
+                return Boolean(
+                    this.authorizedToDeleteSelectedResources ||
+                    this.authorizedToForceDeleteSelectedResources ||
+                    this.authorizedToRestoreSelectedResources ||
+                    this.selectAllMatchingChecked
+                )
+            },
+
+            /**
+             * Determine if the index is a relation field
+             */
+            isRelation() {
+                return Boolean(this.viaResourceId && this.viaRelationship)
+            },
+
+            /**
+             * Return the heading for the view
+             */
+            headingTitle() {
+                return this.isRelation && this.field ? this.field.name : this.resourceResponse.label
+            },
+
+            /**
+             * Return the resource count label
+             */
+            resourceCountLabel() {
+                const first = this.perPage * (this.currentPage - 1)
+
+                return (
+                    this.resources.length &&
+                    `${first + 1}-${first + this.resources.length} ${this.__('of')} ${
+                        this.allMatchingResourceCount
+                        }`
+                )
+            },
+
+            /**
+             * Return the currently encoded filter string from the store
+             */
+            encodedFilters() {
+                return this.$store.getters[`${this.resourceName}/currentEncodedFilters`]
+            },
+
+            /**
+             * Return the initial encoded filters from the query string
+             */
+            initialEncodedFilters() {
+                return this.$route.query[this.filterParameter] || ''
+            },
+
+            paginationComponent() {
+                return `pagination-${Nova.config['pagination'] || 'links'}`
+            },
+
+            hasNextPage() {
+                return Boolean(this.resourceResponse && this.resourceResponse.next_page_url)
+            },
+
+            hasPreviousPage() {
+                return Boolean(this.resourceResponse && this.resourceResponse.prev_page_url)
+            },
+
+            totalPages() {
+                return Math.ceil(this.allMatchingResourceCount / this.currentPerPage)
+            },
+        },
     }
 </script>

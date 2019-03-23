@@ -9,7 +9,6 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResultController extends Controller
 {
-
     public function index(Assay $assay, NovaRequest $request, Guard $guard)
     {
         abort_unless(
@@ -17,11 +16,15 @@ class ResultController extends Controller
             && $guard->user()->study_id == $assay->study_id,
             403
         );
-        $experimentType = config('elimu.result_types.' . $assay->definitionFile->result_type);
+        $experimentType = config('elimu.result_types.'.$assay->definitionFile->result_type);
 
         $experimentType = new $experimentType(null, $assay->definitionFile->parameters->keyBy('target'));
 
-        return $experimentType->results($request, $assay);
+        $response = $experimentType->results($request, $assay);
+
+        $response['filters'] = collect($experimentType->filters($request))->map->serialize($request);
+
+        return $response;
     }
 
     public function targets(Assay $assay, Guard $guard)
@@ -31,6 +34,7 @@ class ResultController extends Controller
             && $guard->user()->study_id == $assay->study_id,
             403
         );
+
         return $assay->definitionFile->parameters->pluck('target');
     }
 
@@ -44,7 +48,7 @@ class ResultController extends Controller
 
         return [
             'download' => route('download-results', compact('assay')),
-            'name' => 'results.xlsx'
+            'name' => 'results.xlsx',
         ];
     }
 
@@ -56,7 +60,7 @@ class ResultController extends Controller
             403
         );
 
-        $experimentType = config('elimu.result_types.' . $assay->definitionFile->result_type);
+        $experimentType = config('elimu.result_types.'.$assay->definitionFile->result_type);
 
         $experimentType = new $experimentType(null, $assay->definitionFile->parameters->keyBy('target'));
 

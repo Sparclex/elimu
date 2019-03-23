@@ -56,15 +56,15 @@ class Audit extends Resource
 
         $values[] = new Panel('User Information', $this->userInformation());
 
-        return array_merge([
+        return array_merge($values, [
             ID::make()->sortable()->onlyOnForms(),
             Text::make('Description', function () {
-                return $this->user->name . " " . $this->event . " " .
+                return $this->event . " " .
                     strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
             }),
             MorphTo::make('Auditable')->hideFromIndex(),
             DateTime::make('Date', 'created_at'),
-        ], $values);
+        ]);
     }
 
     public function userInformation()
