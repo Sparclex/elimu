@@ -16,6 +16,8 @@ Route::get('storageable', 'StorageController@storageable');
 Route::get('storage/{sampleType}', 'StorageController@index');
 
 
+Route::get('/{resource}/filters/options', 'DependentFilterController@options');
+
 Route::get('results/{assay}', 'ResultController@index');
 Route::get('results/{assay}/targets', 'ResultController@targets');
 Route::get('results/{assay}/request-for-download', 'ResultController@requestForDownload');

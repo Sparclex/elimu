@@ -14,11 +14,6 @@ class QPCRResultSpecifier
 
     public function __construct($targetParameters, $result)
     {
-        throw_unless(
-            $targetParameters != null,
-            new InvalidArgumentException(sprintf('No Parameters for target %s', $result->target))
-        );
-
         $this->targetParameters = $targetParameters;
         $this->result = $result;
         $this->styles = false;
@@ -51,6 +46,10 @@ class QPCRResultSpecifier
 
     public function qualitative()
     {
+        if (!$this->targetParameters) {
+            return '<span class="text-danger">No parameter for this target</span>';
+        }
+
         $parameters = $this->targetParameters;
         if ($this->result->replicas < $parameters['minvalues']) {
             $error = 'Not enough data';

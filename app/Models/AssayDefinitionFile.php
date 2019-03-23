@@ -37,6 +37,9 @@ class AssayDefinitionFile extends Model implements AuditableContract
         return $this->belongsTo(SampleType::class);
     }
 
+    /**
+     * @return \App\Experiments\ExperimentType
+     */
     public function resultTypeClass()
     {
         return config('elimu.result_types.' . $this->result_type);
