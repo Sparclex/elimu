@@ -20,19 +20,6 @@ class ResultExtractor
             $experiment->assay->definitionFile->parameters->keyBy('target')
         );
 
-        $experimentType->ignore(
-            [
-                '6179592',
-                '7179593',
-                '8179594',
-                '9179595',
-                '1179596',
-                '5176792',
-                '5176801',
-                '9176805',
-            ]
-        );
-
         $manager = new ExperimentManager($experimentType, $experiment);
 
 
