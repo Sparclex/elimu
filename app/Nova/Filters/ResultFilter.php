@@ -17,7 +17,9 @@ class ResultFilter extends DependentFilter
     public function dependsOn()
     {
         return [
-            AssayFilter::class => Assay::pluck('id')->toArray(),
+            AssayFilter::class => Assay::whereHas('definitionFile', function ($query) {
+                $query->where('result_type', 'qPcr Rdml');
+            })->pluck('id')->toArray(),
         ];
     }
 
