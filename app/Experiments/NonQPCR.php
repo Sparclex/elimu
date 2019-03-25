@@ -251,7 +251,7 @@ class NonQPCR extends ExperimentType
                             ->sort()
                             ->values()[$value];
                     })->bindTo($resource)
-                ),
+                )->sortable(),
         ];
     }
 }
