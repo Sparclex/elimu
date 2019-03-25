@@ -108,7 +108,7 @@
         <span class="sidebar-label">Results</span></h3>
     <ul class="list-reset mb-8">
         <li class="leading-tight mb-4 ml-8 text-sm">
-            <router-link :to="{name: 'results'}" class="text-white text-justify no-underline dim">
+            <router-link :to="{name: 'index', params: {resourceName: 'results'}}" class="text-white text-justify no-underline dim">
                 Results
             </router-link>
         </li>
