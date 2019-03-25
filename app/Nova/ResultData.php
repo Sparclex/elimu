@@ -66,14 +66,16 @@ class ResultData extends Resource
         $primaryValue = Number::make('Primary Value');
 
         if ($this->result) {
-            $resultClass = $this->result->assay->definitionFile->resultTypeClass();
+            $defintionFile = $this->result->assay->definitionFile;
+            $resultClass = $defintionFile->resultTypeClass();
+            $parameters = $defintionFile->parameters->firstWhere('target', strtolower($this->result->target));
 
             if (method_exists($resultClass, 'primaryValue')) {
-                $primaryValue = $resultClass::primaryValue($request);
+                $primaryValue = $resultClass::primaryValue($request, $parameters);
             }
 
             if (method_exists($resultClass, 'secondaryValue')) {
-                $secondaryValue = $resultClass::secondaryValue($request);
+                $secondaryValue = $resultClass::secondaryValue($request, $parameters);
             }
         }
 
@@ -103,31 +105,5 @@ class ResultData extends Resource
                 return true;
             }),
         ];
-    }
-
-    private function data()
-    {
-        /*
-        if ($this->experiment) {
-            $dataLabel = $this->experiment->result_handler::$dataLabel;
-            $additionalDataLabel = $this->experiment->result_handler::$additionalDataLabel;
-        }
-
-        $primaryValueField = Text::make($dataLabel ?? 'Data', 'primary_value');
-        if (is_numeric($this->primary_value) || !strlen($this->primary_value)) {
-            $primaryValueField = Number::make($dataLabel ?? 'Data', 'primary_value')
-                ->resolveUsing(function ($value) {
-                    return number_format((float)$value, 2, '.', '\'');
-                });
-        }
-
-        return [
-            $primaryValueField
-                ->sortable(),
-            Text::make($additionalDataLabel ?? 'Additional Data', 'secondary_value')
-                ->sortable(),
-            AdditionalData::make('extra')
-        ];
-        */
     }
 }
