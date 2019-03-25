@@ -133,9 +133,9 @@ class Result extends Resource
      */
     protected function assayFilterIsset(Request $request)
     {
-        return ! ! optional(
+        return (optional(
             collect(json_decode(base64_decode($request->get('filters'))))
                 ->firstWhere('class', AssayFilter::class)
-        )->value;
+        )->value || $request->get('viaResource') == 'assays');
     }
 }
