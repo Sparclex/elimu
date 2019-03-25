@@ -3,6 +3,7 @@
 namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -49,7 +50,17 @@ abstract class ExperimentType
 
     abstract public function headers($assay): array;
 
+    public static function indexQuery($query, $assay)
+    {
+        return $query;
+    }
+
     public static function filters($request): array
+    {
+        return [];
+    }
+
+    public static function fields($request, $resource)
     {
         return [];
     }

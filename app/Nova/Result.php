@@ -6,11 +6,9 @@ use App\Models\Assay;
 use App\Nova\Filters\AssayFilter;
 use App\Nova\Filters\ResultFilter;
 use App\Nova\Filters\TargetFilter;
-use App\Support\QPCRResultSpecifier;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\TrashedStatus;
@@ -43,9 +41,9 @@ class Result extends Resource
                     }
 
                     return $this->assay
-                    ->definitionFile
-                    ->sampleType
-                    ->name;
+                        ->definitionFile
+                        ->sampleType
+                        ->name;
                 }
             ),
             HasMany::make('Data', 'resultData', ResultData::class),
@@ -105,16 +103,22 @@ class Result extends Resource
             $orderings
         );
 
-        return static::indexQuery($request, $query);
+        return static::indexQuery($request, $query, $filters);
     }
 
-    public static function indexQuery(NovaRequest $request, $query)
+    public static function indexQuery(NovaRequest $request, $query, $filters = null)
     {
-        if (! count($query->getQuery()->getRawBindings()['where'])) {
-            return $query;
-        }
+        $assay = null;
 
-        $assay = Assay::where('id', $query->getQuery()->getRawBindings()['where'][0])->first();
+        $assayFilter = collect($filters)->first(function ($filter) {
+            return $filter->class = AssayFilter::class;
+        });
+
+        if ($request->get('viaResource') == 'assays') {
+            $assay = Assay::where('id', $request->get('viaResourceId'))->first();
+        } elseif ($assayFilter && $assayFilter->value) {
+            $assay = Assay::where('id', $assayFilter->value)->first();
+        }
 
         if (! $assay) {
             return $query;
@@ -131,7 +135,7 @@ class Result extends Resource
     {
         return ! ! optional(
             collect(json_decode(base64_decode($request->get('filters'))))
-            ->firstWhere('class', AssayFilter::class)
+                ->firstWhere('class', AssayFilter::class)
         )->value;
     }
 }

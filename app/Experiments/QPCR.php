@@ -313,7 +313,7 @@ class QPCR extends ExperimentType
         $this->ignoredSamples = $ignoredSamples;
     }
 
-    public static function indexQuery(Builder $query, $assay)
+    public static function indexQuery($query, $assay)
     {
         $query->select("results.*")
             ->selectRaw('avg(primary_value) as avg_cq')
@@ -441,7 +441,7 @@ class QPCR extends ExperimentType
         return $headings;
     }
 
-    public static function primaryValue(Request $request)
+    public static function primaryValue(Request $request, $parameters)
     {
         return Number::make('Primary Value')
             ->displayUsing(
@@ -456,7 +456,7 @@ class QPCR extends ExperimentType
             ->asHtml();
     }
 
-    public static function secondaryValue(Request $request)
+    public static function secondaryValue(Request $request, $parameters)
     {
         return Text::make('Secondary Value')
             ->displayUsing(
