@@ -22,3 +22,5 @@ Route::get('results/{assay}', 'ResultController@index');
 Route::get('results/{assay}/targets', 'ResultController@targets');
 Route::get('results/{assay}/request-for-download', 'ResultController@requestForDownload');
 Route::get('results/{assay}/download', 'ResultController@download')->name('download-results');
+
+Route::get('definition-files/{resultType}', 'DefinitionFileController@template');

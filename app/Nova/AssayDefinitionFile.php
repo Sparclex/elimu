@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Fields\ResultType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Laravel\Nova\Fields\Code;
@@ -62,7 +63,7 @@ class AssayDefinitionFile extends Resource
             Text::make('Name')
                 ->rules('required', 'unique:assay_definition_files,name,{{resourceId}}'),
             BelongsToField::make('Sample Type', 'sampleType', SampleType::class),
-            Select::make('Result Type', 'result_type')
+            ResultType::make('Result Type', 'result_type')
                 ->options(array_combine($resultTypes, $resultTypes))
                 ->rules('required', Rule::in($resultTypes)),
             File::make('Path')
