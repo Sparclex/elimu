@@ -3,5 +3,5 @@
     <span class="px-1">&middot;</span>
     &copy; {{ date('Y') }} Elimu - By Tobias Schindler and Silvan Wehner
     <span class="px-1">&middot;</span>
-    v{{ config('lims.version') }}
+    v{{ config('elimu.version') }}
 </p>
