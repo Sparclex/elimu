@@ -462,8 +462,10 @@ class QPCR extends ExperimentType
             ->displayUsing(
                 function ($value) {
                     return Position::fromPosition($value)
-                        ->withColumns(8)
-                        ->withRows(12)
+                        ->withColumns(12)
+                        ->withRows(8)
+                        ->withColumnFormat('123')
+                        ->withRowFormat('ABC')
                         ->toLabel();
                 }
             );
