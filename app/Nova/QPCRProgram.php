@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 
 class QPCRProgram extends Resource
@@ -59,6 +60,10 @@ class QPCRProgram extends Resource
             ID::make()->sortable(),
             Text::make('Name')
                 ->rules('required'),
+            Number::make('Reaction Volume', 'reaction_volume')
+                ->step(0.1)
+                ->hideFromIndex(),
+
             Table::make('Program')
                 ->fields([
                     Text::make('Step'),

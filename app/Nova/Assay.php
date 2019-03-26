@@ -45,9 +45,6 @@ class Assay extends Resource
             BelongsToField::make('Reagent')
                 ->nullable()
                 ->hideFromIndex(),
-            Number::make('Reaction Volume', 'reaction_volume')
-                ->step(0.01)
-                ->hideFromIndex(),
             BelongsToMany::make('Oligos')
                 ->searchable()
                 ->fields(new ConcentrationPivotField),
