@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Exports\ResultExport;
 use App\Models\Assay;
 use App\Nova\Filters\AssayFilter;
 use App\Nova\Filters\ResultFilter;
@@ -71,7 +72,7 @@ class Result extends Resource
     public function actions(Request $request)
     {
         return [
-            (new DownloadExcel())->withHeadings(),
+            new ResultExport(),
         ];
     }
 

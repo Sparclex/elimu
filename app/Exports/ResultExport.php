@@ -5,31 +5,23 @@ namespace App\Exports;
 use App\Collections\ResultDataCollection;
 use App\Experiments\ExperimentType;
 use App\Models\Assay;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
-class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
+class ResultExport extends DownloadExcel implements WithHeadings, ShouldAutoSize, FromArray
 {
-    use Exportable;
-
     /**
-     * @var ExperimentType
+     * @param array|mixed $headings
+     * @param array       $only
+     *
+     * @return $this
      */
-    private $experimentType;
-    /**
-     * @var Assay
-     */
-    private $assay;
-
-    public function __construct(ExperimentType $experimentType, Assay $assay)
-    {
-        $this->experimentType = $experimentType;
-        $this->assay = $assay;
-    }
-
-    public function headings(): array
+    public function withHeadings($headings = null)
     {
         $headings = [
             'id',
@@ -39,8 +31,17 @@ class ResultExport implements FromArray, WithHeadings, ShouldAutoSize
             'birthdate',
             'gender',
         ];
+        $headings = \is_array($headings) ? $headings : \func_get_args();
 
-        return array_merge($headings, $this->experimentType->headers($this->assay));
+        if (0 === count($headings)) {
+            $this->headingCallback = $this->autoHeading();
+        } else {
+            $this->headingCallback = function () use ($headings) {
+                return $headings;
+            };
+        }
+
+        return $this;
     }
 
     /**
