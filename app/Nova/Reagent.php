@@ -41,6 +41,8 @@ class Reagent extends Resource
 
             Text::make('Manufacturer'),
             Text::make('Supplier'),
+            Text::make('Catalog Number')
+                ->hideFromIndex(),
         ];
     }
 
