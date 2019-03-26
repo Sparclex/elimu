@@ -71,7 +71,9 @@ class ExperimentManager
                 $this->type->extractSamplesIds()->toArray()
             )->whereHas('experiments', function ($query) {
                 return $query->where('experiment_id', $this->experiment->id);
-            })->pluck('id', 'sample_id');
+            })->pluck('id', 'sample_id')->mapWithKeys(function ($value, $key) {
+                return [strtolower($key) => $value];
+            });
         }
 
         return $this->sampleDatabaseIds;
