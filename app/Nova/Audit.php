@@ -59,6 +59,9 @@ class Audit extends Resource
         return array_merge($values, [
             ID::make()->sortable()->onlyOnForms(),
             Text::make('Description', function () {
+                if (!$this->id) {
+                    return null;
+                }
                 return $this->event . " " .
                     strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
             }),
@@ -70,7 +73,8 @@ class Audit extends Resource
     public function userInformation()
     {
         return [
-            BelongsTo::make('User'),
+            MorphTo::make('User')
+                ->types([User::class]),
             Text::make('IP Address')->hideFromIndex(),
             Text::make('User Agent')->hideFromIndex(),
         ];
