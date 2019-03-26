@@ -59,6 +59,9 @@ class Audit extends Resource
         return array_merge([
             ID::make()->sortable()->onlyOnForms(),
             Text::make('Description', function () {
+                if (!$this->user) {
+                    return $this->event;
+                }
                 return $this->user->name . " " . $this->event . " " .
                     strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
             }),
