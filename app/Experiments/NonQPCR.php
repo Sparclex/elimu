@@ -53,7 +53,7 @@ class NonQPCR extends ExperimentType
             $data = collect(
                 $reader->load($this->resultFile)
                     ->getActiveSheet()
-                ->toArray()
+                    ->toArray()
             )
                 ->filter(
                     function ($row) {
@@ -97,6 +97,35 @@ class NonQPCR extends ExperimentType
         $this->assertPrimaryValuesAreValid();
     }
 
+    protected static function valueToLabel($targetParameters, $value)
+    {
+        if (! isset($targetParameters['labels'])) {
+            return $value;
+        }
+
+        return collect(array_map('trim', explode(',', $targetParameters['labels'])))
+            ->sort()
+            ->values()
+            ->get((int) $value, null);
+    }
+
+    protected static function labelToValue($targetParameters, $value)
+    {
+        if (! isset($targetParameters['labels'])) {
+            return $value;
+        }
+
+        return collect(array_map('trim', explode(',', $targetParameters['labels'])))
+            ->sort()
+            ->values()
+            ->first(
+                function ($label) use ($value) {
+                    return strtolower($label) == trim(strtolower($value));
+                },
+                null
+            );
+    }
+
     /**
      * Stores the experiment results
      *
@@ -111,7 +140,8 @@ class NonQPCR extends ExperimentType
                 return [
                     'sample' => $row['sample_id'],
                     'target' => $row['target'],
-                    'primary_value' => $this->parameters[strtolower($row['target'])]['labels']->search(
+                    'primary_value' => self::labelToValue(
+                        $this->parameters[strtolower($row['target'])],
                         $row['primary_value']
                     ),
                     'secondary_value' => $row['secondary_value'] ?? null,
@@ -123,14 +153,37 @@ class NonQPCR extends ExperimentType
         );
     }
 
-    public function export($assay)
+    public static function exportMap($row, $assay)
     {
-        // TODO: Implement export() method.
+        $map = [];
+
+        foreach ($assay->definitionFile->parameters as $targetParameter) {
+            $result = $row->results->first(
+                function ($result) use ($targetParameter) {
+                    return strtolower($result->target) == strtolower($targetParameter['target']);
+                }
+            );
+
+            if (! $result) {
+                $map[] = '';
+                continue;
+            }
+
+            $map[] = self::valueToLabel($targetParameter, $result->resultData->first()->primary_value);
+        }
+
+        return $map;
     }
 
-    public function headers($assay): array
+    public static function headings($assay): array
     {
-        // TODO: Implement headers() method.
+        $headings = [];
+
+        foreach ($assay->definitionFile->parameters as $targetParameter) {
+            $headings[] = $targetParameter['target'];
+        }
+
+        return $headings;
     }
 
     protected function assertExtensionCorrect()
@@ -210,9 +263,7 @@ class NonQPCR extends ExperimentType
         return Text::make('Primary Value')
             ->displayUsing(
                 function ($value) use ($parameters) {
-                    return collect(array_map('trim', explode(',', $parameters['labels'])))
-                        ->sort()
-                        ->values()[$value];
+                    return self::valueToLabel($parameters, $value);
                 }
             );
     }
@@ -226,7 +277,7 @@ class NonQPCR extends ExperimentType
                 ResultData::whereColumn('result_id', 'results.id')
                     ->where('included', true)
                     ->select('primary_value')
-                ->limit(1)
+                    ->limit(1)
             );
     }
 
@@ -247,9 +298,7 @@ class NonQPCR extends ExperimentType
                             ->parameters
                             ->firstWhere('target', strtolower($this->target));
 
-                        return collect(array_map('trim', explode(',', $parameters['labels'])))
-                            ->sort()
-                            ->values()[$value];
+                        return self::valueToLabel($parameters, $value);
                     })->bindTo($resource)
                 )->sortable(),
         ];

@@ -3,7 +3,7 @@
 namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Sample;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -46,9 +46,35 @@ abstract class ExperimentType
      */
     abstract public function getDatabaseData($experiment): Collection;
 
-    abstract public function export($assay);
+    public static function exportQuery($assay, $resultIds)
+    {
+        return Sample::whereHas(
+            'results',
+            function ($query) use ($resultIds) {
+                return $query->whereIn('results.id', $resultIds);
+            }
+        )->with(
+            [
+                'results' => function ($query) use ($resultIds) {
+                    return $query->whereIn('id', $resultIds);
+                },
+                'results.resultData',
+                'sampleTypes' => function ($query) use ($assay) {
+                    return $query->where('sample_types.id', $assay->definitionFile->sample_type_id);
+                },
+                ]
+        );
+    }
 
-    abstract public function headers($assay): array;
+    public static function headings($assay)
+    {
+        return [];
+    }
+
+    public static function exportMap($row, $assay)
+    {
+        return [];
+    }
 
     public static function indexQuery($query, $assay)
     {

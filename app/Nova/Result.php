@@ -2,7 +2,7 @@
 
 namespace App\Nova;
 
-use App\Exports\ResultExport;
+use App\Actions\ResultExport;
 use App\Models\Assay;
 use App\Nova\Filters\AssayFilter;
 use App\Nova\Filters\ResultFilter;
@@ -14,6 +14,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\TrashedStatus;
 use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
+use Maatwebsite\LaravelNovaExcel\Actions\QueuedExport;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Result extends Resource
@@ -23,6 +24,10 @@ class Result extends Resource
     public static $model = 'App\Models\Result';
 
     public static $title = 'id';
+
+    public static $searchRelations = [
+        'sample' => ['sample_id'],
+    ];
 
     public static $search = [];
 
@@ -72,7 +77,7 @@ class Result extends Resource
     public function actions(Request $request)
     {
         return [
-            new ResultExport(),
+            (new ResultExport())
         ];
     }
 
@@ -103,6 +108,9 @@ class Result extends Resource
             ),
             $orderings
         );
+        if ($search && ! empty(trim($search))) {
+            $query = static::applySearch($query, $search);
+        }
 
         return static::indexQuery($request, $query, $filters);
     }
@@ -111,9 +119,11 @@ class Result extends Resource
     {
         $assay = null;
 
-        $assayFilter = collect($filters)->first(function ($filter) {
-            return $filter->class = AssayFilter::class;
-        });
+        $assayFilter = collect($filters)->first(
+            function ($filter) {
+                return $filter->class = AssayFilter::class;
+            }
+        );
 
         if ($request->get('viaResource') == 'assays') {
             $assay = Assay::where('id', $request->get('viaResourceId'))->first();
@@ -136,7 +146,7 @@ class Result extends Resource
     {
         return (optional(
             collect(json_decode(base64_decode($request->get('filters'))))
-                ->firstWhere('class', AssayFilter::class)
+                    ->firstWhere('class', AssayFilter::class)
         )->value || $request->get('viaResource') == 'assays');
     }
 }
