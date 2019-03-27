@@ -6,6 +6,7 @@ use App\Experiments\QPCR;
 use App\Models\Assay;
 use App\Models\AssayDefinitionFile;
 use App\Models\Experiment;
+use App\Models\Result;
 use App\Models\Sample;
 use InvalidArgumentException;
 
@@ -112,8 +113,7 @@ class ResultFactory
 
         $experiment->samples()->attach(array_pluck($samples, 'id'));
 
-        return (new QPCR(null, $this->parameters->keyBy('target')))
-            ->resultQuery(null, $experiment->assay)
+        return QPCR::indexQuery(Result::query(), $experiment->assay)
             ->get();
     }
 

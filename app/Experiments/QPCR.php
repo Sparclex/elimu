@@ -3,9 +3,9 @@
 namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
+use App\Models\Sample;
 use App\Support\Position;
 use App\Support\QPCRResultSpecifier;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\Number;
@@ -353,82 +353,76 @@ class QPCR extends ExperimentType
             ->definitionFile
             ->parameters
             ->firstWhere('target', strtolower($resource->target));
+
         return [
             Text::make(
                 'Result',
                 (function () use ($parameters) {
                     return (new QPCRResultSpecifier($parameters, $this->resource))
-                    ->withStyles()
-                    ->qualitative();
+                        ->withStyles()
+                        ->qualitative();
                 })->bindTo($resource)
             )->asHtml(),
             Number::make(
                 'Quant',
                 (function () use ($parameters) {
                     return (new QPCRResultSpecifier($parameters, $this->resource))
-                    ->quantitative();
+                        ->quantitative();
                 })->bindTo($resource)
             ),
         ];
     }
 
-    public function export($assay)
+    public static function exportQuery($assay, $resultIds)
     {
-        $results = $this->resultQuery(null, $assay)->with('sample', 'sample.sampleTypes')->get();
-
-        $sampleTypeId = $assay->definitionFile->sample_type_id;
-
-        $table = [];
-
-        foreach ($results->groupBy('sample_id') as $rowData) {
-            $extra = optional($rowData[0]->sample->sampleTypes->firstWhere('id', $sampleTypeId))->pivot->extra;
-
-            $row = [
-                'id' => $rowData[0]->sample->sample_id,
-                'subject_id' => $rowData[0]->sample->subject_id,
-                'collected_at' => $rowData[0]->sample->collected_at,
-                'visit_id' => $rowData[0]->sample->visit_id,
-                'birthdate' => $rowData[0]->sample->birthdate,
-                'gender' => $rowData[0]->sample->gender,
-            ];
-            if ($extra) {
-                foreach ($extra as $key => $value) {
-                    $row[$key] = $value;
-                }
+        return Sample::whereHas(
+            'results',
+            function ($query) use ($resultIds) {
+                return $query->whereIn('results.id', $resultIds);
             }
+        )
+            ->with(
+                [
+                    'results' => function ($query) use ($assay, $resultIds) {
+                        $query = $query
+                            ->select('results.*')
+                            ->selectRaw('avg(primary_value) as avg_cq')
+                            ->selectRaw('count(*) as replicas')
+                            ->selectRaw('stddev(primary_value) as stddev')
+                            ->join('result_data', 'results.id', 'result_id')
+                            ->where('included', true)
+                            ->whereIn('result_id', $resultIds)
+                            ->groupBy('result_id');
 
-            foreach ($rowData as $result) {
-                $specifier = new QPCRResultSpecifier(
-                    $assay->definitionFile->parameters->firstWhere('target', strtolower($result->target)),
-                    $result
-                );
-                $row['replicas_'.$result->target] = $result->replicas;
-                $row['mean_cq_'.$result->target] = $result->avg_cq;
-                $row['sd_cq_'.$result->target] = $result->stddev;
-                $row['qual_'.$result->target] = $specifier->qualitative();
-                $row['quant_'.$result->target] = $specifier->quantitative();
-            }
+                        $targetPositives = $assay->definitionFile->parameters->map(
+                            function ($targetParameters) {
+                                return [
+                                    'sql' => '(primary_value <= ? and results.target = ?)',
+                                    'bindings' => [$targetParameters['cutoff'], $targetParameters['target']],
+                                ];
+                            }
+                        );
 
-            $table[] = $row;
-        }
+                        $query->selectRaw(
+                            sprintf(
+                                'count(case when (%s) and primary_value <> 0 then 1 end) as positives',
+                                $targetPositives->pluck('sql')->implode(' or ')
+                            ),
+                            $targetPositives->pluck('bindings')->flatten()->toArray()
+                        );
 
-        return $table;
+                        return $query;
+                    },
+                    'sampleTypes' => function ($query) use ($assay) {
+                        return $query->where('sample_types.id', $assay->definitionFile->sample_type_id);
+                    },
+                ]
+            );
     }
 
-    public function headers($assay): array
+    public static function headings($assay): array
     {
         $headings = [];
-
-        $sampleType = $assay->results()
-            ->first()
-            ->sample
-            ->sampleTypes()
-            ->wherePivot('sample_type_id', $assay->definitionFile->sample_type_id)
-            ->first();
-
-        foreach ($sampleType->pivot->extra as $key => $value) {
-            $headings[] = $key;
-        }
 
         foreach ($assay->definitionFile->parameters->pluck('target') as $target) {
             $headings[] = 'replicas_'.$target;
@@ -439,6 +433,38 @@ class QPCR extends ExperimentType
         }
 
         return $headings;
+    }
+
+    public static function exportMap($row, $assay)
+    {
+        $map = [];
+
+        foreach ($assay->definitionFile->parameters as $targetParameters) {
+            $result = $row->results->first(
+                function ($result) use ($targetParameters) {
+                    return strtolower($result->target) == strtolower($targetParameters['target']);
+                }
+            );
+
+            if (! $result) {
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                continue;
+            }
+
+            $specifier = new QPCRResultSpecifier($targetParameters, $result);
+
+            $map[] = $result->replicas;
+            $map[] = $result->avg_cq;
+            $map[] = $result->stddev;
+            $map[] = $specifier->qualitative();
+            $map[] = $specifier->quantitative();
+        }
+
+        return $map;
     }
 
     public static function primaryValue(Request $request, $parameters)
