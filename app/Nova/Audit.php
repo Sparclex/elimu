@@ -2,8 +2,8 @@
 
 namespace App\Nova;
 
+use App\Actions\AuditExport;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -56,18 +56,25 @@ class Audit extends Resource
 
         $values[] = new Panel('User Information', $this->userInformation());
 
-        return array_merge($values, [
+        return array_merge(
+            $values,
+            [
             ID::make()->sortable()->onlyOnForms(),
-            Text::make('Description', function () {
-                if (!$this->id) {
-                    return null;
-                }
-                return $this->event . " " .
+            Text::make(
+                'Description',
+                function () {
+                    if (! $this->id) {
+                        return null;
+                    }
+
+                    return $this->event." ".
                     strtolower(Nova::resourceForModel($this->auditable_type)::singularLabel());
-            }),
+                }
+            ),
             MorphTo::make('Auditable')->hideFromIndex(),
             DateTime::make('Date', 'created_at'),
-        ]);
+            ]
+        );
     }
 
     public function userInformation()
@@ -89,7 +96,9 @@ class Audit extends Resource
     public function actions(Request $request)
     {
         return [
-            (new DownloadExcel)->withHeadings()->allFields(),
+            (new AuditExport)
+                ->withHeadings('ID', 'User', 'Action', 'Date', 'Old Values', 'New Values', 'IP Address', 'User Agent')
+                ->allFields(),
         ];
     }
 }
