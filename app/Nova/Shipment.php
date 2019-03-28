@@ -68,7 +68,7 @@ class Shipment extends Resource
                 ->help('Each line in the following format: sample_id,aliquots')
                 ->rules('required'),
             BelongsToField::make('Type', 'sampleType', SampleType::class),
-            Text::make('Recipient')
+            Text::make('Recipient institution')
                 ->rules('required'),
             CreatableBelongsTo::make('Recipient Contact', 'recipientPerson', Person::class)
                 ->nullable()
