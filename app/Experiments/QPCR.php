@@ -196,6 +196,13 @@ class QPCR extends ExperimentType
                         'content' => collect($this->getData()['sample'])
                             ->firstWhere('@id', $react['sample']['@id'])['type'],
                         'cq' => $this->getCq($react['data'], $react['data']['tar']['@id']),
+                        'position' => Position::fromPosition($react['@id'])
+                            ->withColumns(12)
+                            ->withRows(8)
+                            ->withColumnFormat('123')
+                            ->withRowFormat('ABC')
+                            ->toLabel()
+
                     ];
                 }
             }
