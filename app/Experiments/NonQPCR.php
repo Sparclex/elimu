@@ -278,6 +278,12 @@ class NonQPCR extends ExperimentType
                     ->where('included', true)
                     ->select('primary_value')
                     ->limit(1)
+            )
+            ->addSubSelect(
+                'replicas',
+                ResultData::selectRaw('count(*)')
+                ->whereColumn('result_data.result_id', 'results.id')
+                ->where('included', true)
             );
     }
 

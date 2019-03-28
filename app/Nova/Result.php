@@ -10,11 +10,10 @@ use App\Nova\Filters\TargetFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\TrashedStatus;
-use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
-use Maatwebsite\LaravelNovaExcel\Actions\QueuedExport;
 use Treestoneit\BelongsToField\BelongsToField;
 
 class Result extends Resource
@@ -52,6 +51,7 @@ class Result extends Resource
                         ->name;
                 }
             ),
+            Number::make('Replicates', 'replicas')->sortable(),
             HasMany::make('Data', 'resultData', ResultData::class),
         ];
 
@@ -132,7 +132,9 @@ class Result extends Resource
         }
 
         if (! $assay) {
-            return $query;
+            return $query->addSubSelect('replicas', \App\Models\ResultData::selectRaw('count(*)')
+                ->whereColumn('result_data.result_id', 'results.id')
+                ->where('included', true));
         }
 
         return $assay->definitionFile->resultTypeClass()::indexQuery($query, $assay);

@@ -62,7 +62,7 @@ abstract class ExperimentType
                 'sampleTypes' => function ($query) use ($assay) {
                     return $query->where('sample_types.id', $assay->definitionFile->sample_type_id);
                 },
-                ]
+            ]
         );
     }
 
@@ -78,7 +78,12 @@ abstract class ExperimentType
 
     public static function indexQuery($query, $assay)
     {
-        return $query;
+        return $query->addSubSelect(
+            'replicas',
+            \App\Models\ResultData::selectRaw('count(*)')
+            ->whereColumn('result_data.result_id', 'results.id')
+            ->where('included', true)
+        );
     }
 
     public static function filters($request): array
