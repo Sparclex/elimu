@@ -8,6 +8,7 @@ use App\Models\SampleMutation;
 use App\Observers\StorageGenerator;
 use App\Rules\StorageSizeExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
@@ -37,6 +38,16 @@ class AppServiceProvider extends ServiceProvider
                 return $request->user()->timezone;
             }
         );
+
+        Collection::macro('isearch', function ($value, $default = false) {
+            foreach ($this->items as $key => $item) {
+                if (strtolower($item) == strtolower($value)) {
+                    return $key;
+                }
+            }
+
+            return $default;
+        });
     }
 
     /**

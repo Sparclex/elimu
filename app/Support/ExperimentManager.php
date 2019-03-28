@@ -92,7 +92,7 @@ class ExperimentManager
                         'result_id' => Result::firstOrCreate([
                             'assay_id' => $this->experiment->assay_id,
                             'study_id' => Auth::user()->study_id,
-                            'sample_id' => $this->getSampleDatabaseIds()[$dataRow['sample']],
+                            'sample_id' => $this->getSampleDatabaseIds()[strtolower($dataRow['sample'])],
                             'target' => $dataRow['target']
                         ])->id,
                         'target' => $dataRow['target'],

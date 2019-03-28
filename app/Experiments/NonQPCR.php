@@ -4,6 +4,7 @@ namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
 use App\Models\ResultData;
+use Exception;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\Text;
 use Maatwebsite\Excel\Excel;
@@ -42,7 +43,11 @@ class NonQPCR extends ExperimentType
      */
     public function extractSamplesIds(): Collection
     {
-        return $this->getData()->pluck('sample_id');
+        return $this->getData()->pluck('sample_id')->map(
+            function ($value) {
+                return strtolower($value);
+            }
+        );
     }
 
     public function getData()
@@ -115,15 +120,8 @@ class NonQPCR extends ExperimentType
             return $value;
         }
 
-        return collect(array_map('trim', explode(',', $targetParameters['labels'])))
-            ->sort()
-            ->values()
-            ->first(
-                function ($label) use ($value) {
-                    return strtolower($label) == trim(strtolower($value));
-                },
-                null
-            );
+        return $targetParameters['labels']
+            ->isearch($value, null);
     }
 
     /**
@@ -227,12 +225,12 @@ class NonQPCR extends ExperimentType
         $this->getData()->each(
             function ($row, $key) {
                 $target = strtolower($row['target']);
-                if ($this->parameters[$target]['labels']->search(trim($row['primary_value'])) === false) {
+                if ($this->parameters[$target]['labels']->isearch(trim($row['primary_value'])) === false) {
                     throw new ExperimentException(
                         sprintf(
                             'Row %d has an invalid primary value. Only the following values are allowed: %s',
                             $key + 1,
-                            implode(', ', $this->parameters[$target]['labels'])
+                            $this->parameters[$target]['labels']->implode(', ')
                         )
                     );
                 }
@@ -282,8 +280,8 @@ class NonQPCR extends ExperimentType
             ->addSubSelect(
                 'replicas',
                 ResultData::selectRaw('count(*)')
-                ->whereColumn('result_data.result_id', 'results.id')
-                ->where('included', true)
+                    ->whereColumn('result_data.result_id', 'results.id')
+                    ->where('included', true)
             );
     }
 
