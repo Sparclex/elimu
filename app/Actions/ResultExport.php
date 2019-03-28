@@ -26,7 +26,7 @@ class ResultExport extends DownloadExcel implements ShouldAutoSize
         $this->resource = $request->resource();
         $this->request = ExportActionRequestFactory::make($request);
 
-        $resultIds = explode(',', $this->request->resources);
+        $resultIds = $this->fetchResultIds($this->request);
 
         if (! $this->onlyOneAssay($resultIds)) {
             return Action::danger('Choose results from the same assay');
@@ -48,8 +48,6 @@ class ResultExport extends DownloadExcel implements ShouldAutoSize
                 ->pivot->extra ?? collect();
 
         $this->extraKeys = $extra->keys();
-
-
 
         $this->headings = array_merge(
             [
@@ -96,5 +94,14 @@ class ResultExport extends DownloadExcel implements ShouldAutoSize
                 ->whereIn('id', $resultIds)
                 ->selectRaw('count(distinct assay_id) as count')
                 ->first()->count === 1;
+    }
+
+    protected function fetchResultIds($request)
+    {
+        if ($request->resources != 'all') {
+            return explode(',', $request->resources);
+        }
+
+        return $request->toQuery()->get()->pluck('id')->toArray();
     }
 }
