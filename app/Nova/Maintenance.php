@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Actions\MaintenanceExport;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
@@ -57,7 +58,9 @@ class Maintenance extends Resource
     public function actions(Request $request)
     {
         return [
-            (new DownloadExcel)->withHeadings()->allFields(),
+            (new MaintenanceExport)
+                ->withHeadings('ID', 'Date', 'Instrument', 'Technician', 'Procedure', 'Created at', 'Updated at')
+                ->allFields(),
         ];
     }
 }
