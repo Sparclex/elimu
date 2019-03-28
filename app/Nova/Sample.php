@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Importer\SampleImporter;
 use App\Nova\Filters\SampleFilter;
 use App\Nova\Lenses\SampleRegistry;
+use App\Nova\RelationFields\SampleMutationFields;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Date;
@@ -61,11 +62,7 @@ class Sample extends Resource
             HasMany::make('Storage', 'storage', Storage::class),
 
             BelongsToMany::make('Types', 'sampleTypes', SampleType::class)
-                ->fields(function () {
-                    return [
-                        Text::make('Aliquots', 'quantity')
-                    ];
-                }),
+                ->fields(new SampleMutationFields),
 
             BelongsToMany::make('Experiments'),
 

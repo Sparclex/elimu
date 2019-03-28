@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Fields\StorageSizeField;
+use App\Nova\RelationFields\SampleMutationFields;
 use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -56,11 +57,7 @@ class SampleType extends Resource
                 ->hideFromIndex(),
             HasMany::make('Storage', 'storages', Storage::class),
             BelongsToMany::make('Samples', 'samples', Sample::class)
-                ->fields(function () {
-                    return [
-                        Text::make('Aliquots', 'quantity')
-                    ];
-                })
+                ->fields(new SampleMutationFields)
         ];
     }
 }
