@@ -64,7 +64,9 @@ class QPCR extends ExperimentType
     protected function getData()
     {
         if (! $this->data) {
-            $this->data = Parser::xml($this->getFileContents());
+            $data = Parser::xml($this->getFileContents());
+
+            $this->data = $this->normalizeData($data);
         }
 
         return $this->data;
@@ -201,7 +203,7 @@ class QPCR extends ExperimentType
                             ->withRows(8)
                             ->withColumnFormat('123')
                             ->withRowFormat('ABC')
-                            ->toLabel()
+                            ->toLabel(),
 
                     ];
                 }
@@ -502,5 +504,24 @@ class QPCR extends ExperimentType
                         ->toLabel();
                 }
             );
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    protected function normalizeData($data)
+    {
+        if (isset($data['sample']['@id'])) {
+            $data['sample'] = [$data['sample']];
+        }
+        if (isset($data['target']['@id'])) {
+            $data['target'] = [$data['target']];
+        }
+        if ($data['experiment']['run']['@id']) {
+            $data['experiment']['run'] = [$data['experiment']['run']];
+        }
+
+        return $data;
     }
 }
