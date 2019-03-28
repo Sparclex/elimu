@@ -5,9 +5,7 @@ namespace App\Nova;
 use App\Fields\Table;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 
 class QPCRProgram extends Resource
@@ -47,11 +45,10 @@ class QPCRProgram extends Resource
         return 'QPCR Program';
     }
 
-
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
@@ -60,24 +57,25 @@ class QPCRProgram extends Resource
             ID::make()->sortable(),
             Text::make('Name')
                 ->rules('required'),
-            Number::make('Reaction Volume', 'reaction_volume')
-                ->step(0.1)
-                ->hideFromIndex(),
 
             Table::make('Program')
-                ->fields([
-                    Text::make('Step'),
-                    Text::make('Temp(°C)', 'temp'),
-                    Text::make('Time (s)', 'time'),
-                    Text::make('Goto'),
-                    Text::make('Cycles')
-                ]),
+                ->fields(
+                    [
+                        Text::make('Step'),
+                        Text::make('Temp(°C)', 'temp'),
+                        Text::make('Time (s)', 'time'),
+                        Text::make('Goto'),
+                        Text::make('Cycles'),
+                    ]
+                ),
             Table::make('Detection Table')
-                ->fields([
-                    Text::make('Channel ID', 'channel_id'),
-                    Text::make('Target'),
-                    Text::make('Threshold')
-                ]),
+                ->fields(
+                    [
+                        Text::make('Channel ID', 'channel_id'),
+                        Text::make('Target'),
+                        Text::make('Threshold'),
+                    ]
+                ),
 
             Text::make('Software'),
             Text::make('Version'),
@@ -90,7 +88,7 @@ class QPCRProgram extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -101,7 +99,7 @@ class QPCRProgram extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -112,7 +110,7 @@ class QPCRProgram extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -123,7 +121,7 @@ class QPCRProgram extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)
