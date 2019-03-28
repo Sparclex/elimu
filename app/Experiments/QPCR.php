@@ -7,6 +7,7 @@ use App\Models\Sample;
 use App\Support\Position;
 use App\Support\QPCRResultSpecifier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -184,7 +185,6 @@ class QPCR extends ExperimentType
         if (! $this->parsedData) {
             $parsedData = [];
             foreach ($this->getData()['experiment']['run'] as $run) {
-                $format = $run['pcrFormat'];
                 foreach ($run['react'] as $react) {
                     if (in_array($react['sample']['@id'], $this->ignoredSamples)) {
                         continue;
@@ -192,15 +192,10 @@ class QPCR extends ExperimentType
                     $parsedData[] = [
                         'sampleId' => strtolower($react['sample']['@id']),
                         'target' => strtolower($react['data']['tar']['@id']),
-                        'position' => Position::fromPosition($react['@id'])
-                            ->withRows($format['rows'])
-                            ->withColumns($format['columns'])
-                            ->toLabel(),
                         'reactId' => $react['@id'],
                         'content' => collect($this->getData()['sample'])
                             ->firstWhere('@id', $react['sample']['@id'])['type'],
                         'cq' => $this->getCq($react['data'], $react['data']['tar']['@id']),
-                        'data' => $react['data']['adp'] ?? [],
                     ];
                 }
             }
@@ -290,7 +285,12 @@ class QPCR extends ExperimentType
                     'target' => $data['target'],
                     'primary_value' => floatval($data['cq']),
                     'secondary_value' => $data['reactId'],
-                    'extra' => json_encode(array_except($data, 'cq', 'reactId')),
+                    'extra' => json_encode(
+                        Arr::only(
+                            array_change_key_case($data, CASE_LOWER),
+                            ['reactid', 'fluor', 'content']
+                        )
+                    ),
                 ];
             }
         );
