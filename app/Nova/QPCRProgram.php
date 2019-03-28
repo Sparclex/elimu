@@ -79,6 +79,9 @@ class QPCRProgram extends Resource
                     Text::make('Threshold')
                 ]),
 
+            Text::make('Software'),
+            Text::make('Version'),
+
             BelongsToMany::make('Assays')
                 ->searchable(),
         ];
