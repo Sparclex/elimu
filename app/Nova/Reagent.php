@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Rules\StudyUnique;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -43,6 +44,8 @@ class Reagent extends Resource
             Text::make('Supplier'),
             Text::make('Catalog Number')
                 ->hideFromIndex(),
+
+            BelongsToMany::make('Assays')
         ];
     }
 

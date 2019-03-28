@@ -17,9 +17,9 @@ class Reagent extends Model implements AuditableContract
         'expires_at'
     ];
 
-    public function assay()
+    public function assays()
     {
-        return $this->belongsTo(Assay::class);
+        return $this->belongsToMany(Assay::class);
     }
 
     public function experiments()

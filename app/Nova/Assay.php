@@ -42,8 +42,8 @@ class Assay extends Resource
             BelongsToField::make('Definition File', 'definitionFile', AssayDefinitionFile::class),
             BelongsToField::make('Instrument')->nullable(),
             BelongsToField::make('SOP', 'protocol', Protocol::class)->nullable(),
-            BelongsToField::make('Reagent')
-                ->nullable()
+            BelongsToMany::make('Reagents')
+                ->searchable()
                 ->hideFromIndex(),
             BelongsToMany::make('Oligos')
                 ->searchable()

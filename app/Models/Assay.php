@@ -36,6 +36,11 @@ class Assay extends Model implements AuditableContract
         );
     }
 
+    public function reagents()
+    {
+        return $this->belongsToMany(Reagent::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(Person::class);
@@ -44,11 +49,6 @@ class Assay extends Model implements AuditableContract
     public function controls()
     {
         return $this->belongsToMany(Control::class);
-    }
-
-    public function reagent()
-    {
-        return $this->belongsTo(Reagent::class);
     }
 
     public function definitionFile()
