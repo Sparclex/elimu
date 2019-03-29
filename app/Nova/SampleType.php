@@ -55,6 +55,8 @@ class SampleType extends Resource
             Select::make('Row Format')
                 ->options($formats)
                 ->hideFromIndex(),
+            Text::make('Storage condition', 'storage_condition')
+                ->sortable(),
             HasMany::make('Storage', 'storages', Storage::class),
             BelongsToMany::make('Samples', 'samples', Sample::class)
                 ->fields(new SampleMutationFields)
