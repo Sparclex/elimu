@@ -30,13 +30,13 @@ class QPCR extends ExperimentType
 
     public const CONTROL_IDS = [self::POSITIVE_CONTROL, self::NTC_CONTROL, self::NEGATIVE_CONTROL];
 
-    private $fileContents;
+    protected $fileContents;
 
-    private $data;
+    protected $data;
 
-    private $parsedData;
+    protected $parsedData;
 
-    private $ignoredSamples = [];
+    protected $ignoredSamples = [];
 
     /**
      * Extract the sample ids of the result file
