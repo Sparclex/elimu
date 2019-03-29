@@ -3,6 +3,8 @@
 namespace App\Experiments;
 
 use App\Exceptions\ExperimentException;
+use App\Models\Sample;
+use App\Support\QPCRResultSpecifier;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -155,6 +157,104 @@ class QPCRWithMelting extends QPCR
         }
 
         return $this->meltingData;
+    }
+
+    public static function headings($assay): array
+    {
+        $headings = [];
+
+        foreach ($assay->definitionFile->parameters->pluck('target') as $target) {
+            $headings[] = 'replicas_'.$target;
+            $headings[] = 'mean_cq_'.$target;
+            $headings[] = 'sd_cq_'.$target;
+            $headings[] = 'qual_'.$target;
+            $headings[] = 'quant_'.$target;
+            $headings[] = 'melt_temp_'. $target;
+        }
+
+        return $headings;
+    }
+
+    public static function exportQuery($assay, $resultIds)
+    {
+        return Sample::whereHas(
+            'results',
+            function ($query) use ($resultIds) {
+                return $query->whereIn('results.id', $resultIds);
+            }
+        )
+            ->with(
+                [
+                    'results' => function ($query) use ($assay, $resultIds) {
+                        $query = $query
+                            ->select('results.*')
+                            ->selectRaw('avg(primary_value) as avg_cq')
+                            ->selectRaw('count(*) as replicas')
+                            ->selectRaw('stddev(primary_value) as stddev')
+                            ->selectRaw('avg(JSON_EXTRACT(result_data.extra, "$.melting_temperature")) as avg_melt')
+                            ->join('result_data', 'results.id', 'result_id')
+                            ->where('included', true)
+                            ->whereIn('result_id', $resultIds)
+                            ->groupBy('result_id');
+
+                        $targetPositives = $assay->definitionFile->parameters->map(
+                            function ($targetParameters) {
+                                return [
+                                    'sql' => '(primary_value <= ? and results.target = ?)',
+                                    'bindings' => [$targetParameters['cutoff'], $targetParameters['target']],
+                                ];
+                            }
+                        );
+
+                        $query->selectRaw(
+                            sprintf(
+                                'count(case when (%s) and primary_value <> 0 then 1 end) as positives',
+                                $targetPositives->pluck('sql')->implode(' or ')
+                            ),
+                            $targetPositives->pluck('bindings')->flatten()->toArray()
+                        );
+
+                        return $query;
+                    },
+                    'sampleTypes' => function ($query) use ($assay) {
+                        return $query->where('sample_types.id', $assay->definitionFile->sample_type_id);
+                    },
+                ]
+            );
+    }
+
+    public static function exportMap($row, $assay)
+    {
+        $map = [];
+
+        foreach ($assay->definitionFile->parameters as $targetParameters) {
+            $result = $row->results->first(
+                function ($result) use ($targetParameters) {
+                    return strtolower($result->target) == strtolower($targetParameters['target']);
+                }
+            );
+
+            if (! $result) {
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                $map[] = '';
+                continue;
+            }
+
+            $specifier = new QPCRResultSpecifier($targetParameters, $result);
+
+            $map[] = $result->replicas;
+            $map[] = $result->avg_cq;
+            $map[] = $result->stddev;
+            $map[] = $specifier->qualitative();
+            $map[] = $specifier->quantitative();
+            $map[] = $result->avg_melt;
+        }
+
+        return $map;
     }
 
     protected function getMeltingTemperatureFor($sampleId, $target, $position)
