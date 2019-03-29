@@ -296,7 +296,7 @@ class NonQPCR extends ExperimentType
                             return self::valueToLabel($parameters, $val);
                         })->implode(', ');
                     })->bindTo($resource)
-                )->sortable(),
+                ),
         ];
     }
 }

@@ -18,7 +18,8 @@ class ResultFilter extends DependentFilter
     {
         return [
             AssayFilter::class => Assay::whereHas('definitionFile', function ($query) {
-                $query->where('result_type', 'qPcr Rdml');
+                $query->where('result_type', 'qPCR RDML')
+                ->orWhere('result_type', 'qPCR RDML with melting temperature');
             })->pluck('id')->toArray(),
         ];
     }
