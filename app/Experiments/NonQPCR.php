@@ -269,20 +269,11 @@ class NonQPCR extends ExperimentType
     public static function indexQuery($query, $assay)
     {
         return $query->join('result_data', 'results.id', 'result_id')
+            ->where('included', true)
             ->select('results.*')
-            ->addSubSelect(
-                'result',
-                ResultData::whereColumn('result_id', 'results.id')
-                    ->where('included', true)
-                    ->select('primary_value')
-                    ->limit(1)
-            )
-            ->addSubSelect(
-                'replicas',
-                ResultData::selectRaw('count(*)')
-                    ->whereColumn('result_data.result_id', 'results.id')
-                    ->where('included', true)
-            );
+            ->selectRaw('GROUP_CONCAT(primary_value) as result')
+            ->selectRaw('count(*) as replicas')
+            ->groupBy('result_id');
     }
 
     public static function filters($request): array
@@ -296,13 +287,14 @@ class NonQPCR extends ExperimentType
             Text::make('Result')
                 ->displayUsing(
                     (function ($value) {
-
                         $parameters = $this->assay
                             ->definitionFile
                             ->parameters
                             ->firstWhere('target', strtolower($this->target));
 
-                        return self::valueToLabel($parameters, $value);
+                        return collect(explode(',', $value))->map(function ($val) use ($parameters) {
+                            return self::valueToLabel($parameters, $val);
+                        })->implode(', ');
                     })->bindTo($resource)
                 )->sortable(),
         ];
