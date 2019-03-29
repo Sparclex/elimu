@@ -22,7 +22,12 @@ class QPCRWithMelting extends QPCR
     {
         return $this->getResultData()->map(
             function ($data) use ($experiment) {
-                $meltingPoint = $this->getMeltingTemperatureFor($data['sampleId'], $data['target'], $data['position']);
+                $meltingPoint = $this->getMeltingTemperatureFor(
+                    $data['sampleId'],
+                    $data['target'],
+                    $data['position'],
+                    $experiment
+                );
 
                 return [
                     'sample' => $data['sampleId'],
@@ -169,7 +174,7 @@ class QPCRWithMelting extends QPCR
             $headings[] = 'sd_cq_'.$target;
             $headings[] = 'qual_'.$target;
             $headings[] = 'quant_'.$target;
-            $headings[] = 'melt_temp_'. $target;
+            $headings[] = 'melt_temp_'.$target;
         }
 
         return $headings;
@@ -257,8 +262,10 @@ class QPCRWithMelting extends QPCR
         return $map;
     }
 
-    protected function getMeltingTemperatureFor($sampleId, $target, $position)
+    protected function getMeltingTemperatureFor($sampleId, $target, $position, $experiment)
     {
+        $meltingPoint = false;
+
         foreach ($this->getMeltingData() as $data) {
             if (! isset($data['Sample']) || ! isset($data['Target'])) {
                 throw new ExperimentException('Invalid melting data file');
@@ -267,8 +274,16 @@ class QPCRWithMelting extends QPCR
                 && strtolower($data['Target']) == strtolower($target)
                 && strtolower($data['Well']) == strtolower($position)
             ) {
-                return $data['Melt_Temperature'] == 'None' ? null : $data['Melt_Temperature'];
+                $meltingPoint = $data['Melt_Temperature'] == 'None' ? null : $data['Melt_Temperature'];
+
+                if ($this->meltingTemperatureInRange($meltingPoint, $experiment, $target)) {
+                    return $meltingPoint;
+                }
             }
+        }
+
+        if ($meltingPoint !== false) {
+            return $meltingPoint;
         }
 
         throw new ExperimentException(
