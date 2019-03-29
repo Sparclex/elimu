@@ -124,7 +124,6 @@ import { Errors } from 'laravel-nova'
                     })
                     .finally(() => {
                         this.working = false;
-                        this.$refs.form.reset();
                     });
             },
 

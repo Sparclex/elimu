@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithLimit;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
+class SampleImporter implements ToCollection, WithHeadingRow, WithValidation, WithLimit
 {
     use Importable;
 
@@ -39,9 +40,11 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
     public function collection(Collection $rows)
     {
-        $rows = $rows->filter(function ($row) {
-            return $row->filter()->isNotEmpty();
-        });
+        $rows = $rows->filter(
+            function ($row) {
+                return $row->filter()->isNotEmpty();
+            }
+        );
 
         $sampleTypes = [];
         $sampleTypeStorage = [];
@@ -66,11 +69,11 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
         foreach ($rows as $row) {
             $row['id'] = strval($row['id']);
-            if (!$databaseSampleIds->has($row['id'])) {
+            if (! $databaseSampleIds->has($row['id'])) {
                 $databaseSampleIds[$row['id']] = $this->saveSampleInformation($row)->id;
             }
 
-            if (!$existingSampleMutations->contains(
+            if (! $existingSampleMutations->contains(
                 function ($sampleMutation) use ($row, $databaseSampleIds, $sampleTypes) {
                     return $row['id'] == $databaseSampleIds[$row['id']]
                         && $sampleTypes[$row['type']]->id == $sampleMutation->sample_type_id;
@@ -78,14 +81,19 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
             )) {
                 $this->saveMutation($row, $databaseSampleIds[$row['id']], $sampleTypes[$row['type']]);
 
-                $newPositions = array_merge($newPositions, $sampleTypeStorage[$row['type']]
-                    ->store($databaseSampleIds[$row['id']], $row['quantity'], false));
+                $newPositions = array_merge(
+                    $newPositions,
+                    $sampleTypeStorage[$row['type']]
+                    ->store($databaseSampleIds[$row['id']], $row['quantity'], false)
+                );
             }
         }
 
-        collect($newPositions)->chunk(200)->each(function ($positions) {
-            Storage::insert($positions->toArray());
-        });
+        collect($newPositions)->chunk(200)->each(
+            function ($positions) {
+                Storage::insert($positions->toArray());
+            }
+        );
     }
 
     public function rules(): array
@@ -138,12 +146,14 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
 
     private function saveMutation(Collection $row, $sampleId, $sampleType)
     {
-        DB::table('sample_mutations')->insert([
-            'sample_id' => $sampleId,
-            'sample_type_id' => $sampleType->id,
-            'quantity' => $row['quantity'] ?? 0,
-            'extra' => $this->extraColumnsToJson($row)
-        ]);
+        DB::table('sample_mutations')->insert(
+            [
+                'sample_id' => $sampleId,
+                'sample_type_id' => $sampleType->id,
+                'quantity' => $row['quantity'] ?? 0,
+                'extra' => $this->extraColumnsToJson($row),
+            ]
+        );
     }
 
     private function extraColumnsToJson(Collection $row)
@@ -156,5 +166,13 @@ class SampleImporter implements ToCollection, WithHeadingRow, WithValidation
         }
 
         return json_encode($extraValues);
+    }
+
+    /**
+     * @return int
+     */
+    public function limit(): int
+    {
+        return 2000;
     }
 }
