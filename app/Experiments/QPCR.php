@@ -518,7 +518,7 @@ class QPCR extends ExperimentType
         if (isset($data['target']['@id'])) {
             $data['target'] = [$data['target']];
         }
-        if ($data['experiment']['run']['@id']) {
+        if (isset($data['experiment']['run']['@id'])) {
             $data['experiment']['run'] = [$data['experiment']['run']];
         }
 
