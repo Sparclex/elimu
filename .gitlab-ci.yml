@@ -77,7 +77,7 @@ phpunit:
   dependencies:
   - composer
   script:
-  - phpunit --coverage-text --colors=never
+  - phpunit
 
 staging:
   stage: deploy
