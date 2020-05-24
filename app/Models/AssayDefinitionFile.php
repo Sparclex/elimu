@@ -14,6 +14,11 @@ class AssayDefinitionFile extends Model implements AuditableContract
 {
     use Auditable, SetUserStudyOnSave;
 
+    public function assay()
+    {
+        return $this->hasOne(Assay::class);
+    }
+
     public function setParametersAttribute($value)
     {
         $this->attributes['parameters'] = json_encode($value);

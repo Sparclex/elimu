@@ -2,36 +2,47 @@
 
 namespace App\Nova;
 
-use App\Nova\RelationFields\StudyUserFields;
-use App\Policies\Authorization;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Password;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Timezone;
+use Laravel\Nova\Fields\Gravatar;
+use Laravel\Nova\Fields\Password;
 
 class User extends Resource
 {
-    public static $displayInNavigation = true;
-
+    /**
+     * The model the resource corresponds to.
+     *
+     * @var string
+     */
     public static $model = 'App\\User';
 
+    /**
+     * The single value that should be used to represent the resource when being displayed.
+     *
+     * @var string
+     */
     public static $title = 'name';
 
+    /**
+     * The columns that should be searched.
+     *
+     * @var array
+     */
     public static $search = [
-        'id',
-        'name',
-        'email',
+        'id', 'name', 'email',
     ];
 
+    /**
+     * Get the fields displayed by the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
     public function fields(Request $request)
     {
         return [
-            ID::make()->hideFromIndex(),
+            ID::make()->sortable(),
 
             Gravatar::make(),
 
@@ -41,7 +52,7 @@ class User extends Resource
 
             Text::make('Email')
                 ->sortable()
-                ->rules('required', 'email', 'max:255')
+                ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
 
@@ -49,32 +60,50 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:6')
                 ->updateRules('nullable', 'string', 'min:6'),
-
-            Boolean::make('Is Admin', 'is_admin')
-                ->rules('required')
-                ->canSee(function () {
-                    return auth()->user()->is_admin;
-                }),
-
-            Timezone::make('Timezone')->rules('required')->sortable(),
-
-            DateTime::make('Created at')->onlyOnDetail(),
-
-            BelongsToMany::make('Studies')
-                ->fields(new StudyUserFields())
         ];
     }
 
-    public function getRoles()
+    /**
+     * Get the cards available for the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function cards(Request $request)
     {
-        $roles = [
-            Authorization::MONITOR => Authorization::MONITOR,
-            Authorization::SCIENTIST => Authorization::SCIENTIST,
-            Authorization::LABMANAGER => Authorization::LABMANAGER,
-        ];
-        if (Authorization::isAdministrator()) {
-            $roles[Authorization::ADMINISTRATOR] = Authorization::ADMINISTRATOR;
-        }
-        return $roles;
+        return [];
+    }
+
+    /**
+     * Get the filters available for the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function filters(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * Get the lenses available for the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function lenses(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [];
     }
 }
