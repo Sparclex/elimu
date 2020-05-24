@@ -26,11 +26,11 @@ class Qualifier
             return new QualifyError(self::NOT_ENOUGH_DATA);
         }
 
-        if($this->resultsDiverge($numberOfPositiveResults, $numberOfResults)) {
+        if ($this->resultsDiverge($numberOfPositiveResults, $numberOfResults)) {
             return new QualifyError(self::NEEDS_REPETITION);
         }
 
-        if($numberOfPositiveResults > 0 && $stddev > $cutoffStdev) {
+        if ($numberOfPositiveResults > 0 && $stddev > $cutoffStdev) {
             return new QualifyError(self::STANDARD_DEVIATION_TOO_HIGH);
         }
 

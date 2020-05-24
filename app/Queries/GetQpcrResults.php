@@ -35,7 +35,7 @@ class GetQpcrResults implements AnalizedResultsQuery
             $query->joinSub(
                 $this->results($assayId, $parameter['target'], $parameter['cutoff'] ?? 0),
                 $tableName,
-                $tableName . '.sample_id' ,
+                $tableName . '.sample_id',
                 'samples.id'
             );
 
@@ -44,7 +44,7 @@ class GetQpcrResults implements AnalizedResultsQuery
                 $tableName . '.avg_cq' => 'mean_cq_' . $normalizedTarget,
                 $tableName . '.stddev' => 'sd_cq_' . $normalizedTarget,
                 $tableName . '.positives' => 'positives_' . $normalizedTarget,
-            ])->each(static function($alias, $column) use($query) {
+            ])->each(static function ($alias, $column) use ($query) {
                 $query->selectRaw("{$column} as \"{$alias}\"");
             });
         }

@@ -29,7 +29,7 @@ class ListEvaluatedResults
             throw new AssayNotFound($assayName);
         }
 
-        if($definitionFile->result_type !== 'qPCR RDML') {
+        if ($definitionFile->result_type !== 'qPCR RDML') {
             throw new AssayTypeNotSupported($definitionFile->result_type);
         }
 
