@@ -14,6 +14,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('showToken') }}" target="_blank" class="block no-underline text-90 hover:bg-30 p-3">
+                {{ __('Show api token') }}
+            </a>
+        </li>
+        <li>
             <a href="{{ route('nova.logout') }}" class="block no-underline text-90 hover:bg-30 p-3">
                 {{ __('Logout') }}
             </a>
