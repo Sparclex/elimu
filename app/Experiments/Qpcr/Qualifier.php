@@ -15,8 +15,8 @@ class Qualifier
     const STANDARD_DEVIATION_TOO_HIGH = 'Standard deviation too high';
 
     public function qualify(
-        float $cqValue,
-        float $stddev,
+        ?float $cqValue,
+        ?float $stddev,
         int $numberOfPositiveResults,
         int $numberOfResults,
         int $minimalNumberOfResults,

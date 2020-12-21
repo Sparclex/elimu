@@ -11,7 +11,7 @@ class Quantifier
         }
 
         return round(
-            10 ** ($slope * $this->result->avg_cq + $intercept),
+            10 ** ($slope * $cqValue + $intercept),
             2
         );
     }
